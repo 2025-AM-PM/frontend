@@ -1,0 +1,4 @@
+[
+  { "id": 1, "title": "프로젝트 A", "year": 2015, "image": "/images/a.jpg", "description": "설명 A" },
+  { "id": 2, "title": "프로젝트 B", "year": 2016, "image": "/images/b.jpg", "description": "설명 B" }
+]

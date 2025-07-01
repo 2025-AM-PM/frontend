@@ -1,0 +1,96 @@
+.project-root{
+    position: relative;
+    width:100vw;
+    height:100vh;
+}
+
+.project-title-group{
+    position: absolute;
+    top:100px;
+    left:50%;
+    transform:translateX(-50%);
+    text-align: center;
+}
+
+.project-title{
+    font-size:5rem;
+    font-family:'Noto Sans',sans-serif;
+    color:#ffff;
+}
+
+.project-subtitle{
+    margin-top:10px;
+    font-size:05.rem;
+    color:#ffff;
+    font-family: 'Noto sans', sans-serif;
+}
+
+.filter-bar{
+    display:flex;
+    gap:1rem;
+    justify-content:center;
+    margin: 2rem 0;
+    margin-top:4rem;
+}
+
+.pill-btn,
+.pill-btn.active,
+.pill-btn:hover {
+  border-radius: 999px !important;
+  padding: 0.5rem 1.5rem;
+  background: #fff;
+  color: #222;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transition: background 0.2s, color 0.2s;
+  border: none;
+}
+
+.pill-btn.active,
+.pill-btn:hover {
+  background: #5ca0ff;
+  color: #fff;
+}
+
+
+.project-list {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.project-card {
+  background: #e0e0e0;
+  border-radius: 2rem;
+  width: 280px;
+  padding: 1.5rem 1rem 1rem 1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.project-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.project-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  text-align: center;
+}
+
+.project-desc {
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+}
