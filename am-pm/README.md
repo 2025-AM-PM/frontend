@@ -12,26 +12,26 @@ npm start
 
 # 폴더 구조
 
-📦src
- ┣ 📂assets
- ┃ ┣ 📜gold.png
- ┃ ┗ 📜logo.png
- ┣ 📂components
- ┃ ┣ 📜User.tsx
- ┃ ┣ 📜header.tsx
- ┃ ┣ 📜project.tsx
- ┃ ┗ 📜rank.tsx
- ┣ 📂pages
- ┃ ┗ 📜Home.tsx
- ┣ 📂styles
- ┃ ┣ 📜header.css
- ┃ ┗ 📜user.css
- ┣ 📜App.css
- ┣ 📜App.test.tsx
- ┣ 📜App.tsx
- ┣ 📜index.css
- ┣ 📜index.tsx
- ┣ 📜logo.svg
- ┣ 📜react-app-env.d.ts
- ┣ 📜reportWebVitals.ts
- ┗ 📜setupTests.ts
+- `src/`
+  - `assets/`
+    - `gold.png`
+    - `logo.png`
+  - `components/`
+    - `User.tsx`
+    - `header.tsx`
+    - `project.tsx`
+    - `rank.tsx`
+  - `pages/`
+    - `Home.tsx`
+  - `styles/`
+    - `header.css`
+    - `user.css`
+  - `App.css`
+  - `App.test.tsx`
+  - `App.tsx`
+  - `index.css`
+  - `index.tsx`
+  - `logo.svg`
+  - `react-app-env.d.ts`
+  - `reportWebVitals.ts`
+  - `setupTests.ts`
