@@ -38,8 +38,8 @@ function Project() {
             ))}
         </div>
         <div className="filter-bar">
-            <button className={`pill-btn${selectedYear==="all"?"active":""}`} onClick={()=>setSelectedYear("all")}>전체</button>
-            {year.map(year=>(<button key={year} className={`pill-btn${selectedYear===year?"active":""}`} onClick={()=>setSelectedYear(year)}>{year}</button>))}
+            <button className={`pill-btn ${selectedYear==="all"?"active":""}`} onClick={()=>setSelectedYear("all")}>전체</button>
+            {year.map(year=>(<button key={year} className={`pill-btn ${selectedYear===year?"active":""}`} onClick={()=>setSelectedYear(year)}>{year}</button>))}
         </div>
             <div className="project-list">
         {filteredProjects.map(project => (
