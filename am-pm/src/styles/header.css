@@ -1,28 +1,29 @@
 .header {
     width: 100%;
-    margin: auto;
-    height: 5rem;
-    
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    
+    height: 5rem; /* .container의 높이와 동일하게 설정 */
 }
 
 .container {
     width: 80%;
-    height: 70%;
+    height: 4rem; 
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    background-color: rgba(0, 0, 0, 0.1); /* #13161c에 투명도 적용 */
-    backdrop-filter: blur(5px); /* blur 효과 적용 */
-    box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.1);
-    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+    align-items: center; 
+
+   
+    position: fixed;
+    top: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    
+    background-color: rgba(28, 33, 40, 0.6);
+    backdrop-filter: blur(10px); 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    
     border-radius: 1rem;
     padding: 0.5rem;
-    margin-top: 1.5rem;
 }
 
 .logo {

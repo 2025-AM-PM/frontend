@@ -3,13 +3,89 @@
     width: 100%;
     background-color: #2C333A;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     color: white;
 }
 
-.mini-board .post-info {
-    font-size: 1rem;
-    color: white;
-    display: flex;
-    justify-content: space-between;
+/* .mb-title {
+    padding-left: 12px; 
+    font-size: 1.5rem;
+    font-weight: 600;
+    border-bottom: 2px solid #4A90E2; 
+    margin-top: 1rem;
+    padding-bottom: 1rem;
+} */
+
+.mb-title {
+    font-size: 1.7rem;
+    font-weight: 700;
+    border-bottom: 2px solid #4A90E2; 
+    /* 그라디언트 텍스트 스타일 */
+    background: linear-gradient(90deg, #DDE4ED, #4A90E2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+
+    /* 간격 제어 */
+    margin: 1rem 1rem; /* 위아래 마진 1rem, 좌우 마진 0 */
+    padding-bottom: 1rem;   
+}
+
+
+/* 테이블 전체 스타일 */
+.post-table {
+    margin-top: 0;
+    width: 100%;
+    border-collapse: collapse; /* 테두리선을 한 줄로 합침 */
+    color: #E0E0E0; /* 기본 텍스트 색상 */
+}
+
+/* 테이블 헤더(th)와 셀(td) 공통 스타일 */
+.post-table th,
+.post-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #3B444F; /* 행 구분선 */
+}
+
+/* 테이블 헤더(th) 전용 스타일 */
+.post-table th {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #8a99a8; /* 헤더 텍스트 색상 */
+    text-align: center;
+}
+
+/* 각 컬럼의 너비 조절 */
+.th-title { width: 60%; text-align: left; }
+.th-author { width: 20%; }
+.th-date { width: 20%; }
+
+/* 제목 셀(td-title) 스타일 */
+.td-title a {
+    color: #FFFFFF; /* 제목 링크 색상 */
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.td-title a:hover {
+    color: #4A90E2; /* 호버 시 색상 변경 */
+    text-decoration: underline;
+}
+
+/* 작성자, 작성일 셀 텍스트 정렬 */
+.td-author,
+.td-date {
+    text-align: center !important;
+    font-size: 0.9rem;
+    color: #A0AEC0;
+}
+
+.clickable-row {
+    cursor: pointer; /* 마우스 커서를 손가락 모양으로 변경 */
+    transition: background-color 0.2s ease;
+}
+
+.clickable-row:hover {
+    background-color: #38414a; /* 마우스를 올렸을 때 배경색 살짝 변경 */
 }
