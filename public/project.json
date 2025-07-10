@@ -3,42 +3,42 @@
     "id": 1,
     "title": "KUCC 25-1 MT",
     "year": 2025,
-    "images": ["/project-images/mt1.jpg"],
+    "images": ["/project-images/mt1.jpg", "/project-images/mt2.jpg"],
     "description": "3월 14일~15일에 대성리 드락펜션에서 25학년도 1학기 KUCC MT가 이루어졌습니다!"
   },
   {
     "id": 2,
     "title": "KUCC 25-1 OT",
     "year": 2025,
-    "images": ["/project-images/ot1.jpg"],
+    "images": ["/project-images/ot1.jpg", "/project-images/ot2.jpg"],
     "description": "2025년 1학기 KUCC 동아리 오리엔테이션이 3월 12일에 진행되었습니다."
   },
   {
     "id": 3,
     "title": "2025-1학기 신입회원 모집 공고",
     "year": 2025,
-    "images": ["/project-images/recruit1.jpg"],
+    "images": ["/project-images/recruit1.jpg", "/project-images/recruit2.jpg"],
     "description": "고려대학교 중앙 컴퓨터 동아리 KUCC에서 신입 회원을 모집합니다."
   },
   {
     "id": 4,
     "title": "KUCC x YCC 교류 해커톤, KeYThon",
     "year": 2025,
-    "images": ["/project-images/keython1.jpg"],
+    "images": ["/project-images/keython1.jpg", "/project-images/keython2.jpg"],
     "description": "제 2회 KUCC x YCC 연합 교류 해커톤, KeYThon이 1월 18일~19일에 진행되었습니다."
   },
   {
     "id": 5,
     "title": "선배와의 만남",
     "year": 2024,
-    "images": ["/project-images/senior1.jpg"],
+    "images": ["/project-images/senior1.jpg", "/project-images/senior2.jpg"],
     "description": "지난 11월 28일, 선배와의 만남이 진행되었습니다."
   },
   {
     "id": 6,
     "title": "24-2 제 2회 KUCC 해커톤: 쿠씨톤",
     "year": 2024,
-    "images": ["/project-images/cussiton1.jpg"],
+    "images": ["/project-images/cussiton1.jpg", "/project-images/cussiton2.jpg"],
     "description": "2024년 11월 1일~2일 KUCC 해커톤이 개최되었습니다."
   }
-]
+] 

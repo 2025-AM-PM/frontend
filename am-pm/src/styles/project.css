@@ -1,40 +1,38 @@
-.project-root{
-    position: relative;
-    width:100vw;
-    height:100vh;
+.project-root {
+  min-height: 100vh;
+  width: 100vw;
+  background: #181b23;
+  position: relative;
+  overflow-x: hidden;
 }
-
-.project-title-group{
-    position: absolute;
-    top:100px;
-    left:50%;
-    transform:translateX(-50%);
-    text-align: center;
+.project-title-group {
+  width: 100%;
+  margin-top: 80px;
+  margin-bottom: 32px;
+  text-align: center;
+  position: static;
+  transform: none;
 }
-
-.project-title{
-    font-size:5rem;
-    font-family:'Noto Sans',sans-serif;
-    color:#ffff;
+.project-title {
+  font-size: 4rem;
+  font-family: 'Noto Sans', sans-serif;
+  color: #fff;
+  font-weight: bold;
 }
-
-.project-subtitle{
-    margin-top:10px;
-    font-size:05.rem;
-    color:#ffff;
-    font-family: 'Noto sans', sans-serif;
+.project-subtitle {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #ccc;
+  font-family: 'Noto Sans', sans-serif;
 }
-
-.filter-bar{
-    display:flex;
-    gap:1rem;
-    justify-content:center;
-    margin: 2rem 0;
-    margin-top:4rem;
+.filter-bar {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0 0 0;
 }
-
 .pill-btn {
-  border-radius: 999px !important;
+  border-radius: 999px;
   padding: 0.5rem 1.5rem;
   background: #fff;
   color: #222;
@@ -45,50 +43,69 @@
   transition: background 0.2s, color 0.2s;
   border: none;
 }
-
 .pill-btn.active,
 .pill-btn:hover {
   background: #5ca0ff;
   color: #fff;
 }
-
-
 .project-list {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 2rem;
+  justify-items: center;
+  width: 90%;
+  max-width: 1200px;
+  margin: 2rem auto 0 auto;
 }
-
 .project-card {
-  background: #e0e0e0;
-  border-radius: 2rem;
-  width: 280px;
-  padding: 1.5rem 1rem 1rem 1rem;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  position: relative;
+  border-radius: 0.8rem;
+  width: 100%;
+  max-width: 320px;
+  height: 200px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(90, 89, 89, 0.09);
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: stretch;
 }
-
 .project-image {
   width: 100%;
-  height: 200px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 1.5rem;
-  margin-bottom: 1rem;
+  border-radius: 0.8rem;
+  display: block;
 }
-
-.project-title {
-  font-size: 1.25rem;
+.project-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  height: 90px;
+  padding: 0.5rem 1rem;
+  border-bottom-left-radius: 0.8rem;
+  border-bottom-right-radius: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.project-card-title, .project-desc {
+  width: 100%;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  line-height: 1.2;
+}
+.project-card-title {
   font-weight: bold;
-  margin-bottom: 0.3rem;
-  text-align: center;
+  margin-bottom: 0.2rem;
+  color: #fff;
 }
-
 .project-desc {
-  font-size: 1rem;
-  color: #333;
-  text-align: center;
+  font-size: 0.92rem;
+  color: #eee;
 }

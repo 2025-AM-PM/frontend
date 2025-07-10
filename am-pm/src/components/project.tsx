@@ -1,12 +1,13 @@
 import Header from "./header";
 import '../styles/project.css';
 import React, {useEffect, useState} from "react";
+// import { Textfit } from 'react-textfit';
 
 type ProjectType = {
   id: number;
   title: string;
   year: number;
-  image: string;
+  images: string[];
   description: string;
 };
 
@@ -32,24 +33,26 @@ function Project() {
             <div className="project-title">프로젝트</div>
             <div className="project-subtitle">지금까지 진행한 프로젝트들을 구경해보세요!</div>
         </div>
-        <div>
+        {/* <div>
             {projects.map(project=>(
                 <div key={project.id}>{project.title}</div>
             ))}
-        </div>
+        </div> */}
         <div className="filter-bar">
             <button className={`pill-btn ${selectedYear==="all"?"active":""}`} onClick={()=>setSelectedYear("all")}>전체</button>
             {year.map(year=>(<button key={year} className={`pill-btn ${selectedYear===year?"active":""}`} onClick={()=>setSelectedYear(year)}>{year}</button>))}
         </div>
             <div className="project-list">
-        {filteredProjects.map(project => (
-          <div key={project.id} className="project-card">
-            <img src={project.image} alt={project.title} className="project-image" />
-            <div className="project-card-title">{project.title}</div>
-            <div className="project-desc">{project.description}</div>
-          </div>
-        ))}
-      </div>
+              {filteredProjects.map(project => (
+                <div key={project.id} className="project-card">
+                  <img src={project.images[0]} alt={project.title} className="project-image" />
+                  <div className="project-overlay">
+                    <div className="project-card-title">{project.title}</div>
+                    <div className="project-desc">{project.description}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
         </>
         
     );
