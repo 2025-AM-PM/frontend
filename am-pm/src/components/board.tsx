@@ -60,7 +60,7 @@ function Board() {
   const boardTitles = {
     studyBoards: "스터디",
     jobBoards: "취업 정보",
-    exhibits: "과제 전시",
+    exhibits: "프로젝트 자랑",
     notices: "공지사항",
   };
 
@@ -72,7 +72,7 @@ function Board() {
           const normalizepPost: Post[] = posts.map((post) => ({
             id: post.id,
             title: post.title,
-            author: post.writter || "관리자",
+            author: post.writter || "익명",
             createdAt: post.createdAt,
             view: post.view,
             link: post.link,

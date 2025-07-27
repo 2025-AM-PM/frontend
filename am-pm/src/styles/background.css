@@ -1,0 +1,67 @@
+.background-main {
+  margin-top: 2rem;
+  height: 15%;
+  background-color: black;
+
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 배경 이미지 레이어 */
+.hero-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+
+  /* key가 변경될 때마다 이 애니메이션이 실행됩니다. */
+  animation: fadeIn 1.5s ease-in-out;
+  transition: opacity 1.5s ease-in-out;
+}
+
+/* 페이드 인 효과를 위한 Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 반투명 오버레이 레이어 */
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2; /* 배경 이미지 위에 위치 */
+}
+
+/* 텍스트 콘텐츠 */
+.hero-content {
+  position: relative;
+  z-index: 3; /* 오버레이 위에 위치 */
+  color: white;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* h1, p 태그 스타일은 이전과 동일 */
+.hero-content h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+}
