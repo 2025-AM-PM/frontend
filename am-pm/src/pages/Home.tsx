@@ -1,15 +1,19 @@
-import React from 'react';
-import Header from '../components/header'
-import '../styles/home.css'
-import Board from '../components/board';
+import React from "react";
+import Header from "../components/header";
+import "../styles/home.css";
+import Board from "../components/board";
+import { Clock } from "../components/clock";
+import Background from "../components/background";
 
 function HomePage() {
   return (
-    <div className='main'>
-        <Header />
-        <Board />
+    <div className="main">
+      <Header />
+      <Clock initialSeconds={3186254} />
+      <Background />
+      <Board />
     </div>
-  )
+  );
 }
 
 export default HomePage;
