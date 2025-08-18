@@ -1,96 +1,31 @@
 .header {
-    width: 100%;
-    height: 5rem; /* .container의 높이와 동일하게 설정 */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--muted);
 }
-
-.container {
-    width: 80%;
-    height: 4rem; 
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center; 
-
-   
-    position: fixed;
-    top: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    
-    background-color: rgba(28, 33, 40, 0.6);
-    backdrop-filter: blur(10px); 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-    
-    border-radius: 1rem;
-    padding: 0.5rem;
+.header-inner {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
-
-.logo {
-    height: 100%;
-    aspect-ratio: 1/1;
-    background-color: black;
-    border-radius: 50%;
-    background-image: url('../assets/logo.png');
-    background-size: cover;
-    background-position: center;
-    margin-left: 2rem;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
 }
-
 .nav {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  gap: 20px;
 }
-
-.nav li{
-    list-style: none;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    
+.nav a {
+  color: var(--ink);
+  font-weight: 600;
 }
-
-.nav-item {
-    border-radius: 1rem;
-}
-
-.nav-item a {
-    padding: 0 1rem;
-    text-decoration: none;
-    color: #62748E;
-    font-weight: 600;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    font-family: 'Noto Sans', sans-serif;
-}
-
-.nav-list {
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    gap: 1rem;
-}
-
-.nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-item:hover a {
-    color: white;
-    transform: scale(1.1);
-}
-
-
-.nav-item-current {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.nav-item-current a {
-  color: white;
-  transform: scale(1.1);
+.nav a.active {
+  color: var(--brand);
 }

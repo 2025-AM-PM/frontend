@@ -1,6 +1,68 @@
-.body {
+/* .body {
   width: 100vW;
   height: 500vw;
   background-color: #13161C;
   font-family: 'Noto Sans', sans-serif;
+} */
+
+@font-face {
+  font-family: "Pretendard";
+  src: local("Pretendard"), local("Noto Sans KR");
+  font-display: swap;
+}
+
+:root {
+  --bg: #ffffff;
+  --ink: #1a1a1a;
+  --sub: #5f6b7a;
+  --muted: #e9edf2;
+  --brand: #2f6feb; /* 링크/포인트 */
+  --card: #f8fafc;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --radius: 14px;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: "Pretendard", system-ui, -apple-system, Segoe UI, Roboto,
+    "Noto Sans KR", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--brand);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+}
+
+.section {
+  padding: 64px 0;
+}
+
+.section-title {
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 700;
+  margin: 0 0 16px;
+}
+
+.section-desc {
+  color: var(--sub);
+  margin: 0 0 32px;
 }

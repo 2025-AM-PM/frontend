@@ -1,0 +1,45 @@
+.timeline {
+  position: relative;
+  padding-left: 24px;
+  border-left: 3px solid var(--muted);
+}
+.timeline-item {
+  position: relative;
+  margin: 18px 0 28px;
+  padding-left: 12px;
+}
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -31px;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 0 4px #e8f0ff;
+}
+.timeline-year {
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+.timeline-title {
+  font-weight: 700;
+  margin: 4px 0;
+}
+.timeline-desc {
+  color: var(--sub);
+}
+.timeline-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.badge {
+  font-size: 12px;
+  padding: 4px 8px;
+  background: #fff;
+  border: 1px solid var(--muted);
+  border-radius: 999px;
+}

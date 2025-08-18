@@ -1,0 +1,50 @@
+.profile-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 880px) {
+  .profile-grid {
+    grid-template-columns: 360px 1fr;
+  }
+}
+.card {
+  background: var(--card);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 6px solid #fff;
+  box-shadow: var(--shadow);
+}
+.kv {
+  display: grid;
+  gap: 8px;
+}
+.kv-row {
+  display: flex;
+  gap: 10px;
+}
+.kv-key {
+  width: 110px;
+  color: var(--sub);
+}
+.tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.tag {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #eef3ff;
+  border: 1px solid #dbe5ff;
+  font-size: 13px;
+}

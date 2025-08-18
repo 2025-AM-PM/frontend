@@ -1,0 +1,25 @@
+.footer {
+  border-top: 1px solid var(--muted);
+  background: #fbfcfe;
+}
+.footer-inner {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr;
+  padding: 28px 0;
+}
+@media (min-width: 880px) {
+  .footer-inner {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+.legal {
+  color: var(--sub);
+  font-size: 14px;
+}
+.links {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
