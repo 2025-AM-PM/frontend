@@ -1,0 +1,55 @@
+.history-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 0;
+  margin-top: 10rem;
+  height: 15%;
+}
+
+/* 제목: 가운데 정렬, 흰색 */
+.history-title {
+  margin: 0;
+  text-align: center;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-size: clamp(22px, 3.6vw, 42px);
+}
+
+/* 배경 컨테이너: 80vw x 15vh, 가운데 정렬, 기본 검은 배경 */
+.history-bg {
+  width: 90vw;
+  height: 100%;
+  min-height: 120px;
+  background-color: #000; /* 기본 배경: 검정 */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain; /* 업로드 이미지가 꽉 차도록 */
+  border-radius: 16px;
+  margin: 2rem auto;
+  outline: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* 업로드 UI (선택) */
+.history-upload {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #cfd8e3;
+  font-size: 14px;
+  opacity: 0.9;
+}
+.history-upload input[type="file"] {
+  display: inline-block;
+  font: inherit;
+  color: inherit;
+}
+.history-upload span {
+  user-select: none;
+}
+
+.history-bg.has-image {
+  background-color: transparent; /* 이미지가 있을 때 배경색 제거 */
+}
