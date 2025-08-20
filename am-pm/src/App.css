@@ -1,6 +1,17 @@
-.body {
-  width: 100vW;
-  height: 500vw;
-  background-color: #13161C;
-  font-family: 'Noto Sans', sans-serif;
+/* 뷰포트 기준 높이 확보 */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* 실제 body 요소 스타일 */
+body {
+  margin: 0; /* 기본 여백 제거 */
+  /* 높이를 고정하지 말고 최소 높이로 */
+  min-height: 100vh; /* 표준 */
+  min-height: 100dvh; /* 모바일 주소창 대응 */
+  background-color: #13161c; /* 사이트 배경 */
+  font-family: "Noto Sans", system-ui, -apple-system, Segoe UI, Roboto,
+    "Noto Sans KR", sans-serif;
 }

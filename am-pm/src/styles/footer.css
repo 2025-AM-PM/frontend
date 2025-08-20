@@ -1,0 +1,137 @@
+:root {
+  --footer-bg: #171b22; /* #13161C와 잘 어울리는 살짝 밝은 톤 */
+  --footer-ink: #e7ecf3; /* 본문 텍스트 */
+  --footer-muted: #9aa4b2; /* 보조 텍스트 */
+  --footer-accent: #e0534e; /* 포인트 컬러(하트/호버) */
+  --footer-stroke: #2a303a; /* 얇은 구분선 */
+}
+
+.site-footer {
+  background: var(--footer-bg);
+  color: var(--footer-ink);
+  padding: 22px 0 26px;
+}
+
+.container {
+  width: min(1100px, 92%);
+  margin: 0 auto;
+}
+
+/* 상단: 카피라이트 · 소셜 */
+.footer-top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 12px;
+}
+.copyright {
+  font-size: 14px;
+  color: var(--footer-ink);
+  opacity: 0.9;
+}
+
+.socials {
+  display: inline-flex;
+  gap: 12px;
+}
+.socials a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--footer-ink);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: transform 0.15s ease, color 0.15s ease, background 0.15s ease,
+    border-color 0.15s ease;
+}
+.socials a:hover {
+  color: var(--footer-accent);
+  background: rgba(224, 83, 78, 0.12);
+  border-color: rgba(224, 83, 78, 0.35);
+  transform: translateY(-2px);
+}
+
+/* 구분선 */
+.divider {
+  height: 1px;
+  background: var(--footer-stroke);
+  opacity: 0.9;
+}
+
+/* 본문: 좌우 2단 */
+.footer-main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  padding-top: 18px;
+}
+.left {
+  display: grid;
+  gap: 14px;
+}
+.credit-lines {
+  display: grid;
+  gap: 4px;
+}
+.credit-line {
+  font-weight: 700;
+}
+.credit-line:nth-child(1)::after {
+  content: "";
+}
+.credit-line:nth-child(1) {
+  color: var(--footer-ink);
+}
+.credit-line:nth-child(1) .heart {
+  color: var(--footer-accent);
+}
+
+.org-info {
+  display: grid;
+  gap: 6px;
+  color: var(--footer-ink);
+  opacity: 0.9;
+}
+.org-info .muted {
+  color: var(--footer-muted);
+  font-size: 13px;
+}
+
+/* 오른쪽 연락처 열 */
+.right {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 48px;
+}
+.contact-col {
+  min-width: 180px;
+}
+.contact-label {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.contact-item {
+  color: var(--footer-ink);
+  opacity: 0.9;
+  font-size: 14px;
+}
+
+/* 반응형: 모바일에서는 세로 스택 */
+@media (max-width: 840px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    gap: 10px;
+  }
+  .footer-main {
+    grid-template-columns: 1fr;
+  }
+  .right {
+    grid-auto-flow: row;
+    gap: 16px;
+  }
+}

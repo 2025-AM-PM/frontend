@@ -11,6 +11,7 @@ import ProjectsGrid from "../components/projectGrid";
 import study from "../assets/study.jpg";
 import hackerthon from "../assets/hackerthone.jpg";
 import skSubmit from "../assets/skSubmit.jpg";
+import Footer from "../components/Footer";
 
 function HomePage() {
   const projects: ProjectCardProps[] = [
@@ -56,6 +57,7 @@ function HomePage() {
       <Board />
       <History backgroundUrl={timeline} allowUpload={false} />
       <ProjectsGrid projects={projects} />
+      {/* <Footer /> */}
     </div>
   );
 }
