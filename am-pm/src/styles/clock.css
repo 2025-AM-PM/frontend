@@ -1,53 +1,19 @@
-.neon-clock-container {
-  padding: 2rem;
+.clock-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 0;
 }
 
-.neon-clock {
-  font-family: "Courier New", Consolas, Monaco, "Lucida Console", monospace;
-  font-size: clamp(3rem, 8vw, 6rem);
-  font-weight: 400;
-  letter-spacing: 0.1em;
-  color: white;
-  text-align: center;
-  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor,
-    0 0 15px currentColor, 0 0 20px currentColor, 0 0 25px black, 0 0 30px black,
-    0 0 35px black;
-  animation: pulse 2s infinite alternate;
-}
-
-.neon-clock.timer-finished {
-  color: #ff0040; /* 카운트다운 종료 시 색상 */
-  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor,
-    0 0 15px currentColor, 0 0 20px currentColor, 0 0 25px #cc0033,
-    0 0 30px #cc0033, 0 0 35px #cc0033;
-  animation: flash 0.5s infinite alternate;
-}
-
-@keyframes pulse {
-  from {
-    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor,
-      0 0 15px currentColor, 0 0 20px currentColor, 0 0 25px black,
-      0 0 30px black, 0 0 35px black;
-  }
-  to {
-    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor,
-      0 0 15px currentColor, 0 0 20px currentColor, 0 0 25px black,
-      0 0 30px black, 0 0 35px black;
-  }
-}
-
-@keyframes flash {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.3;
-  }
-}
-
-@media (max-width: 768px) {
-  .neon-clock {
-    font-size: clamp(2rem, 6vw, 4rem);
-    letter-spacing: 0.05em;
-  }
+.digits {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(40px, 9vw, 96px);
+  color: #fff; /* 숫자만 흰색으로 */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  user-select: none;
 }
