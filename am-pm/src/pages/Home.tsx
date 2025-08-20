@@ -57,7 +57,7 @@ function HomePage() {
       <Board />
       <History backgroundUrl={timeline} allowUpload={false} />
       <ProjectsGrid projects={projects} />
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

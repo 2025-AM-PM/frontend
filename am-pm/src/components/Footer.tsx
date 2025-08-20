@@ -17,14 +17,13 @@ type Props = {
 };
 
 const Footer: React.FC<Props> = ({
-  org = "KUCC",
-  startYear = 2020,
-  address = "서울특별시 성북구 고려대로 105, 고려대학교 자연계캠퍼스 과학도서관 314호",
-  email = "anamkucc314@gmail.com",
+  org = "AM:PM",
+  startYear = 2018,
+  address = "전북특별자치도 전주시 덕진구 백제대로 567 전북대학교 공과대학 5호관 312호",
+  email = "hjs123@jbnu.ac.kr",
   credits = [
-    "Made with ♥ by KUCC",
-    "2020 Ver.",
-    "2024 Ver. Created by 팀 이민승, 김현서, 김재린, 문준호, 현지수, 주찬혁, 박기동",
+    "Made with ♥ by AM:PM",
+    "2025 Ver. Created by 팀 한준서, 김성광, 박병훈, 전정현",
   ],
   socials = [
     { name: "instagram", href: "#" },
@@ -33,10 +32,10 @@ const Footer: React.FC<Props> = ({
     { name: "youtube", href: "#" },
   ],
   contacts = [
-    { label: "회장", items: ["장훈성 010-2455-5464"] },
+    { label: "회장", items: ["김준원 010-2455-5464"] },
     {
       label: "부회장",
-      items: ["신서현 010-6608-9457", "이종현 010-5043-6804"],
+      items: ["임창우 010-6608-9457"],
     },
   ],
 }) => {
@@ -46,7 +45,7 @@ const Footer: React.FC<Props> = ({
 
   return (
     <footer className="site-footer" role="contentinfo">
-      <div className="container footer-top">
+      <div className="container-footer footer-top">
         <div className="copyright">Copyright © {org} All Rights Reserved.</div>
         <nav className="socials" aria-label="소셜 링크">
           {socials.map((s) => (
@@ -65,7 +64,7 @@ const Footer: React.FC<Props> = ({
 
       <div className="divider" aria-hidden />
 
-      <div className="container footer-main">
+      <div className="container-footer footer-main">
         <div className="left">
           <div className="credit-lines">
             {credits.map((line, i) => (
