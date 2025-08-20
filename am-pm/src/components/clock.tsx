@@ -36,7 +36,9 @@ export default function Clock() {
   // diff 또는 현재시각 문자열
   const text = useMemo(() => {
     if (targetMs) {
-      const diffSec = Math.abs(Math.round((targetMs - nowMs) / 1000));
+      // ✅ 지난 경우는 0으로 고정(절대값 사용 금지)
+      const delta = Math.round((targetMs - nowMs) / 1000); // 남은 초 (미래: 양수, 과거: 음수)
+      const diffSec = Math.max(0, delta); // 0 미만이면 0으로 클램프
       return formatDiff(diffSec);
     }
     return formatClock(new Date(nowMs));
