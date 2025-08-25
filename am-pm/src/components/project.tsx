@@ -1,7 +1,8 @@
 import Header from "./header";
 import React, { useEffect, useMemo, useState } from "react";
 import "../styles/project.css"; // 기존 타이틀/필터 CSS 계속 사용
-import ProjectsGrid, { ProjectCardProps } from "../components/projectCard";
+import { ProjectCardProps } from "../components/projectCard";
+import ProjectsGrid from "../components/projectGrid";
 
 type ProjectType = {
   id: number;
@@ -98,7 +99,7 @@ function Project() {
       {error ? (
         <div className="error-message">{error}</div>
       ) : (
-        <ProjectsGrid projects={cards} showHeader={false} />
+        <ProjectsGrid projects={cards} />
       )}
     </>
   );
