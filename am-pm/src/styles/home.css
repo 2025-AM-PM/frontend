@@ -5,9 +5,3 @@
   min-height: 100vh; /* 표준 */
   min-height: 100dvh; /* 모바일 주소창 대응 */
 }
-
-/* 3) 푸터를 맨 아래로 밀기 */
-.site-footer {
-  margin-top: auto;
-  position: static;
-}
