@@ -1,0 +1,89 @@
+:root {
+  --accent: #e0534e;
+  --accent-hover: #cc4943;
+  --ink: #e7ecf3;
+  --muted: #9aa4b2;
+  --surface: #171b22;
+  --border: #2a303a;
+  --danger: #d64545;
+}
+
+/* base */
+.ui-input {
+  width: 100%;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease, color 0.15s ease;
+
+  padding: 0 12px;
+  font-size: 14px;
+  line-height: 1.2;
+
+  /* placeholder / selection */
+  caret-color: var(--ink);
+}
+.ui-input::placeholder {
+  color: var(--muted);
+}
+.ui-input::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* sizes */
+.ui-input--sm {
+  height: 36px;
+}
+.ui-input--md {
+  height: 40px;
+}
+.ui-input--lg {
+  height: 44px;
+}
+
+/* focus */
+.ui-input:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(224, 83, 78, 0.35);
+}
+
+/* disabled */
+.ui-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* invalid (aria) */
+.ui-input[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.18);
+}
+
+/* type=file 버튼 스타일 */
+.ui-input[type="file"] {
+  padding: 0 8px;
+}
+.ui-input[type="file"]::file-selector-button {
+  margin-right: 8px;
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.ui-input[type="file"]::file-selector-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* dark 환경(이미 다크라 기본값과 동일하게 유지) */
+/* 필요 시 라이트 테마 추가 */

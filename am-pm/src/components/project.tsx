@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "../styles/project.css"; // 기존 타이틀/필터 CSS 계속 사용
 import { ProjectCardProps } from "../components/projectCard";
 import ProjectsGrid from "../components/projectGrid";
+import projectJson from "../assets/json/test.json";
 
 type ProjectType = {
   id: number;
@@ -16,24 +17,25 @@ type ProjectType = {
 // 우리 카드에 year를 덧댄 로컬 타입(필터용)
 type ProjectCardWithYear = ProjectCardProps & { year: number };
 
+const raw: ProjectType[] = projectJson as ProjectType[];
+
 function Project() {
-  const [raw, setRaw] = useState<ProjectType[]>([]);
+  // const [raw, setRaw] = useState<ProjectType[]>([]);
   const [selectedYear, setSelectedYear] = useState<number | "all">("all");
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ JSON을 가져와서 -> 우리가 만든 카드 타입으로 매핑
-  useEffect(() => {
-    fetch("/project.json")
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<ProjectType[]>;
-      })
-      .then((data) => setRaw(data))
-      .catch((err) => {
-        console.error("Error fetching data:", err);
-        setError("프로젝트 데이터를 불러오지 못했습니다.");
-      });
-  }, []);
+  // useEffect(() => {
+  //   fetch("../assets/json/project.json")
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  //       return res.json() as Promise<ProjectType[]>;
+  //     })
+  //     .then((data) => setRaw(data))
+  //     .catch((err) => {
+  //       console.error("Error fetching data:", err);
+  //       setError("프로젝트 데이터를 불러오지 못했습니다.");
+  //     });
+  // }, []);
 
   // 연도 목록
   const years = useMemo(

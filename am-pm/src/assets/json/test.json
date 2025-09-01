@@ -1,0 +1,65 @@
+[
+  {
+    "id": 101,
+    "title": "AM·PM 홈페이지 리뉴얼",
+    "year": 2025,
+    "images": ["images/test.png"],
+    "description": "동아리 웹사이트 UI/UX 전면 개편. 반응형 레이아웃과 접근성 개선, 빌드 속도 35% 단축."
+  },
+  {
+    "id": 102,
+    "title": "게임잼 2025",
+    "year": 2025,
+    "images": ["images/test.png"],
+    "description": "48시간 내 팀별 프로토타입 제작. 물리 퍼즐 장르 최우수상 수상."
+  },
+  {
+    "id": 103,
+    "title": "알고리즘 캠프",
+    "year": 2025,
+    "images": ["images/test.png"],
+    "description": "DP/그래프 집중 트랙 운영. 참가자 평균 솔브 수 2.1배 증가."
+  },
+  {
+    "id": 201,
+    "title": "데이터 시각화 워크숍",
+    "year": 2024,
+    "images": ["images/test.png"],
+    "description": "D3.js와 Observable을 활용한 인터랙티브 차트 제작 실습."
+  },
+  {
+    "id": 202,
+    "title": "쿠씨톤 해커톤",
+    "year": 2024,
+    "images": ["images/test.png"],
+    "description": "캠퍼스 연합 해커톤. 실시간 채팅·투표 기능을 갖춘 캠퍼스 이벤트 서비스 개발."
+  },
+  {
+    "id": 203,
+    "title": "스터디 매니저 웹앱",
+    "year": 2024,
+    "images": ["images/test.png"],
+    "description": "출석/과제/세션 관리 도구. 캘린더 연동과 자동 리마인더 지원."
+  },
+  {
+    "id": 301,
+    "title": "졸업작품 전시",
+    "year": 2023,
+    "images": ["images/test.png"],
+    "description": "학부 졸업 프로젝트 전시 지원 사이트 구축 및 부스 운영."
+  },
+  {
+    "id": 302,
+    "title": "오픈소스 컨트리뷰션",
+    "year": 2023,
+    "images": ["images/test.png"],
+    "description": "번역/문서/버그 픽스 등 다양한 PR 진행. 이슈 템플릿·CI 워크플로우 개선."
+  },
+  {
+    "id": 303,
+    "title": "신입 온보딩 툴",
+    "year": 2023,
+    "images": ["images/test.png"],
+    "description": "신입 부원 안내/퀘스트 시스템. 진행률 대시보드와 배지 시스템 제공."
+  }
+]

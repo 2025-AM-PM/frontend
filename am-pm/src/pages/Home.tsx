@@ -56,6 +56,7 @@ function HomePage() {
       <Background />
       <Board />
       <History backgroundUrl={timeline} allowUpload={false} />
+      <h2 className="project-title">Our Activities</h2>
       <ProjectsGrid projects={projects} />
       <Footer />
     </div>

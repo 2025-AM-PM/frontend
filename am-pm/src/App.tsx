@@ -5,6 +5,7 @@ import HomePage from "./pages/Home";
 import Project from "./components/project";
 import "./App.css";
 import Rank from "./components/rank";
+import BoardWrite from "./components/boardWrite";
 
 function App() {
   useEffect(() => {
@@ -17,6 +18,7 @@ function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/projects" element={<Project />} />
       <Route path="/rank" element={<Rank />} />
+      <Route path="/board/:category/write" element={<BoardWrite />} />
     </Routes>
   );
 }

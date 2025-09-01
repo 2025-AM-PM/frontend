@@ -1,0 +1,43 @@
+:root {
+  --ink: #e7ecf3;
+  --muted: #9aa4b2;
+  --danger: #d64545;
+}
+
+/* base */
+.ui-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.2;
+  user-select: none;
+}
+
+/* sizes */
+.ui-label--sm {
+  font-size: 13px;
+}
+.ui-label--md {
+  font-size: 14px;
+}
+.ui-label--lg {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* muted / disabled */
+.ui-label--muted {
+  color: var(--muted);
+}
+.ui-label--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* required mark */
+.ui-label__req {
+  color: var(--danger);
+  margin-left: 2px;
+}

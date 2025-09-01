@@ -1,0 +1,93 @@
+:root {
+  --accent: #e0534e;
+  --accent-hover: #cc4943;
+  --ink: #e7ecf3;
+  --muted: #9aa4b2;
+  --surface: #171b22;
+  --border: #2a303a;
+  --danger: #d64545;
+}
+
+/* base */
+.ui-textarea {
+  width: 100%;
+  min-width: 0;
+
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+
+  border-radius: 10px;
+  outline: none;
+
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.5;
+
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease, color 0.15s ease;
+
+  /* selection & placeholder */
+  caret-color: var(--ink);
+}
+.ui-textarea::placeholder {
+  color: var(--muted);
+}
+.ui-textarea::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* sizes (min-height만 다름) */
+.ui-textarea--sm {
+  min-height: 240px;
+}
+.ui-textarea--md {
+  min-height: 360px;
+} /* 기본 */
+.ui-textarea--lg {
+  min-height: 420px;
+}
+
+/* resize 옵션 */
+.ui-textarea--noresize {
+  resize: none;
+}
+/* 필요시 외부에서 .resize-y 같은 클래스 임의로 추가해도 됨 */
+
+/* focus */
+.ui-textarea:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(224, 83, 78, 0.35);
+}
+
+/* disabled */
+.ui-textarea:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* invalid (aria) */
+.ui-textarea[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(214, 69, 69, 0.18);
+}
+
+/* 스크롤바(선택) — 다크톤에 어울리게 */
+.ui-textarea {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+.ui-textarea::-webkit-scrollbar {
+  width: 10px;
+}
+.ui-textarea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.ui-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}

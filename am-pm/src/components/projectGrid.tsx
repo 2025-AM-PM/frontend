@@ -9,7 +9,6 @@ type Props = {
 const ProjectsGrid: React.FC<Props> = ({ projects }) => {
   return (
     <section className="p-grid-wrap" aria-label="Projects">
-      <h2 className="project-title">Our Activities</h2>
       <div className="p-grid">
         {projects.map((p) => (
           <ProjectCard key={p.title + p.date} {...p} />
