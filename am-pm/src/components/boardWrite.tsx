@@ -1,16 +1,74 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import MarkdownIt from "markdown-it";
 
 import { Button } from "../components/button";
 import { Input } from "../components/input";
-import { Textarea } from "../components/textArea"; // ← 파일명/경로 대소문자 정확히!
+import { Textarea } from "../components/textArea";
 import { Label } from "../components/label";
-
-import "../styles/post-editor.css"; // 기존 스타일 + 아래 추가 CSS가 이 파일에 들어가야 함
+import { uploadImageRemote } from "../lib/uploadRemote";
+import "../styles/post-editor.css";
 
 export default function BoardWrite() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // 커서 위치에 문자열 삽입
+  const insertAtCursor = (snippet: string) => {
+    const ta = textareaRef.current;
+    if (!ta) {
+      setContent((v) => `${v}\n${snippet}`);
+      return;
+    }
+    const start = ta.selectionStart ?? ta.value.length;
+    const end = ta.selectionEnd ?? ta.value.length;
+    const before = ta.value.slice(0, start);
+    const after = ta.value.slice(end);
+    const next = `${before}${snippet}${after}`;
+
+    setContent(next);
+
+    const caretPos = start + snippet.length;
+    const prevScroll = ta.scrollTop;
+    requestAnimationFrame(() => {
+      ta.focus();
+      ta.setSelectionRange(caretPos, caretPos);
+      ta.scrollTop = prevScroll;
+    });
+  };
+
+  // 파일들 업로드 → URL → 마크다운 삽입
+  const handleFiles = async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    for (const f of list) {
+      if (!f.type.startsWith("image/")) continue;
+      const url = await uploadImageRemote(f);
+      insertAtCursor(`\n![image](${url})\n`);
+    }
+  };
+
+  // 붙여넣기 이미지 처리
+  const onPaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    const imgs: File[] = [];
+    for (const it of items as any) {
+      const file = it.getAsFile?.();
+      if (file && file.type?.startsWith("image/")) imgs.push(file);
+    }
+    if (imgs.length) {
+      e.preventDefault();
+      await handleFiles(imgs);
+    }
+  };
+
+  // 드래그&드롭 이미지 처리
+  const onDrop = async (e: React.DragEvent<HTMLTextAreaElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer?.files?.length) await handleFiles(e.dataTransfer.files);
+  };
+  const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) =>
+    e.preventDefault();
 
   const onSubmit = () => {
     if (!title.trim() || !content.trim()) return;
@@ -35,7 +93,7 @@ export default function BoardWrite() {
     onSubmit();
   };
 
-  // Markdown 렌더러 & 프리뷰
+  // Markdown 렌더러 & 프리뷰(150ms 디바운스)
   const md = useMemo(
     () =>
       new MarkdownIt({
@@ -81,10 +139,14 @@ export default function BoardWrite() {
             <div className="pe-textarea-wrap">
               <Textarea
                 id="post-body"
+                ref={textareaRef}
                 value={content}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   setContent(e.target.value)
                 }
+                onPaste={onPaste}
+                onDrop={onDrop}
+                onDragOver={onDragOver}
                 placeholder={`# Start writing your post here...
 
 Write your content in Markdown. You can use:
@@ -105,7 +167,9 @@ console.log('Hello, world!');
 - More items`}
                 className="pe-textarea"
               />
-              <p className="pe-hint">Supports Markdown</p>
+              <p className="pe-hint">
+                Supports Markdown. Paste or drag images to upload.
+              </p>
             </div>
           </div>
 
