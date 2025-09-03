@@ -6,6 +6,7 @@ import Project from "./components/project";
 import "./App.css";
 import Rank from "./components/rank";
 import BoardWrite from "./components/boardWrite";
+import LoginPage from "./components/login";
 
 function App() {
   useEffect(() => {
@@ -19,6 +20,7 @@ function App() {
       <Route path="/projects" element={<Project />} />
       <Route path="/rank" element={<Rank />} />
       <Route path="/board/:category/write" element={<BoardWrite />} />
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 }

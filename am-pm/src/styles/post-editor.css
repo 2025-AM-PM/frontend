@@ -1,13 +1,3 @@
-:root {
-  --page-bg: #13161c;
-  --surface: #171b22;
-  --border: #2a303a;
-  --ink: #e7ecf3;
-  --muted: #9aa4b2;
-  --accent: #e0534e;
-  --accent-hover: #cc4943;
-}
-
 /* 섹션 래퍼 */
 .pe-wrap {
   width: min(80vw, 92%);
