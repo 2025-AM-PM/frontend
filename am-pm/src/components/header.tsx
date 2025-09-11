@@ -46,7 +46,7 @@ function Header() {
         </nav>
         {/* 유저 정보 */}
         <div className="user">
-          <User name={fakeUser.userName} rank={fakeUser.userTier} />
+          <User name={fakeUser.userName || ""} rank={fakeUser.userTier || ""} />
         </div>
       </div>
     </header>

@@ -1,5 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import MarkdownIt from "markdown-it";
+import React, { useEffect, useRef, useState, useDeferredValue } from "react";
+import ReactMarkdown, { Components, defaultUrlTransform } from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 
 import { Button } from "../components/button";
 import { Input } from "../components/input";
@@ -11,6 +13,7 @@ import "../styles/post-editor.css";
 export default function BoardWrite() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const deferredContent = useDeferredValue(content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // 커서 위치에 문자열 삽입
@@ -25,7 +28,6 @@ export default function BoardWrite() {
     const before = ta.value.slice(0, start);
     const after = ta.value.slice(end);
     const next = `${before}${snippet}${after}`;
-
     setContent(next);
 
     const caretPos = start + snippet.length;
@@ -37,7 +39,7 @@ export default function BoardWrite() {
     });
   };
 
-  // 파일들 업로드 → URL → 마크다운 삽입
+  // 파일 업로드 → URL → 마크다운 삽입
   const handleFiles = async (files: FileList | File[]) => {
     const list = Array.from(files);
     for (const f of list) {
@@ -93,21 +95,21 @@ export default function BoardWrite() {
     onSubmit();
   };
 
-  // Markdown 렌더러 & 프리뷰(150ms 디바운스)
-  const md = useMemo(
-    () =>
-      new MarkdownIt({
-        html: false,
-        linkify: true,
-        breaks: true,
-      }),
-    []
-  );
-  const [previewHtml, setPreviewHtml] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setPreviewHtml(md.render(content || "")), 150);
-    return () => clearTimeout(t);
-  }, [content, md]);
+  // react-markdown용 컴포넌트 매핑(필요 시 커스터마이징)
+  const mdComponents: Components = {
+    a: ({ node, ...props }) => (
+      <a {...props} target="_blank" rel="noreferrer" />
+    ),
+    img: ({ node, ...props }) => (
+      <img {...props} loading="lazy" decoding="async" />
+    ),
+    // 코드 블록 커스터마이징이 필요하면 아래를 확장하면 됨
+    // code: ({inline, className, children, ...props}) => {
+    //   return inline
+    //     ? <code className={className} {...props}>{children}</code>
+    //     : <pre className={className}><code {...props}>{children}</code></pre>;
+    // },
+  };
 
   return (
     <section className="pe-wrap">
@@ -187,10 +189,15 @@ console.log('Hello, world!');
         <aside className="pe-preview" aria-label="Preview">
           <div className="pe-preview-card">
             <div className="pe-preview-head">Preview</div>
-            <div
-              className="markdown-body"
-              dangerouslySetInnerHTML={{ __html: previewHtml }}
-            />
+            <div className="markdown-body">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkBreaks]}
+                components={mdComponents}
+                urlTransform={defaultUrlTransform}
+              >
+                {deferredContent || ""}
+              </ReactMarkdown>
+            </div>
           </div>
         </aside>
       </div>
