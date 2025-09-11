@@ -36,12 +36,12 @@ export default function LoginPage() {
       }
 
       // JSON 응답 시 파싱 (필요 없으면 생략 가능)
-      const data = await res
-        .json()
-        .catch(async () => ({ raw: await res.text() }));
+      // const data = await res
+      //   .json()
+      //   .catch(async () => ({ raw: await res.text() }));
 
       // TODO: 성공 후 이동/상태 업데이트
-      console.log("[login success]", data);
+      console.log("[login success]");
       alert("로그인 성공(데모): 콘솔을 확인하세요.");
     } catch (err: any) {
       console.error("[login failed]", err);
