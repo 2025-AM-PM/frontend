@@ -5,6 +5,50 @@ import "../styles/login.css";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
+  // ⬇️ 폼 상태 (간단)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const ORIGIN = "https://ampm-test.duckdns.org";
+    const LOGIN_URL = `${ORIGIN}/login`;
+
+    try {
+      const res = await fetch(LOGIN_URL, {
+        method: "POST",
+        // credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          studentNumber: email,
+          studentPassword: password,
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`HTTP ${res.status} ${res.statusText}\n${text}`);
+      }
+
+      // JSON 응답 시 파싱 (필요 없으면 생략 가능)
+      const data = await res
+        .json()
+        .catch(async () => ({ raw: await res.text() }));
+
+      // TODO: 성공 후 이동/상태 업데이트
+      console.log("[login success]", data);
+      alert("로그인 성공(데모): 콘솔을 확인하세요.");
+    } catch (err: any) {
+      console.error("[login failed]", err);
+      alert(`로그인 실패: ${err?.message || String(err)}`);
+    }
+  };
+
   return (
     <main className="login-page" aria-labelledby="loginTitle">
       {/* Header */}
@@ -21,7 +65,7 @@ export default function LoginPage() {
         <h2 className="card-title">로그인</h2>
         <p className="card-sub">학번과 비밀번호 입력해주세요</p>
 
-        <form className="auth-form" noValidate>
+        <form className="auth-form" noValidate onSubmit={handleLogin}>
           {/* Email */}
           <div className="field">
             <label htmlFor="email" className="field-label">
@@ -33,6 +77,8 @@ export default function LoginPage() {
               autoComplete="email"
               placeholder="학번을 입력해주세요"
               className="text-field"
+              value={email}
+              onChange={(e) => setEmail(e.currentTarget.value)}
             />
           </div>
 
@@ -48,6 +94,8 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 className="text-field with-icon"
+                value={password}
+                onChange={(e) => setPassword(e.currentTarget.value)}
               />
               <button
                 type="button"
@@ -56,7 +104,6 @@ export default function LoginPage() {
                 aria-pressed={showPassword}
                 onClick={() => setShowPassword((v) => !v)}
               >
-                {/* simple eye / eye-off icon */}
                 {showPassword ? (
                   <svg
                     viewBox="0 0 24 24"
@@ -91,10 +138,15 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Options row (static) */}
+          {/* Options row */}
           <div className="options-row">
             <label className="checkbox">
-              <input type="checkbox" className="checkbox-input" />
+              <input
+                type="checkbox"
+                className="checkbox-input"
+                checked={keepSignedIn}
+                onChange={(e) => setKeepSignedIn(e.currentTarget.checked)}
+              />
               <span className="checkbox-label">로그인 유지하기</span>
             </label>
             <Link to="#" className="link-muted">
@@ -102,8 +154,8 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Primary button (no submit logic) */}
-          <button type="button" className="btn btn-primary">
+          {/* Submit */}
+          <button type="submit" className="btn btn-primary">
             Sign in
           </button>
 
@@ -111,7 +163,7 @@ export default function LoginPage() {
           <p className="form-hint">
             계정이 없나요?{" "}
             <Link to="#" className="link">
-              문의하기
+              회원가입
             </Link>
           </p>
         </form>
