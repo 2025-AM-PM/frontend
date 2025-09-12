@@ -2,15 +2,13 @@ import "../styles/header.css";
 import { Routes, Route, NavLink, useLocation } from "react-router-dom";
 import UserInfo from "./User";
 import { User } from "../types";
-
-export const fakeUser: User = {
-  studentNumber: "202010957",
-  studentName: "한준서",
-  studentTier: "gold",
-};
+import LoginBtn from "./loginBtn";
+import { useAuth } from "../contexts/userContext";
 
 function Header() {
   const location = useLocation();
+  const { user } = useAuth();
+
   return (
     <header className="header">
       <div className="container">
@@ -46,10 +44,14 @@ function Header() {
         </nav>
         {/* 유저 정보 */}
         <div className="user">
-          <UserInfo
-            name={fakeUser.studentName || ""}
-            rank={fakeUser.studentTier || ""}
-          />
+          {user ? (
+            <UserInfo
+              name={user.studentName || ""}
+              rank={user.studentTier || ""}
+            />
+          ) : (
+            <LoginBtn />
+          )}
         </div>
       </div>
     </header>

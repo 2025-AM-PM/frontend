@@ -5,7 +5,7 @@ export async function apiFetch<T>(
   init: RequestInit = {}
 ): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    // credentials: "include", // 쿠키 세션 사용
+    credentials: "include", // 쿠키 세션 사용
     headers: {
       Accept: "application/json",
       ...(init.headers || {}),

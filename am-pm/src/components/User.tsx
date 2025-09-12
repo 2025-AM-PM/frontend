@@ -12,7 +12,7 @@ function UserInfo({
   try {
     rankImgSrc = require(`../assets/${rank}.png`);
   } catch (e) {
-    rankImgSrc = "";
+    rankImgSrc = require(`../assets/noob.png`);
   }
 
   return (
