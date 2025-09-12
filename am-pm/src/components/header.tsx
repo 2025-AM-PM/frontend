@@ -1,12 +1,12 @@
 import "../styles/header.css";
 import { Routes, Route, NavLink, useLocation } from "react-router-dom";
-import User from "./User";
-import { Session } from "../types";
+import UserInfo from "./User";
+import { User } from "../types";
 
-export const fakeUser: Session = {
-  userId: "202010957",
-  userName: "한준서",
-  userTier: "gold",
+export const fakeUser: User = {
+  studentNumber: "202010957",
+  studentName: "한준서",
+  studentTier: "gold",
 };
 
 function Header() {
@@ -46,7 +46,10 @@ function Header() {
         </nav>
         {/* 유저 정보 */}
         <div className="user">
-          <User name={fakeUser.userName || ""} rank={fakeUser.userTier || ""} />
+          <UserInfo
+            name={fakeUser.studentName || ""}
+            rank={fakeUser.studentTier || ""}
+          />
         </div>
       </div>
     </header>

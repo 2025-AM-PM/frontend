@@ -1,7 +1,13 @@
 import "../styles/user.css";
 import { Link } from "react-router-dom";
 
-function User({ name, rank }: { name: string | null; rank: string | null }) {
+function UserInfo({
+  name,
+  rank,
+}: {
+  name: string | null;
+  rank: string | null;
+}) {
   let rankImgSrc = "";
   try {
     rankImgSrc = require(`../assets/${rank}.png`);
@@ -20,4 +26,4 @@ function User({ name, rank }: { name: string | null; rank: string | null }) {
   );
 }
 
-export default User;
+export default UserInfo;
