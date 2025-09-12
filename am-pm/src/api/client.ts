@@ -15,7 +15,7 @@ export async function apiFetch<T>(
 
   // 204나 빈 본문이면 null 반환
   const data = await res.json();
-
+  console.log(data);
   if (!res.ok) {
     const err = (data && (data.message || data.error)) || res.statusText;
     throw new Error(err);
