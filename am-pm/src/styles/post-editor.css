@@ -1,0 +1,215 @@
+/* 섹션 래퍼 */
+.pe-wrap {
+  width: min(80vw, 92%);
+  margin: 0 auto;
+  padding: 24px 0 32px;
+  color: var(--ink);
+}
+
+/* 폼 레이아웃 (수직 간격) */
+.pe-form {
+  display: grid;
+  gap: 24px;
+}
+
+/* 필드 그룹 */
+.pe-field {
+  display: grid;
+  gap: 8px;
+}
+
+/* 라벨 */
+.pe-label {
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 18px;
+}
+.pe-label--secondary {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* 인풋/텍스트에어리어 공통 */
+.pe-input,
+.pe-textarea {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+/* 인풋(제목) */
+.pe-input {
+  height: 44px;
+  padding: 0 12px;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+/* 텍스트에어리어(본문) */
+.pe-textarea {
+  min-height: 360px; /* md 이상에서는 400px로 키우고 싶으면 미디어쿼리 추가 */
+  padding: 10px 12px;
+  line-height: 1.5;
+  resize: none;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas,
+    "Liberation Mono", Menlo, monospace;
+}
+
+/* 포커스 스타일 */
+.pe-input:focus-visible,
+.pe-textarea:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(224, 83, 78, 0.2);
+}
+
+/* 힌트 텍스트 */
+.pe-hint {
+  margin: 6px 2px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* 버튼 */
+.pe-button {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px !important; /* shadcn 등 라이브러리 덮어쓰기 대비 */
+  background: var(--accent) !important;
+  color: #fff !important;
+  transition: background 0.15s ease, opacity 0.15s ease, transform 0.06s ease;
+}
+.pe-button:hover:not([disabled]) {
+  background: var(--accent-hover) !important;
+}
+.pe-button:active:not([disabled]) {
+  transform: translateY(1px);
+}
+.pe-button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* textarea 아래 보조 래퍼 (간격용) */
+.pe-textarea-wrap {
+  display: grid;
+  gap: 6px;
+}
+
+.pe-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* 오른쪽 프리뷰 카드 */
+.pe-preview-card {
+  background: var(--surface, #171b22);
+  border: 1px solid var(--border, #2a303a);
+  border-radius: 12px;
+  padding: 14px 14px 10px;
+  min-height: 360px;
+  color: var(--ink, #e7ecf3);
+  margin-left: 2rem;
+}
+.pe-preview-head {
+  font-weight: 800;
+  color: var(--muted, #9aa4b2);
+  margin-bottom: 8px;
+  letter-spacing: 0.2px;
+}
+
+/* 모바일에서 스택 */
+@media (max-width: 768px) {
+  .pe-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Markdown 프리뷰 기본 스타일 ===== */
+.markdown-body {
+  color: var(--ink, #e7ecf3);
+  line-height: 1.6;
+  font-size: 15px;
+}
+.markdown-body p {
+  margin: 0 0 12px;
+}
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+  margin: 18px 0 10px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+.markdown-body h1 {
+  font-size: 28px;
+}
+.markdown-body h2 {
+  font-size: 22px;
+}
+.markdown-body h3 {
+  font-size: 18px;
+}
+
+.markdown-body a {
+  color: #9bc3ff;
+  text-decoration: underline;
+}
+.markdown-body strong {
+  font-weight: 800;
+}
+.markdown-body em {
+  font-style: italic;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 20px;
+  margin: 0 0 12px;
+}
+.markdown-body blockquote {
+  margin: 12px 0;
+  padding: 8px 12px;
+  color: var(--muted, #9aa4b2);
+  border-left: 3px solid var(--border, #2a303a);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border, #2a303a);
+  border-radius: 6px;
+  padding: 1px 5px;
+}
+.markdown-body pre {
+  overflow: auto;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #0f1319;
+  border: 1px solid var(--border, #2a303a);
+  margin: 10px 0 12px;
+}
+.markdown-body pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
+/* 이미지가 박스 넘치지 않도록 */
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  margin: 8px 0;
+}

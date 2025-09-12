@@ -1,16 +1,26 @@
-import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import HomePage from './pages/Home';
-import Project from './components/project';
-import './App.css';
-import Rank from './components/rank';
+import React from "react";
+import { Routes, Route, Link } from "react-router-dom";
+import { useEffect } from "react";
+import HomePage from "./pages/Home";
+import Project from "./components/project";
+import "./App.css";
+import Rank from "./components/rank";
+import BoardWrite from "./components/boardWrite";
+import LoginPage from "./components/login";
 
 function App() {
+  useEffect(() => {
+    if (!localStorage.getItem("clock_target_iso")) {
+      localStorage.setItem("clock_target_iso", "2025-09-01T09:00:00+09:00");
+    }
+  }, []);
   return (
     <Routes>
-      <Route path='/' element={<HomePage />} />
-      <Route path='/projects' element={<Project />} />
-      <Route path='/rank' element={<Rank />} />
+      <Route path="/" element={<HomePage />} />
+      <Route path="/projects" element={<Project />} />
+      <Route path="/rank" element={<Rank />} />
+      <Route path="/board/:category/write" element={<BoardWrite />} />
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   );
 }

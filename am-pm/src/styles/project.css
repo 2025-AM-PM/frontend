@@ -1,0 +1,115 @@
+.project-root {
+  min-height: 100vh;
+  width: 100vw;
+  background: #181b23;
+  position: relative;
+  overflow-x: hidden;
+}
+.project-title-group {
+  width: 100%;
+  margin-top: 80px;
+  margin-bottom: 32px;
+  text-align: center;
+  position: static;
+  transform: none;
+}
+.project-title {
+  font-size: 4rem;
+  font-family: "Noto Sans", sans-serif;
+  color: #fff;
+  font-weight: bold;
+}
+.project-subtitle {
+  margin-top: 10px;
+  font-size: 1.2rem;
+  color: #ccc;
+  font-family: "Noto Sans", sans-serif;
+}
+.filter-bar {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0 0 0;
+}
+.pill-btn {
+  border-radius: 999px;
+  padding: 0.5rem 1.5rem;
+  background: #fff;
+  color: #222;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition: background 0.2s, color 0.2s;
+  border: none;
+  margin-bottom: 2rem;
+}
+.pill-btn.active,
+.pill-btn:hover {
+  background: #5ca0ff;
+  color: #fff;
+}
+.project-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+  width: 90%;
+  max-width: 1200px;
+  margin: 2rem auto 0 auto;
+}
+.project-card {
+  position: relative;
+  border-radius: 0.8rem;
+  width: 100%;
+  max-width: 320px;
+  height: 200px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(90, 89, 89, 0.09);
+  display: flex;
+  align-items: stretch;
+}
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.8rem;
+  display: block;
+}
+.project-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  height: 90px;
+  padding: 0.5rem 1rem;
+  border-bottom-left-radius: 0.8rem;
+  border-bottom-right-radius: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.project-card-title,
+.project-desc {
+  width: 100%;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  line-height: 1.2;
+}
+.project-card-title {
+  font-weight: bold;
+  margin-bottom: 0.2rem;
+  color: #fff;
+}
+.project-desc {
+  font-size: 0.92rem;
+  color: #eee;
+}
