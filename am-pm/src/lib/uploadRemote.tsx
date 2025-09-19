@@ -1,41 +1,42 @@
-// src/lib/uploadRemote.ts
-const ENDPOINT = process.env.REACT_APP_UPLOAD_ENDPOINT || "/api/uploads";
-// const ENDPOINT = "http://210.117.175.69:3000/api/uploads";
-const API_KEY = process.env.REACT_APP_UPLOAD_API_KEY;
+/**
+ * Presigned URL을 사용해 파일을 스토리지에 업로드합니다.
+ * 성공 시 true, 실패 시 false를 반환합니다.
+ * @param presignedUrl - 파일 업로드를 위한 Presigned URL
+ * @param file - 업로드할 File 객체
+ * @returns {Promise<boolean>} 업로드 성공 여부
+ */
+export async function uploadImageRemote(presignedUrl: string, file: File): Promise<boolean> {
+  console.log(`'${file.name}' 파일 업로드를 시작합니다...`);
 
-export async function uploadImageRemote(file: File): Promise<string> {
-  const fd = new FormData();
-  fd.append("file", file);
+  console.log("서버로부터 받은 Presigned URL:", presignedUrl);
 
-  const headers: Record<string, string> = {};
-  if (API_KEY) headers["Authorization"] = `Bearer ${API_KEY}`;
-
-  let res: Response;
   try {
-    res = await fetch(ENDPOINT, {
-      method: "POST",
-      body: fd,
-      headers,
-      credentials: "omit",
+    const response = await fetch(presignedUrl, {
+      method: 'PUT',
+      // ❗ [수정 1] FormData 대신 파일 객체를 body에 직접 전달합니다.
+      body: file,
+      // ❗ [수정 2] 파일의 실제 MIME 타입을 Content-Type 헤더로 설정합니다.
+      headers: {
+        'Content-Type': file.type,
+      },
     });
-  } catch (e: any) {
-    throw new Error(`네트워크 오류: ${e?.message || e}`);
-  }
 
-  const raw = await res.text(); // 원문 확보
-  if (!res.ok) {
-    throw new Error(
-      `업로드 실패 ${res.status} ${res.statusText} :: ${raw.slice(0, 200)}`
-    );
+    if (response.ok) {
+      // 성공 시 응답 본문은 비어있는 경우가 많으므로 굳이 읽지 않아도 됩니다.
+      console.log(`✅ '${file.name}' 파일 업로드 성공`);
+      return true;
+    } else {
+      // 실패 시 응답 본문을 포함한 에러를 발생시킵니다.
+      const errorText = await response.text();
+      throw new Error(`업로드 실패: ${response.status} - ${errorText}`);
+    }
+  } catch (error) {
+    // ❗ [수정 3] 'unknown' 타입의 에러를 안전하게 처리합니다.
+    if (error instanceof Error) {
+      console.error(`❌ 파일 업로드 중 오류 발생: ${error.message}`);
+    } else {
+      console.error('❌ 알 수 없는 오류 발생:', error);
+    }
+    return false;
   }
-
-  let json: any;
-  try {
-    json = JSON.parse(raw);
-  } catch {
-    throw new Error(`JSON 파싱 실패 :: ${raw.slice(0, 200)}`);
-  }
-
-  if (!json?.url) throw new Error(`응답에 url 없음 :: ${raw.slice(0, 200)}`);
-  return json.url as string;
 }

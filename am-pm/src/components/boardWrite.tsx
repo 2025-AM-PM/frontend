@@ -40,13 +40,43 @@ export default function BoardWrite() {
     });
   };
 
+  interface UploadUrlResponse {
+    fileId: string;
+    presignedUrl: string;
+  }
+
   // 파일 업로드 → URL → 마크다운 삽입
   const handleFiles = async (files: FileList | File[]) => {
     const list = Array.from(files);
     for (const f of list) {
       if (!f.type.startsWith("image/")) continue;
-      const url = await uploadImageRemote(f);
-      insertAtCursor(`\n![image](${url})\n`);
+
+
+
+      try {
+        const { data: uploadInfo } = await apiFetch<UploadUrlResponse>('/files/upload', { // 1. '/api' 경로 추가
+        method: 'GET',
+        auth: true, // 2. 인증 토큰을 첨부하도록 auth 옵션 추가
+        // 'Content-Type' 헤더는 GET 요청에 불필요하므로 제거해도 됩니다.
+      });
+
+      if (!uploadInfo) {
+        throw new Error("서버로부터 업로드 정보를 받지 못했습니다.");
+      }
+
+      const { fileId, presignedUrl } = uploadInfo;
+      console.log(`- fileId: ${fileId}`);
+      console.log("- Presigned URL을 성공적으로 받았습니다.");
+
+      insertAtCursor(`\n![image](${fileId})\n`);
+      // console.log(presignedUrl+"프리사인유알엘************************************");
+      await uploadImageRemote(presignedUrl, f);
+      console.log("성공적으로 파일을 업로드 했습니다.");
+
+      } catch (error) {
+        console.error('게시글 등록 실패:', error);
+        alert('파일 업로드 중 문제가 생겼습니다.');
+      }
     }
   };
 
