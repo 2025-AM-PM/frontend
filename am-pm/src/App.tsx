@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from "./contexts/userContext";
 import RegisterPage from "./components/register";
 import Poll from "./components/poll";
 import PollCreate from "./components/pollCreate";
+import Mypage from "./pages/mypage";
 import PostDetail from "./components/postDetail";
 
 function AppInner() {
@@ -44,6 +45,8 @@ function AppInner() {
         }
       />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/mypage" element={<Mypage />} />
+
     </Routes>
   );
 }
