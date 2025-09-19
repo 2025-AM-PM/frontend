@@ -14,7 +14,7 @@ type RegisterReq = {
   studentPassword: string;
 };
 
-// 로그인: 헤더(또는 바디)에서 토큰 수집 → localStorage 저장, 동시에 사용자도 저장
+
 export async function login(req: LoginReq): Promise<User> {
   const { data, headers } = await apiFetch<LoginRes>("/student/login", {
     method: "POST",
