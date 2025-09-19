@@ -14,6 +14,7 @@ function Poll() {
   const { user } = useAuth();
   const [polls, setPolls] = useState<PollSummaryResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"OPEN" | "CLOSED" | "">("");
@@ -36,9 +37,13 @@ function Poll() {
   });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-  const fetchPolls = async () => {
+  const fetchPolls = async (isSearch: boolean = false) => {
     try {
-      setLoading(true);
+      if (isSearch) {
+        setSearching(true);
+      } else {
+        setLoading(true);
+      }
       const searchParams: PollSearchParam = {};
 
       if (searchQuery.trim()) {
@@ -96,20 +101,20 @@ function Poll() {
       );
     } finally {
       setLoading(false);
+      setSearching(false);
     }
   };
 
+  // 검색어가 아닌 필터들이 변경될 때
   useEffect(() => {
-    fetchPolls();
+    fetchPolls(false);
   }, [currentPage, statusFilter, sortBy, dateFilter, attributeFilters]);
 
   // 실시간 검색을 위한 debounced effect
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (searchQuery !== undefined) {
-        setCurrentPage(0);
-        fetchPolls();
-      }
+      setCurrentPage(0);
+      fetchPolls(true);
     }, 300);
 
     return () => clearTimeout(timeoutId);
@@ -118,7 +123,7 @@ function Poll() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(0);
-    fetchPolls();
+    fetchPolls(true);
   };
 
   const handleStatusChange = (status: "OPEN" | "CLOSED" | "") => {
@@ -148,17 +153,20 @@ function Poll() {
   };
 
   const clearAllFilters = () => {
-    setSearchQuery("");
-    setStatusFilter("");
-    setDateFilter("");
-    setSortBy("createdAt,DESC");
-    setAttributeFilters({
-      multiple: null,
-      anonymous: null,
-      allowAddOption: null,
-      allowRevote: null,
+    // React 18의 자동 배칭을 활용하여 한 번에 상태 업데이트
+    React.startTransition(() => {
+      setSearchQuery("");
+      setStatusFilter("");
+      setDateFilter("");
+      setSortBy("createdAt,DESC");
+      setAttributeFilters({
+        multiple: null,
+        anonymous: null,
+        allowAddOption: null,
+        allowRevote: null,
+      });
+      setCurrentPage(0);
     });
-    setCurrentPage(0);
   };
 
   // 로컬 필터링 함수 (API 필터링 후 클라이언트 사이드에서 추가 필터링)
@@ -208,7 +216,7 @@ function Poll() {
     );
   };
 
-  if (loading) {
+  if (loading && !searching && polls.length === 0) {
     return <div className="poll-loading">투표 목록을 불러오는 중...</div>;
   }
 
@@ -233,20 +241,28 @@ function Poll() {
 
         {/* 기본 검색 및 필터 */}
         <div className="poll-filters">
-          <div className="search-form">
-            <input
-              type="text"
-              placeholder="투표 제목 검색... (실시간 검색)"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-          </div>
+          <form className="search-form" onSubmit={handleSearch}>
+            <div className="search-input-wrapper">
+              <input
+                type="text"
+                placeholder="투표 제목 검색... (실시간 검색)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`search-input ${searching ? "searching" : ""}`}
+              />
+              {searching && (
+                <div className="search-spinner">
+                  <div className="spinner"></div>
+                </div>
+              )}
+            </div>
+          </form>
 
           <div className="filter-row">
             <div className="status-filters">
               <label className="filter-label">상태:</label>
               <button
+                type="button"
                 className={`filter-button ${
                   statusFilter === "" ? "active" : ""
                 }`}
@@ -255,6 +271,7 @@ function Poll() {
                 전체
               </button>
               <button
+                type="button"
                 className={`filter-button ${
                   statusFilter === "OPEN" ? "active" : ""
                 }`}
@@ -263,6 +280,7 @@ function Poll() {
                 진행중
               </button>
               <button
+                type="button"
                 className={`filter-button ${
                   statusFilter === "CLOSED" ? "active" : ""
                 }`}
@@ -303,12 +321,17 @@ function Poll() {
 
           <div className="filter-controls">
             <button
+              type="button"
               className="advanced-filter-toggle"
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
             >
               고급 필터 {showAdvancedFilters ? "▲" : "▼"}
             </button>
-            <button className="clear-filters-btn" onClick={clearAllFilters}>
+            <button
+              type="button"
+              className="clear-filters-btn"
+              onClick={clearAllFilters}
+            >
               필터 초기화
             </button>
           </div>
@@ -518,7 +541,15 @@ function Poll() {
       </div>
 
       {/* 투표 목록 */}
-      <div className="poll-list">
+      <div className={`poll-list ${searching ? "searching" : ""}`}>
+        {searching && (
+          <div className="search-overlay">
+            <div className="search-loading">
+              <div className="spinner large"></div>
+              <span>검색 중...</span>
+            </div>
+          </div>
+        )}
         {polls.length === 0 ? (
           <div className="no-polls">
             {searchQuery ||
@@ -588,6 +619,7 @@ function Poll() {
       {totalPages > 1 && (
         <div className="pagination">
           <button
+            type="button"
             className="pagination-button"
             disabled={currentPage === 0}
             onClick={() => setCurrentPage(currentPage - 1)}
@@ -600,6 +632,7 @@ function Poll() {
           </span>
 
           <button
+            type="button"
             className="pagination-button"
             disabled={currentPage >= totalPages - 1}
             onClick={() => setCurrentPage(currentPage + 1)}

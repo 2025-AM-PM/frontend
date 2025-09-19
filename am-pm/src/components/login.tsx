@@ -11,7 +11,6 @@ export default function LoginPage({
 }) {
   const [showPassword, setShowPassword] = useState(false);
 
-  // ⬇️ 폼 상태 (간단)
   const [studentNumber, setStudentNumber] = useState("");
   const [studentPassword, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
