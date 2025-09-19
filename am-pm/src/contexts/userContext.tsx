@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { User } from "../types";
-import { fetchMe, logout } from "../api/auth";
+import { logout } from "../api/auth";
 import {
   getStoredUser,
   setStoredUser,
@@ -22,34 +22,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 1) localStorage에 있으면 즉시 하이드레이션 (네트워크 없이)
   const [user, setUser] = useState<User | null>(() => getStoredUser<User>());
 
-  // 2) 앱 시작 시, 토큰이 있으면 /me로 최신값 동기화(선택적)
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      if (!hasAccessToken()) return;
-      const me = await fetchMe().catch(() => null);
-      if (alive && me) setUser(me);
-    })();
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  // 3) state 변경 → localStorage에도 반영
+  // 2) state 변경 ↔ localStorage 동기화
   useEffect(() => {
     setStoredUser<User>(user);
   }, [user]);
 
-  // 4) 탭 간 동기화 (다른 탭에서 로그인/로그아웃 반영)
+  // 3) 탭 간 동기화 (다른 탭에서 로그인/로그아웃 반영)
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (!e.key) return;
       if (e.key === StorageKeys.user) {
-        const next = getStoredUser<User>();
-        setUser(next);
+        setUser(getStoredUser<User>());
       }
       if (e.key === StorageKeys.access && !e.newValue) {
-        // 토큰이 사라졌다면 즉시 로그아웃 반영
+        // 토큰이 사라지면 즉시 로그아웃 반영
         setUser(null);
       }
     };
@@ -58,20 +44,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const reloadUser = async () => {
+    // 지금은 로컬만 사용하므로 토큰 없으면 비우고 종료
     if (!hasAccessToken()) {
       setUser(null);
       return;
     }
-    const me = await fetchMe().catch(() => null);
-    if (me) setUser(me);
+    // 서버에서 최신 유저를 다시 가져오고 싶다면 여기서 /me 호출을 복원
+    // const me = await fetchMe().catch(() => null);
+    // setUser(me ?? null);
   };
 
   const signOut = async () => {
-    await logout();
+    await logout(); // localStorage 비움
+    setUser(null); // 현재 탭 UI 즉시 반영
+    window.location.replace("/login"); // 뒤로가기 방지
   };
 
   const value = useMemo(
-    () => ({ user, setUser, isAuthed: !!user, reloadUser, signOut }),
+    () => ({
+      user,
+      setUser,
+      isAuthed: !!user && hasAccessToken(), // 사용자 + 토큰 둘 다 있을 때 로그인으로 간주
+      reloadUser,
+      signOut,
+    }),
     [user]
   );
 
