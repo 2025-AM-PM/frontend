@@ -1,21 +1,40 @@
 import "../styles/header.css";
 import { Routes, Route, NavLink, useLocation } from "react-router-dom";
-import User from "./User";
-import { Session } from "../types";
-
-export const fakeUser: Session = {
-  userId: "202010957",
-  userName: "한준서",
-  userTier: "gold",
-};
+import UserInfo from "./User";
+import { User } from "../types";
+import LoginBtn from "./loginBtn";
+// ⬇️ 로컬 스토리지 유틸만 사용
+import { getStoredUser } from "../api/storage";
+import { useEffect, useState } from "react";
 
 function Header() {
   const location = useLocation();
+
+  // 로컬 스토리지에서 즉시 하이드레이션
+  const [user, setUser] = useState<User | null>(() => getStoredUser<User>());
+
+  // 라우트 변경/탭 포커스/스토리지 변경 시 동기화
+  useEffect(() => {
+    const sync = () => setUser(getStoredUser<User>());
+    // 1) 라우트 변경마다 동기화
+    sync();
+    // 2) 다른 탭에서 변경되면 반영
+    window.addEventListener("storage", sync);
+    // 3) 창에 다시 포커스 들어올 때 동기화
+    window.addEventListener("focus", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("focus", sync);
+    };
+    // location.pathname이 바뀔 때마다 재동기화
+  }, [location.pathname]);
+
   return (
     <header className="header">
       <div className="container">
         {/* 로고 */}
         <div className="logo"></div>
+
         {/* 네비바 */}
         <nav className="nav">
           <ul className="nav-list">
@@ -25,7 +44,7 @@ function Header() {
               }`}
             >
               <NavLink to="/" end>
-                홈{" "}
+                홈
               </NavLink>
             </li>
             <li
@@ -44,9 +63,17 @@ function Header() {
             </li>
           </ul>
         </nav>
+
         {/* 유저 정보 */}
         <div className="user">
-          <User name={fakeUser.userName || ""} rank={fakeUser.userTier || ""} />
+          {user ? (
+            <UserInfo
+              name={user.studentName || ""}
+              rank={user.studentTier || ""}
+            />
+          ) : (
+            <LoginBtn />
+          )}
         </div>
       </div>
     </header>
