@@ -9,6 +9,7 @@ import {
   getPollResults,
   votePoll,
   closePoll,
+  deletePoll,
 } from "../api/client";
 import { useAuth } from "../contexts/userContext";
 import "../styles/poll.css";
@@ -33,6 +34,7 @@ function PollDetailModal({
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [voting, setVoting] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [maxReachedAnimation, setMaxReachedAnimation] = useState<number | null>(
     null
   );
@@ -138,6 +140,31 @@ function PollDetailModal({
       );
     } finally {
       setClosing(false);
+    }
+  };
+
+  const handleDeletePoll = async () => {
+    if (!poll) return;
+
+    if (
+      !window.confirm(
+        "정말로 이 투표를 삭제하시겠습니까?\n삭제된 투표는 복구할 수 없습니다."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      await deletePoll(pollId);
+      onPollUpdated?.();
+      onClose(); // 삭제 후 모달 닫기
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "투표 삭제에 실패했습니다."
+      );
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -461,6 +488,18 @@ function PollDetailModal({
                 disabled={closing}
               >
                 {closing ? "종료 중..." : "투표 종료"}
+              </button>
+            )}
+
+            {/* 투표 삭제 버튼 (투표 생성자만) */}
+            {poll.createdBy === user?.studentId && (
+              <button
+                className="button danger"
+                onClick={handleDeletePoll}
+                disabled={deleting}
+                style={{ marginLeft: "8px" }}
+              >
+                {deleting ? "삭제 중..." : "투표 삭제"}
               </button>
             )}
           </div>
