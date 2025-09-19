@@ -65,26 +65,26 @@ function formatDate(iso: string) {
 type CodeRenderer = NonNullable<Components["code"]>;
 type ImgRenderer = NonNullable<Components["img"]>;
 
-const CodeBlock: CodeRenderer = ({ children, className }) => {
-  const match = /language-(\w+)/.exec(className || "");
-  return match ? (
-    <SyntaxHighlighter
-      PreTag="div"
-      language={match[1]}
-      style={dark}
-      wrapLongLines
-    >
-      {String(children).replace(/\n$/, "")}
-    </SyntaxHighlighter>
-  ) : (
-    <code className={`md-inline-code ${className ?? ""}`}>{children}</code>
-  );
-};
-
-const ImgOmitted: ImgRenderer = () => null;
+// const ImgOmitted: ImgRenderer = () => null;
 
 export default function PostDetail() {
   const [post, setPost] = useState<Post | null>(null);
+
+  const CodeBlock: CodeRenderer = ({ children, className }) => {
+    const match = /language-(\w+)/.exec(className || "");
+    return match ? (
+      <SyntaxHighlighter
+        PreTag="div"
+        language={match[1]}
+        style={dark}
+        wrapLongLines
+      >
+        {String(children).replace(/\n$/, "")}
+      </SyntaxHighlighter>
+    ) : (
+      <code className={`md-inline-code ${className ?? ""}`}>{children}</code>
+    );
+  };
 
   // 가짜 로딩 → 목데이터 주입
   useEffect(() => {
@@ -92,10 +92,22 @@ export default function PostDetail() {
     return () => clearTimeout(t);
   }, []);
 
+  const MdImage: ImgRenderer = ({ node, alt, ...props }) => {
+    return (
+      <img
+        {...props}
+        alt={alt ?? ""}
+        loading="lazy"
+        decoding="async"
+        className="md-img"
+      />
+    );
+  };
+
   // react-markdown용 매핑: 링크 target, 이미지 제거, 코드 기본 처리
   const mdComponents: Components = {
     code: CodeBlock,
-    img: ImgOmitted,
+    img: MdImage, // ⬅️ 이 줄이 핵심
     a: ({ node, ...props }) => (
       <a {...props} target="_blank" rel="noreferrer" />
     ),

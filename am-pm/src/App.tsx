@@ -19,7 +19,7 @@ function AppInner() {
 
   useEffect(() => {
     if (!localStorage.getItem("clock_target_iso")) {
-      localStorage.setItem("clock_target_iso", "2025-09-01T09:00:00+09:00");
+      localStorage.setItem("clock_target_iso", "2025-12-25T09:00:00+09:00");
     }
   }, []);
 
