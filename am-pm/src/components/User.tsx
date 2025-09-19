@@ -22,7 +22,7 @@ function UserInfo({
         <img src={rankImgSrc} alt={rank || undefined} className="tier" />
       )}
       <span className="user-name">{name}</span>
-      <Link to="./login" onClick={logout}>
+      <Link to="/login" onClick={logout}>
         로그아웃
       </Link>
     </div>

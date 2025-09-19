@@ -11,6 +11,7 @@ import { AuthProvider, useAuth } from "./contexts/userContext";
 import RegisterPage from "./components/register";
 import Poll from "./components/poll";
 import PollCreate from "./components/pollCreate";
+import PostDetail from "./components/postDetail";
 
 function AppInner() {
   const { setUser } = useAuth();
@@ -30,6 +31,7 @@ function AppInner() {
       <Route path="/polls" element={<Poll />} />
       <Route path="/polls/create" element={<PollCreate />} />
       <Route path="/board/:category/write" element={<BoardWrite />} />
+      <Route path="/detail" element={<PostDetail />} />
       <Route
         path="/login"
         element={
