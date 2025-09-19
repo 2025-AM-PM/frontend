@@ -9,7 +9,7 @@ function LoginBtn() {
   };
   return (
     <div className="loginBtn">
-      <button onClick={handleLoginClick}>
+      <button onClick={handleLoginClick} className="login-button">
         <span>로그인하기</span>
       </button>
     </div>
