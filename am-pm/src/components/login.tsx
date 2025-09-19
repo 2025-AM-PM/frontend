@@ -24,7 +24,7 @@ export default function LoginPage({
     setErr(null);
     try {
       const u = await login({ studentNumber, studentPassword });
-      onSuccess(u); // ★ User만 전달
+      onSuccess(u);
     } catch (e: any) {
       setErr(e.message || "로그인 실패");
     } finally {
@@ -136,7 +136,7 @@ export default function LoginPage({
           {/* Create account */}
           <p className="form-hint">
             계정이 없나요?{" "}
-            <Link to="#" className="link">
+            <Link to="/register" className="link">
               회원가입
             </Link>
           </p>

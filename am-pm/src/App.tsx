@@ -8,6 +8,7 @@ import Rank from "./components/rank";
 import BoardWrite from "./components/boardWrite";
 import LoginPage from "./components/login";
 import { AuthProvider, useAuth } from "./contexts/userContext";
+import RegisterPage from "./components/register";
 
 function AppInner() {
   const { setUser } = useAuth();
@@ -36,6 +37,7 @@ function AppInner() {
           />
         }
       />
+      <Route path="/register" element={<RegisterPage />} />
     </Routes>
   );
 }

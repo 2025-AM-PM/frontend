@@ -9,15 +9,16 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const [name, setName] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const ORIGIN = process.env.REACT_BASE_ENDPOINT;
-    const LOGIN_URL = `${ORIGIN}/student/signup`;
+    const SIGNUP_URL = `${ORIGIN}/student/signup`;
 
     try {
-      const res = await fetch(LOGIN_URL, {
+      const res = await fetch(SIGNUP_URL, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -27,6 +28,7 @@ export default function RegisterPage() {
         body: JSON.stringify({
           studentNumber: email,
           studentPassword: password,
+          studentName: name,
         }),
       });
 
@@ -36,9 +38,9 @@ export default function RegisterPage() {
       }
 
       // JSON 응답 시 파싱 (필요 없으면 생략 가능)
-      // const data = await res
-      //   .json()
-      //   .catch(async () => ({ raw: await res.text() }));
+      const data = await res
+        .json()
+        .catch(async () => ({ raw: await res.text() }));
 
       // TODO: 성공 후 이동/상태 업데이트
       console.log("[login success]");
@@ -55,14 +57,14 @@ export default function RegisterPage() {
       <header className="login-hero" aria-hidden="true">
         <div className="brand-dot" aria-hidden="true"></div>
         <h1 id="loginTitle" className="hero-title">
-          로그인하기
+          회원가입하기
         </h1>
-        <p className="hero-sub">계속하려면 로그인을 해주세요.</p>
+        <p className="hero-sub">계속하려면 회원가입을 해주세요.</p>
       </header>
 
       {/* Card */}
       <section className="auth-card" aria-label="Sign in form">
-        <h2 className="card-title">로그인</h2>
+        <h2 className="card-title">회원가입</h2>
         <p className="card-sub">학번과 비밀번호 입력해주세요</p>
 
         <form className="auth-form" noValidate onSubmit={handleLogin}>
