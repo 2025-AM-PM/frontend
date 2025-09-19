@@ -308,14 +308,10 @@ function PollDetailModal({
                 </span>
               )}
               {poll.anonymous && (
-                <span className="key-setting anonymous">
-                  익명 투표
-                </span>
+                <span className="key-setting anonymous">익명 투표</span>
               )}
               {poll.allowRevote && (
-                <span className="key-setting revote">
-                  재투표 가능
-                </span>
+                <span className="key-setting revote">재투표 가능</span>
               )}
             </div>
 
@@ -324,19 +320,27 @@ function PollDetailModal({
               <div className="advanced-info-grid">
                 <div className="info-item">
                   <span className="info-label">생성일</span>
-                  <span className="info-value">{formatDate(poll.createdAt)}</span>
+                  <span className="info-value">
+                    {formatDate(poll.createdAt)}
+                  </span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">복수 선택</span>
-                  <span className="info-value">{poll.multiple ? "가능" : "불가능"}</span>
+                  <span className="info-value">
+                    {poll.multiple ? "가능" : "불가능"}
+                  </span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">옵션 추가</span>
-                  <span className="info-value">{poll.allowAddOption ? "가능" : "불가능"}</span>
+                  <span className="info-value">
+                    {poll.allowAddOption ? "가능" : "불가능"}
+                  </span>
                 </div>
                 <div className="info-item">
                   <span className="info-label">결과 공개</span>
-                  <span className="info-value">{getResultVisibilityText(poll.resultVisibility)}</span>
+                  <span className="info-value">
+                    {getResultVisibilityText(poll.resultVisibility)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -477,7 +481,9 @@ function PollDetailModal({
             {canShowResults() && (
               <button
                 className="button tertiary"
-                onClick={showResults ? () => setShowResults(false) : handleShowResults}
+                onClick={
+                  showResults ? () => setShowResults(false) : handleShowResults
+                }
               >
                 {showResults ? "투표하기" : "결과보기"}
               </button>
