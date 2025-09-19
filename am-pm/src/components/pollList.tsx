@@ -9,9 +9,9 @@ import { getPolls } from "../api/client";
 import { useAuth } from "../contexts/userContext";
 import PollDetailModal from "./PollDetailModal";
 import Header from "./header";
-import "../styles/poll.css";
+import "../styles/pollList.css";
 
-function Poll() {
+function PollList() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [polls, setPolls] = useState<PollSummaryResponse[]>([]);
@@ -663,4 +663,4 @@ function Poll() {
   );
 }
 
-export default Poll;
+export default PollList;

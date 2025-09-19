@@ -9,7 +9,7 @@ import BoardWrite from "./components/boardWrite";
 import LoginPage from "./components/login";
 import { AuthProvider, useAuth } from "./contexts/userContext";
 import RegisterPage from "./components/register";
-import Poll from "./components/poll";
+import PollList from "./components/pollList";
 import PollCreate from "./components/pollCreate";
 
 function AppInner() {
@@ -27,7 +27,7 @@ function AppInner() {
       <Route path="/" element={<HomePage />} />
       <Route path="/projects" element={<Project />} />
       <Route path="/rank" element={<Rank />} />
-      <Route path="/polls" element={<Poll />} />
+      <Route path="/polls" element={<PollList />} />
       <Route path="/polls/create" element={<PollCreate />} />
       <Route path="/board/:category/write" element={<BoardWrite />} />
       <Route
