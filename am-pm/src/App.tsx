@@ -9,6 +9,7 @@ import BoardWrite from "./components/boardWrite";
 import LoginPage from "./components/login";
 import { AuthProvider, useAuth } from "./contexts/userContext";
 import RegisterPage from "./components/register";
+import Mypage from "./pages/mypage";
 
 function AppInner() {
   const { setUser } = useAuth();
@@ -38,6 +39,8 @@ function AppInner() {
         }
       />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/mypage" element={<Mypage />} />
+
     </Routes>
   );
 }
