@@ -73,37 +73,36 @@ export default function BoardWrite() {
   const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) =>
     e.preventDefault();
 
-  const onSubmit = async () => { // 비동기 처리를 위해 async 사용
-  if (!title.trim() || !content.trim()) return;
+  const onSubmit = async () => {
+    // 비동기 처리를 위해 async 사용
+    if (!title.trim() || !content.trim()) return;
 
-  const postData = {
-    title: title,
-    description: content,
-    exhibitUrl: "" // todo: 어떻게 추가할것인지
+    const postData = {
+      request: { title: title, description: content, exhibitUrl: "" }, // todo: 어떻게 추가할것인지
+      files: [],
+    };
+
+    // const API_ENDPOINT =  process.env.REACT_APP_API_BASE+'/exhibits'; // 실제 백엔드 API 주소
+
+    try {
+      const { data } = await apiFetch("/exhibits", {
+        // 1. HTTP 메서드 지정
+        method: "POST",
+        // 2. 헤더에 콘텐츠 타입 명시
+        headers: {
+          "Content-Type": "application/json",
+        },
+        // 3. 데이터를 JSON 문자열로 변환하여 body에 담아 전송
+        body: JSON.stringify(postData),
+      });
+
+      console.log("게시글 등록 성공:", data);
+      alert("게시글이 성공적으로 등록되었습니다.");
+    } catch (error) {
+      console.error("게시글 등록 실패:", error);
+      alert("게시글 등록 중 오류가 발생했습니다.");
+    }
   };
-
-  // const API_ENDPOINT =  process.env.REACT_APP_API_BASE+'/exhibits'; // 실제 백엔드 API 주소
-
-  try {
-    const { data } = await apiFetch('/exhibits', {
-      // 1. HTTP 메서드 지정
-      method: 'POST',
-      // 2. 헤더에 콘텐츠 타입 명시
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // 3. 데이터를 JSON 문자열로 변환하여 body에 담아 전송
-      body: JSON.stringify(postData),
-    }); 
-
-    console.log('게시글 등록 성공:', data);
-    alert('게시글이 성공적으로 등록되었습니다.');
-
-  } catch (error) {
-    console.error('게시글 등록 실패:', error);
-    alert('게시글 등록 중 오류가 발생했습니다.');
-  }
-};
 
   // ⌘/Ctrl + Enter
   useEffect(() => {

@@ -12,6 +12,7 @@ import RegisterPage from "./components/register";
 import Poll from "./components/poll";
 import PollCreate from "./components/pollCreate";
 import Mypage from "./pages/mypage";
+import PostDetail from "./components/postDetail";
 
 function AppInner() {
   const { setUser } = useAuth();
@@ -19,7 +20,7 @@ function AppInner() {
 
   useEffect(() => {
     if (!localStorage.getItem("clock_target_iso")) {
-      localStorage.setItem("clock_target_iso", "2025-09-01T09:00:00+09:00");
+      localStorage.setItem("clock_target_iso", "2025-12-25T09:00:00+09:00");
     }
   }, []);
 
@@ -31,6 +32,7 @@ function AppInner() {
       <Route path="/polls" element={<Poll />} />
       <Route path="/polls/create" element={<PollCreate />} />
       <Route path="/board/:category/write" element={<BoardWrite />} />
+      <Route path="/detail" element={<PostDetail />} />
       <Route
         path="/login"
         element={
