@@ -11,6 +11,7 @@ import {
 } from "../types";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
+console.log("API_BASE", API_BASE);
 
 export type ApiResponse<T> = {
   status: number;
@@ -33,7 +34,6 @@ export async function apiFetch<T>(
   if (init.headers)
     new Headers(init.headers).forEach((v, k) => headers.set(k, v));
 
-  // 변경 메서드 또는 명시적 auth=true → Authorization 첨부
   if (isMutating || init.auth) {
     const tk = getAccessToken();
     if (tk && !headers.has("Authorization")) {

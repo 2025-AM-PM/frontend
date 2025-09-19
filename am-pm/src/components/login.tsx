@@ -23,7 +23,7 @@ export default function LoginPage({
     setErr(null);
     try {
       const u = await login({ studentNumber, studentPassword });
-      console.log(u);
+
       onSuccess(u);
     } catch (e: any) {
       if (e.status === 401) {
