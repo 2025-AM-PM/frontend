@@ -9,13 +9,14 @@ const args = Object.fromEntries(
 );
 const username = args.email || process.env.EMAIL;
 const password = args.password || process.env.PASSWORD;
-const name = args.name || process.env.NAME || "테스트사용자"; // timeout 컨트롤러
+const name = "테스트 사용자"; // timeout 컨트롤러
 function withTimeout(ms = DEFAULT_TIMEOUT_MS) {
   const ctrl = new AbortController();
   const id = setTimeout(() => ctrl.abort(new Error("Request timed out")), ms);
   return { signal: ctrl.signal, clear: () => clearTimeout(id) };
 }
 async function fetchPost(username, password, name) {
+  console.log(name);
   const t = withTimeout();
   try {
     const payload = {
@@ -51,7 +52,7 @@ async function fetchPost(username, password, name) {
 
   if (username && password) {
     console.log("\n== Trying POST /login ==\n");
-    await fetchPost(username, password);
+    await fetchPost(username, password, name);
   } else {
     console.log(
       "\n(POST 생략: --email, --password 인자를 주면 POST 테스트도 합니다)"

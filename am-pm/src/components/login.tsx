@@ -24,9 +24,14 @@ export default function LoginPage({
     setErr(null);
     try {
       const u = await login({ studentNumber, studentPassword });
+      console.log(u);
       onSuccess(u);
     } catch (e: any) {
-      setErr(e.message || "로그인 실패");
+      if (e.status === 401) {
+        const msg = "학번 또는 비밀번호가 올바르지 않습니다.";
+        setErr(msg);
+        alert(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -82,6 +87,7 @@ export default function LoginPage({
               />
               <button
                 type="button"
+                tabIndex={-1}
                 className="icon-btn"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 aria-pressed={showPassword}

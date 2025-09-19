@@ -1,54 +1,59 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import "../styles/register.css";
+import { useNavigate } from "react-router-dom";
+import "../styles/login.css";
+import { register } from "../api/auth";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showRePassword, setShowRePassword] = useState(false);
+  const [studentNumber, setStudentNumber] = useState("");
+  const [studentPassword, setPassword] = useState("");
+  const [reStudentPassword, setRePassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [studentName, setStudentName] = useState("");
 
-  // ⬇️ 폼 상태 (간단)
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
-  const [name, setName] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
 
-    const ORIGIN = process.env.REACT_BASE_ENDPOINT;
-    const SIGNUP_URL = `${ORIGIN}/student/signup`;
+    if (!checkPassword(studentPassword, reStudentPassword)) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
 
     try {
-      const res = await fetch(SIGNUP_URL, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          studentNumber: email,
-          studentPassword: password,
-          studentName: name,
-        }),
+      setLoading(true);
+      setErr(null);
+
+      const status = await register({
+        studentName,
+        studentNumber,
+        studentPassword,
       });
 
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`HTTP ${res.status} ${res.statusText}\n${text}`);
+      if (status === 201) {
+        alert("회원가입 성공");
+        navigate("/login");
+        return;
       }
 
-      // JSON 응답 시 파싱 (필요 없으면 생략 가능)
-      const data = await res
-        .json()
-        .catch(async () => ({ raw: await res.text() }));
-
-      // TODO: 성공 후 이동/상태 업데이트
-      console.log("[login success]");
-      alert("로그인 성공(데모): 콘솔을 확인하세요.");
-    } catch (err: any) {
-      console.error("[login failed]", err);
-      alert(`로그인 실패: ${err?.message || String(err)}`);
+      setErr(`회원가입 실패`);
+    } catch (e: any) {
+      if (e?.status === 500) {
+        alert("이미 가입된 사용자입니다. 관리자에게 문의하세요");
+      } else {
+        setErr(e?.message || "회원가입 실패");
+      }
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const checkPassword = (password: string, rePassowrd: string) => {
+    return password === rePassowrd;
   };
 
   return (
@@ -65,29 +70,44 @@ export default function RegisterPage() {
       {/* Card */}
       <section className="auth-card" aria-label="Sign in form">
         <h2 className="card-title">회원가입</h2>
-        <p className="card-sub">학번과 비밀번호 입력해주세요</p>
+        <p className="card-sub">학번, 비밀번호, 이름을 입력해주세요</p>
 
-        <form className="auth-form" noValidate onSubmit={handleLogin}>
-          {/* Email */}
+        <form className="auth-form" noValidate onSubmit={onSubmit}>
+          {/* 학번 */}
           <div className="field">
             <label htmlFor="email" className="field-label">
-              Email
+              학번
             </label>
             <input
               id="email"
-              type="email"
-              autoComplete="email"
+              type="text"
+              autoComplete="name"
               placeholder="학번을 입력해주세요"
               className="text-field"
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
+              value={studentNumber}
+              onChange={(e) => setStudentNumber(e.currentTarget.value)}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="name" className="field-label">
+              이름
+            </label>
+            <input
+              id="name"
+              type="name"
+              autoComplete="email"
+              placeholder="이름을 입력해주세요"
+              className="text-field"
+              value={studentName}
+              onChange={(e) => setStudentName(e.currentTarget.value)}
             />
           </div>
 
           {/* Password with show/hide only */}
           <div className="field">
             <label htmlFor="password" className="field-label">
-              Password
+              비밀번호
             </label>
             <div className="password-wrap">
               <input
@@ -96,11 +116,12 @@ export default function RegisterPage() {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 className="text-field with-icon"
-                value={password}
+                value={studentPassword}
                 onChange={(e) => setPassword(e.currentTarget.value)}
               />
               <button
                 type="button"
+                tabIndex={-1}
                 className="icon-btn"
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 aria-pressed={showPassword}
@@ -140,34 +161,66 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Options row */}
-          <div className="options-row">
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                className="checkbox-input"
-                checked={keepSignedIn}
-                onChange={(e) => setKeepSignedIn(e.currentTarget.checked)}
-              />
-              <span className="checkbox-label">로그인 유지하기</span>
+          <div className="field">
+            <label htmlFor="password" className="field-label">
+              비밀번호 재입력
             </label>
-            <Link to="#" className="link-muted">
-              비밀번호를 분실하셨나요?
-            </Link>
+            <div className="password-wrap">
+              <input
+                id="password"
+                type={showRePassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="••••••••"
+                className="text-field with-icon"
+                value={reStudentPassword}
+                onChange={(e) => setRePassword(e.currentTarget.value)}
+              />
+              <button
+                type="button"
+                tabIndex={-1}
+                className="icon-btn"
+                aria-label={showRePassword ? "Hide password" : "Show password"}
+                aria-pressed={showRePassword}
+                onClick={() => setShowRePassword((v) => !v)}
+              >
+                {showRePassword ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm10 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M4 20 20 4"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 5c-5 0-9 4.5-10 7 1 2.5 5 7 10 7s9-4.5 10-7c-1-2.5-5-7-10-7Zm0 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Submit */}
           <button type="submit" className="btn btn-primary">
-            Sign in
+            회원가입
           </button>
-
-          {/* Create account */}
-          <p className="form-hint">
-            계정이 없나요?{" "}
-            <Link to="#" className="link">
-              회원가입
-            </Link>
-          </p>
         </form>
       </section>
 
