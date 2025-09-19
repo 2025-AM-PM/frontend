@@ -190,7 +190,7 @@ function PollCreate() {
       <form onSubmit={handleSubmit} className="poll-create-form">
         {/* 기본 정보 */}
         <div className="form-section">
-          <h2>기본 정보</h2>
+          <h2>📝 기본 정보</h2>
 
           <div className="form-group">
             <label htmlFor="title">투표 제목 *</label>
@@ -256,25 +256,12 @@ function PollCreate() {
                 />
               </div>
             </div>
-            <small className="deadline-helper">
-              선택한 날짜:{" "}
-              {formData.deadlineAt
-                ? new Date(formData.deadlineAt).toLocaleString("ko-KR", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  })
-                : "날짜와 시간을 선택하세요"}
-            </small>
           </div>
         </div>
 
         {/* 투표 옵션 */}
         <div className="form-section">
-          <h2>투표 옵션</h2>
+          <h2>🗳️ 투표 옵션</h2>
 
           {formData.options.map((option, index) => (
             <div key={index} className="option-group">
@@ -313,52 +300,57 @@ function PollCreate() {
 
         {/* 투표 설정 */}
         <div className="form-section">
-          <h2>투표 설정</h2>
-
-          <div className="form-group">
-            <label htmlFor="maxSelect">최대 선택 개수</label>
-            <input
-              type="number"
-              id="maxSelect"
-              value={formData.maxSelect}
-              onChange={(e) =>
-                updateFormData("maxSelect", parseInt(e.target.value) || 1)
-              }
-              min={1}
-              max={Math.min(
-                10,
-                formData.options.filter((opt) => opt.trim()).length || 1
-              )}
-            />
-            <small>사용자가 선택할 수 있는 최대 옵션 개수</small>
-          </div>
+          <h2>⚙️ 투표 설정</h2>
 
           <div className="checkbox-group">
             <label>
+              <span>복수 선택 허용</span>
               <input
                 type="checkbox"
                 checked={formData.multiple}
                 onChange={(e) => updateFormData("multiple", e.target.checked)}
               />
-              복수 선택 허용
+              <div className="toggle-switch"></div>
             </label>
             <small>여러 옵션을 동시에 선택할 수 있도록 허용</small>
           </div>
 
+          {formData.multiple && (
+            <div className="form-group conditional-input">
+              <label htmlFor="maxSelect">최대 선택 개수</label>
+              <input
+                type="number"
+                id="maxSelect"
+                value={formData.maxSelect}
+                onChange={(e) =>
+                  updateFormData("maxSelect", parseInt(e.target.value) || 1)
+                }
+                min={1}
+                max={Math.min(
+                  10,
+                  formData.options.filter((opt) => opt.trim()).length || 1
+                )}
+              />
+              <small>사용자가 선택할 수 있는 최대 옵션 개수</small>
+            </div>
+          )}
+
           <div className="checkbox-group">
             <label>
+              <span>익명 투표</span>
               <input
                 type="checkbox"
                 checked={formData.anonymous}
                 onChange={(e) => updateFormData("anonymous", e.target.checked)}
               />
-              익명 투표
+              <div className="toggle-switch"></div>
             </label>
             <small>투표자의 이름을 공개하지 않음</small>
           </div>
 
           <div className="checkbox-group">
             <label>
+              <span>옵션 추가 허용</span>
               <input
                 type="checkbox"
                 checked={formData.allowAddOption}
@@ -366,13 +358,14 @@ function PollCreate() {
                   updateFormData("allowAddOption", e.target.checked)
                 }
               />
-              옵션 추가 허용
+              <div className="toggle-switch"></div>
             </label>
             <small>투표자가 새로운 옵션을 추가할 수 있도록 허용</small>
           </div>
 
           <div className="checkbox-group">
             <label>
+              <span>재투표 허용</span>
               <input
                 type="checkbox"
                 checked={formData.allowRevote}
@@ -380,7 +373,7 @@ function PollCreate() {
                   updateFormData("allowRevote", e.target.checked)
                 }
               />
-              재투표 허용
+              <div className="toggle-switch"></div>
             </label>
             <small>투표자가 투표를 변경할 수 있도록 허용</small>
           </div>
@@ -408,13 +401,14 @@ function PollCreate() {
           <button
             type="button"
             onClick={() => navigate("/polls")}
-            className="cancel-btn"
+            className="cancel-button"
             disabled={loading}
           >
             취소
           </button>
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? "투표 생성 중..." : "투표 만들기"}
+          <button type="submit" className="submit-button" disabled={loading}>
+            {loading && <span className="loading-spinner"></span>}
+            {loading ? "투표 생성 중..." : "🚀 투표 만들기"}
           </button>
         </div>
       </form>

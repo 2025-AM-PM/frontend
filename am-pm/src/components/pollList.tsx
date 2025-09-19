@@ -646,14 +646,6 @@ function PollList() {
                   >
                     상세보기
                   </button>
-                  {poll.status === "OPEN" && (
-                    <button
-                      className="poll-button vote-button"
-                      onClick={() => setSelectedPollId(poll.id)}
-                    >
-                      투표하기
-                    </button>
-                  )}
                 </div>
               </div>
             ))
