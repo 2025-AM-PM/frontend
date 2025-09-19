@@ -30,7 +30,7 @@ export async function login(req: LoginReq): Promise<User> {
     headers.get("authorizen");
   const token =
     raw && raw.toLowerCase().startsWith("bearer ") ? raw.slice(7) : null;
-  // 바디로 토큰을 준다면: const token = (data as any)?.accessToken ?? token;
+
   if (token) setAccessToken(token);
 
   // 2) 사용자 저장
@@ -51,7 +51,8 @@ export async function register(req: RegisterReq): Promise<number> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
   });
-  return status; // 201 기대
+
+  return status;
 }
 
 /** 서버 호출 없이 클라이언트 상태만 정리 */
