@@ -202,8 +202,9 @@ console.log("서버로 전송하는 백준 아이디:", `'${inputBaekjoonId}'`);
     "tier": number,
     "rating": number
   }
+  
     }
-    try {
+    try { 
         const { status, data } = await apiFetch<info>("/student/info", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
