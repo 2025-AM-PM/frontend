@@ -1,16 +1,14 @@
 import "../styles/header.css";
 import { Routes, Route, NavLink, useLocation } from "react-router-dom";
-import User from "./User";
-import { Session } from "../types";
-
-export const fakeUser: Session = {
-  userId: "202010957",
-  userName: "한준서",
-  userTier: "gold",
-};
+import UserInfo from "./User";
+import { User } from "../types";
+import LoginBtn from "./loginBtn";
+import { useAuth } from "../contexts/userContext";
 
 function Header() {
   const location = useLocation();
+  const { user } = useAuth();
+
   return (
     <header className="header">
       <div className="container">
@@ -46,7 +44,14 @@ function Header() {
         </nav>
         {/* 유저 정보 */}
         <div className="user">
-          <User name={fakeUser.userName || ""} rank={fakeUser.userTier || ""} />
+          {user ? (
+            <UserInfo
+              name={user.studentName || ""}
+              rank={user.studentTier || ""}
+            />
+          ) : (
+            <LoginBtn />
+          )}
         </div>
       </div>
     </header>

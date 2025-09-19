@@ -1,51 +1,34 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "../styles/login.css";
+import { User } from "../types";
+import { login } from "../api/auth";
 
-export default function LoginPage() {
+export default function LoginPage({
+  onSuccess,
+}: {
+  onSuccess: (u: User) => void;
+}) {
   const [showPassword, setShowPassword] = useState(false);
 
   // ⬇️ 폼 상태 (간단)
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [keepSignedIn, setKeepSignedIn] = useState(false);
+  const [studentNumber, setStudentNumber] = useState("");
+  const [studentPassword, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const ORIGIN = "https://ampm-test.duckdns.org";
-    const LOGIN_URL = `${ORIGIN}/login`;
-
+    if (loading) return;
+    setLoading(true);
+    setErr(null);
     try {
-      const res = await fetch(LOGIN_URL, {
-        method: "POST",
-        // credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          studentNumber: email,
-          studentPassword: password,
-        }),
-      });
-
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`HTTP ${res.status} ${res.statusText}\n${text}`);
-      }
-
-      // JSON 응답 시 파싱 (필요 없으면 생략 가능)
-      // const data = await res
-      //   .json()
-      //   .catch(async () => ({ raw: await res.text() }));
-
-      // TODO: 성공 후 이동/상태 업데이트
-      console.log("[login success]");
-      alert("로그인 성공(데모): 콘솔을 확인하세요.");
-    } catch (err: any) {
-      console.error("[login failed]", err);
-      alert(`로그인 실패: ${err?.message || String(err)}`);
+      const u = await login({ studentNumber, studentPassword });
+      onSuccess(u); // ★ User만 전달
+    } catch (e: any) {
+      setErr(e.message || "로그인 실패");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,11 +48,11 @@ export default function LoginPage() {
         <h2 className="card-title">로그인</h2>
         <p className="card-sub">학번과 비밀번호 입력해주세요</p>
 
-        <form className="auth-form" noValidate onSubmit={handleLogin}>
+        <form className="auth-form" noValidate onSubmit={onSubmit}>
           {/* Email */}
           <div className="field">
             <label htmlFor="email" className="field-label">
-              Email
+              학번
             </label>
             <input
               id="email"
@@ -77,15 +60,15 @@ export default function LoginPage() {
               autoComplete="email"
               placeholder="학번을 입력해주세요"
               className="text-field"
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
+              value={studentNumber}
+              onChange={(e) => setStudentNumber(e.currentTarget.value)}
             />
           </div>
 
           {/* Password with show/hide only */}
           <div className="field">
             <label htmlFor="password" className="field-label">
-              Password
+              비밀번호
             </label>
             <div className="password-wrap">
               <input
@@ -94,7 +77,7 @@ export default function LoginPage() {
                 autoComplete="current-password"
                 placeholder="••••••••"
                 className="text-field with-icon"
-                value={password}
+                value={studentPassword}
                 onChange={(e) => setPassword(e.currentTarget.value)}
               />
               <button
@@ -140,15 +123,6 @@ export default function LoginPage() {
 
           {/* Options row */}
           <div className="options-row">
-            <label className="checkbox">
-              <input
-                type="checkbox"
-                className="checkbox-input"
-                checked={keepSignedIn}
-                onChange={(e) => setKeepSignedIn(e.currentTarget.checked)}
-              />
-              <span className="checkbox-label">로그인 유지하기</span>
-            </label>
             <Link to="#" className="link-muted">
               비밀번호를 분실하셨나요?
             </Link>
@@ -156,7 +130,7 @@ export default function LoginPage() {
 
           {/* Submit */}
           <button type="submit" className="btn btn-primary">
-            Sign in
+            로그인
           </button>
 
           {/* Create account */}
