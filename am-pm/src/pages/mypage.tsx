@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom"; // ✨ Link를 추가합니다.
 import "../styles/mypage.css";
+import { apiFetch
 
+ } from "../api/client";
 interface UserProfile {
   name: string;
   studentId: string;
@@ -24,6 +26,12 @@ export default function Mypage() {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const [isLoading, setIsLoading] = useState(false); // API 호출 로딩 상태
+  const [verificationCode, setVerificationCode] = useState<string | null>(null); // 서버에서 받은 인증 코드
+  const [isVerified, setIsVerified] = useState(false); // 최종 인증 완료 여부
+  const [inputBaekjoonId, setInputBaekjoonId] = useState(""); // 사용자가 직접 입력하는 백준 아이디
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -138,9 +146,99 @@ export default function Mypage() {
     }
   };
 
-  const handleVerifyBaekjoon = () => {
-    alert("백준 인증 기능을 구현할 예정입니다.");
+  // 1. 백준 인증 코드 발급 함수
+  const handleIssueCode = async () => {
+    setIsLoading(true);
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+      alert("로그인이 필요합니다.");
+      setIsLoading(false);
+      return;
+    }
+
+    const ORIGIN = "https://ampm-test.duckdns.org";
+    const ISSUE_CODE_URL = `${ORIGIN}/api/student/issue`;
+
+    try {
+      const res = await fetch(ISSUE_CODE_URL, {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${accessToken}` },
+      });
+      if (!res.ok) throw new Error("인증 코드 발급에 실패했습니다.");
+      
+      const code = await res.text(); // API가 순수 문자열을 반환
+      setVerificationCode(code);
+
+    } catch (err: any) {
+      alert(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const handleFinalVerification = async () => {
+    // 이제 profile.baekjoonId 대신 사용자가 입력한 inputBaekjoonId를 확인합니다.
+    if (!inputBaekjoonId) {
+        alert("백준 아이디를 입력해주세요.");
+        return;
+    }
+
+console.log("서버로 전송하는 백준 아이디:", `'${inputBaekjoonId}'`); 
+
+    setIsLoading(true);
+    const accessToken = localStorage.getItem('access_token');
+    if (!accessToken) {
+        alert("로그인이 필요합니다.");
+        setIsLoading(false);
+        navigate('/login');
+        return;
+    }
+
+    type info = {
+         "studentNumber": string,
+        "solvedAcInformationResponse": {
+    "handle": string,
+    "solvedCount": number,
+    "tier": number,
+    "rating": number
+  }
+    }
+    try {
+        const { status, data } = await apiFetch<info>("/student/info", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({solvedAcNickname: inputBaekjoonId}),
+        });
+
+        if (status !== 200) throw new Error("인증에 실패했습니다. 아이디와 코드를 다시 확인해주세요.");
+        
+        // const data = await res.json();
+        alert("백준 계정 인증에 성공했습니다!");
+        setIsVerified(true);
+        setVerificationCode(null);
+        if(!data)   throw new Error("errolr")
+        // 인증에 성공했으므로 화면에 보이는 백준 아이디도 업데이트합니다.
+        setProfile(prev => ({ ...prev, baekjoonId: data.solvedAcInformationResponse.handle }));
+
+    } catch (err: any) {
+        alert(err.message);
+    } finally {
+        setIsLoading(false);
+    }
+  };
+  
+  // 3. 인증 코드 복사 함수
+  const handleCopyCode = () => {
+    if (verificationCode) {
+      navigator.clipboard.writeText(verificationCode)
+        .then(() => alert("인증 코드가 복사되었습니다!"))
+        .catch(() => alert("복사에 실패했습니다."));
+    }
+  };
+
+//   const handleVerifyBaekjoon = () => {
+//     alert("백준 인증 기능을 구현할 예정입니다.");
+//   };
 
   return (
     <main className="login-page" aria-labelledby="mypageTitle">
@@ -225,12 +323,52 @@ export default function Mypage() {
         <div className="profile-info">
           <div className="field">
             <label className="field-label">백준 아이디</label>
-            <div className="text-field-display">{profile.baekjoonId}</div>
+            <div className="text-field-display">{profile.baekjoonId || "아직 등록되지 않았습니다."}</div>
           </div>
         </div>
-        <button className="btn btn-primary full-width-btn" onClick={handleVerifyBaekjoon}>
-          인증하기
-        </button>
+
+        {isVerified ? (
+          <button className="btn btn-success full-width-btn" disabled>
+            인증 완료
+          </button>
+        ) : verificationCode ? (
+          // ✨ --- 이 부분을 아래 코드로 교체하세요 ---
+          <div className="verification-steps">
+            <div className="field">
+              <label className="field-label">인증할 백준 아이디</label>
+              <input
+                type="text"
+                className="text-field"
+                value={inputBaekjoonId}
+                onChange={(e) => setInputBaekjoonId(e.target.value)}
+                placeholder="solved.ac 닉네임을 입력하세요"
+              />
+            </div>
+            <p className="verification-guide">
+              위 아이디의 <a href="https://solved.ac/settings/profile" target="_blank" rel="noopener noreferrer">solved.ac 프로필</a> 자기소개(Bio)란에 아래 코드를 붙여넣고 저장해주세요.
+            </p>
+            <div className="code-box">
+              <span className="code-text">{verificationCode}</span>
+              <button onClick={handleCopyCode} className="btn-copy">복사</button>
+            </div>
+            <button 
+              className="btn btn-primary full-width-btn" 
+              onClick={handleFinalVerification}
+              disabled={isLoading}
+            >
+              {isLoading ? "확인 중..." : "인증 완료하기"}
+            </button>
+          </div>
+        ) : (
+          // 초기 상태
+          <button 
+            className="btn btn-primary full-width-btn" 
+            onClick={handleIssueCode}
+            disabled={isLoading}
+          >
+            {isLoading ? "코드 발급 중..." : "인증하기"}
+          </button>
+        )}
       </section>
 
       <footer className="login-footer" aria-hidden="true">
