@@ -1,4 +1,5 @@
-// src/api/client.ts
+import { getAccessToken } from "./storage";
+
 export const API_BASE = process.env.REACT_APP_API_BASE;
 
 export type ApiResponse<T> = {
@@ -7,29 +8,45 @@ export type ApiResponse<T> = {
   headers: Headers;
 };
 
+type Extra = { auth?: boolean; withCredentials?: boolean };
+
 export async function apiFetch<T>(
   path: string,
-  init: RequestInit = {}
+  init: RequestInit & Extra = {}
 ): Promise<ApiResponse<T>> {
+  const method = (init.method || "GET").toUpperCase();
+  const isMutating =
+    method !== "GET" && method !== "HEAD" && method !== "OPTIONS";
+
+  // 기본 헤더
+  const headers = new Headers({ Accept: "application/json" });
+  if (init.headers)
+    new Headers(init.headers).forEach((v, k) => headers.set(k, v));
+
+  // 변경 메서드 또는 명시적 auth=true → Authorization 첨부
+  if (isMutating || init.auth) {
+    const tk = getAccessToken();
+    if (tk && !headers.has("Authorization")) {
+      headers.set("Authorization", `Bearer ${tk}`);
+    }
+  }
+
+  const credentials: RequestCredentials =
+    isMutating || init.withCredentials ? "include" : "omit";
+
   const res = await fetch(`${API_BASE}${path}`, {
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      ...(init.headers || {}),
-    },
     ...init,
+    headers,
+    credentials,
   });
 
   const contentType = res.headers.get("content-type") || "";
-  const raw = await res.text(); // ← 항상 텍스트로
+  const raw = await res.text();
   let parsed: any = null;
-
   if (raw && contentType.includes("application/json")) {
     try {
       parsed = JSON.parse(raw);
-    } catch {
-      // JSON이 아니면 parsed는 null 유지
-    }
+    } catch {}
   }
 
   if (!res.ok) {

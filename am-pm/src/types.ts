@@ -9,7 +9,7 @@ export interface Post {
 
 export interface MiniBoardProps {
   boardTitle: string;
-  posts: Post[]; // 단일 게시글 정보 대신 게시글 '배열'을 받도록 수정
+  posts: Post[];
 }
 
 export interface User {
