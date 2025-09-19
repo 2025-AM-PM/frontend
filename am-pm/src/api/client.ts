@@ -74,7 +74,10 @@ export async function apiFetch<T>(
 
   if (!res.ok) {
     // ## 개선 4: 에러 객체 타입 (예시)
-    const message = (parsed && (parsed.message || parsed.error)) || raw || `${res.status} ${res.statusText}`;
+    const message =
+      (parsed && (parsed.message || parsed.error)) ||
+      raw ||
+      `${res.status} ${res.statusText}`;
     const error = new Error(message) as any; // 실제로는 ApiError 같은 커스텀 클래스 사용 권장
     error.status = res.status;
     error.responseBody = parsed; // 디버깅을 위해 파싱된 body도 포함
@@ -189,4 +192,11 @@ export async function closePoll(pollId: number): Promise<PollSummaryResponse> {
   );
 
   return response.data!;
+}
+
+// Delete poll
+export async function deletePoll(pollId: number): Promise<void> {
+  await apiFetch<void>(`/polls/${pollId}`, {
+    method: "DELETE",
+  });
 }

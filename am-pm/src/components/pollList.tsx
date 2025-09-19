@@ -9,14 +9,15 @@ import { getPolls } from "../api/client";
 import { useAuth } from "../contexts/userContext";
 import PollDetailModal from "./PollDetailModal";
 import Header from "./header";
-import "../styles/poll.css";
+import "../styles/pollList.css";
 
-function Poll() {
+function PollList() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [polls, setPolls] = useState<PollSummaryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
+  const [filterLoading, setFilterLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"OPEN" | "CLOSED" | "">("");
@@ -42,10 +43,14 @@ function Poll() {
   // 모달 상태
   const [selectedPollId, setSelectedPollId] = useState<number | null>(null);
 
-  const fetchPolls = async (isSearch: boolean = false) => {
+  const fetchPolls = async (
+    loadingType: "initial" | "search" | "filter" = "initial"
+  ) => {
     try {
-      if (isSearch) {
+      if (loadingType === "search") {
         setSearching(true);
+      } else if (loadingType === "filter") {
+        setFilterLoading(true);
       } else {
         setLoading(true);
       }
@@ -58,28 +63,38 @@ function Poll() {
         searchParams.status = statusFilter;
       }
 
-      // 날짜 필터링
+      // 날짜 필터링 - 마감 기한 기준으로 필터링
       if (dateFilter) {
         const now = new Date();
-        const today = new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate()
-        );
+
+        // 현재 시점부터 필터링 시작 (이미 마감된 투표 제외)
+        searchParams.deadlineFrom = now.toISOString();
 
         switch (dateFilter) {
           case "today":
-            searchParams.deadlineFrom = today.toISOString();
+            // 오늘 자정까지 마감되는 투표
+            const endOfToday = new Date(
+              now.getFullYear(),
+              now.getMonth(),
+              now.getDate(),
+              23,
+              59,
+              59,
+              999
+            );
+            searchParams.deadlineTo = endOfToday.toISOString();
             break;
           case "week":
-            const weekAgo = new Date(today);
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            searchParams.deadlineFrom = weekAgo.toISOString();
+            // 일주일 후까지 마감되는 투표
+            const weekLater = new Date(now);
+            weekLater.setDate(weekLater.getDate() + 7);
+            searchParams.deadlineTo = weekLater.toISOString();
             break;
           case "month":
-            const monthAgo = new Date(today);
-            monthAgo.setMonth(monthAgo.getMonth() - 1);
-            searchParams.deadlineFrom = monthAgo.toISOString();
+            // 한달 후까지 마감되는 투표
+            const monthLater = new Date(now);
+            monthLater.setMonth(monthLater.getMonth() + 1);
+            searchParams.deadlineTo = monthLater.toISOString();
             break;
         }
       }
@@ -107,19 +122,25 @@ function Poll() {
     } finally {
       setLoading(false);
       setSearching(false);
+      setFilterLoading(false);
     }
   };
 
+  // 컴포넌트 마운트 시 초기 데이터 로딩
+  useEffect(() => {
+    fetchPolls("initial");
+  }, []);
+
   // 검색어가 아닌 필터들이 변경될 때
   useEffect(() => {
-    fetchPolls(false);
+    fetchPolls("filter");
   }, [currentPage, statusFilter, sortBy, dateFilter, attributeFilters]);
 
   // 실시간 검색을 위한 debounced effect
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setCurrentPage(0);
-      fetchPolls(true);
+      fetchPolls("search");
     }, 300);
 
     return () => clearTimeout(timeoutId);
@@ -128,7 +149,7 @@ function Poll() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(0);
-    fetchPolls(true);
+    fetchPolls("search");
   };
 
   const handleStatusChange = (status: "OPEN" | "CLOSED" | "") => {
@@ -221,7 +242,7 @@ function Poll() {
     );
   };
 
-  if (loading && !searching && polls.length === 0) {
+  if (loading && !searching && !filterLoading && polls.length === 0) {
     return <div className="poll-loading">투표 목록을 불러오는 중...</div>;
   }
 
@@ -312,7 +333,7 @@ function Poll() {
               </div>
 
               <div className="date-filters">
-                <label className="filter-label">기간:</label>
+                <label className="filter-label">마감기한:</label>
                 <select
                   value={dateFilter}
                   onChange={(e) => handleDateFilterChange(e.target.value)}
@@ -320,8 +341,8 @@ function Poll() {
                 >
                   <option value="">전체 기간</option>
                   <option value="today">오늘 마감</option>
-                  <option value="week">일주일 이내</option>
-                  <option value="month">한달 이내</option>
+                  <option value="week">7일 이내 마감</option>
+                  <option value="month">30일 이내 마감</option>
                 </select>
               </div>
             </div>
@@ -525,7 +546,16 @@ function Poll() {
                         `상태: ${
                           statusFilter === "OPEN" ? "진행중" : "종료됨"
                         }`,
-                      dateFilter && `기간: ${dateFilter}`,
+                      dateFilter &&
+                        `마감기한: ${
+                          dateFilter === "today"
+                            ? "오늘"
+                            : dateFilter === "week"
+                            ? "7일 이내"
+                            : dateFilter === "month"
+                            ? "30일 이내"
+                            : dateFilter
+                        }`,
                       attributeFilters.multiple !== null &&
                         `복수선택: ${
                           attributeFilters.multiple ? "가능" : "불가능"
@@ -550,12 +580,22 @@ function Poll() {
         </div>
 
         {/* 투표 목록 */}
-        <div className={`poll-list ${searching ? "searching" : ""}`}>
+        <div
+          className={`poll-list ${searching || filterLoading ? "loading" : ""}`}
+        >
           {searching && (
             <div className="search-overlay">
               <div className="search-loading">
                 <div className="spinner large"></div>
                 <span>검색 중...</span>
+              </div>
+            </div>
+          )}
+          {filterLoading && (
+            <div className="filter-overlay">
+              <div className="filter-loading">
+                <div className="spinner large"></div>
+                <span>필터 적용 중...</span>
               </div>
             </div>
           )}
@@ -606,14 +646,6 @@ function Poll() {
                   >
                     상세보기
                   </button>
-                  {poll.status === "OPEN" && (
-                    <button
-                      className="poll-button vote-button"
-                      onClick={() => setSelectedPollId(poll.id)}
-                    >
-                      투표하기
-                    </button>
-                  )}
                 </div>
               </div>
             ))
@@ -655,7 +687,7 @@ function Poll() {
           onClose={() => setSelectedPollId(null)}
           onPollUpdated={() => {
             // 투표 목록 새로고침
-            fetchPolls(false);
+            fetchPolls("filter");
           }}
         />
       )}
@@ -663,4 +695,4 @@ function Poll() {
   );
 }
 
-export default Poll;
+export default PollList;

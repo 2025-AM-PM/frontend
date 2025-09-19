@@ -9,9 +9,10 @@ import {
   getPollResults,
   votePoll,
   closePoll,
+  deletePoll,
 } from "../api/client";
 import { useAuth } from "../contexts/userContext";
-import "../styles/poll.css";
+import "../styles/pollDetailModal.css";
 
 interface PollDetailModalProps {
   pollId: number;
@@ -33,6 +34,7 @@ function PollDetailModal({
   const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
   const [voting, setVoting] = useState(false);
   const [closing, setClosing] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [maxReachedAnimation, setMaxReachedAnimation] = useState<number | null>(
     null
   );
@@ -48,12 +50,8 @@ function PollDetailModal({
       const pollData = await getPollDetail(pollId);
       setPoll(pollData);
 
-      // 이미 투표했거나 결과가 항상 보이는 경우 결과도 같이 가져오기
-      if (
-        pollData.voted ||
-        pollData.resultVisibility === "ALWAYS" ||
-        pollData.status === "CLOSED"
-      ) {
+      // 투표 종료된 경우에만 자동으로 결과 보기
+      if (pollData.status === "CLOSED") {
         try {
           const resultsData = await getPollResults(pollId);
           setResults(resultsData);
@@ -138,6 +136,31 @@ function PollDetailModal({
       );
     } finally {
       setClosing(false);
+    }
+  };
+
+  const handleDeletePoll = async () => {
+    if (!poll) return;
+
+    if (
+      !window.confirm(
+        "정말로 이 투표를 삭제하시겠습니까?\n삭제된 투표는 복구할 수 없습니다."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      await deletePoll(pollId);
+      onPollUpdated?.();
+      onClose(); // 삭제 후 모달 닫기
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "투표 삭제에 실패했습니다."
+      );
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -260,18 +283,15 @@ function PollDetailModal({
         </div>
 
         <div className="modal-body">
-          {/* 투표 정보 */}
-          <div className="poll-info-section">
-            <div className="poll-status-info">
+          {/* 핵심 투표 정보 */}
+          <div className="poll-main-info">
+            <div className="poll-status-header">
               <span className={`status-badge ${poll.status.toLowerCase()}`}>
                 {poll.status === "OPEN" ? "진행중" : "종료됨"}
               </span>
-              <span className="poll-dates">
-                생성일: {formatDate(poll.createdAt)}
-              </span>
-              <span className="poll-dates">
-                마감일: {formatDate(poll.deadlineAt)}
-              </span>
+              <div className="poll-deadline">
+                <strong>마감: {formatDate(poll.deadlineAt)}</strong>
+              </div>
             </div>
 
             {poll.description && (
@@ -280,26 +300,48 @@ function PollDetailModal({
               </div>
             )}
 
-            <div className="poll-settings">
-              <div className="setting-item">
-                <strong>최대 선택:</strong> {poll.maxSelect}개
-              </div>
-              <div className="setting-item">
-                <strong>복수 선택:</strong> {poll.multiple ? "가능" : "불가능"}
-              </div>
-              <div className="setting-item">
-                <strong>익명 투표:</strong> {poll.anonymous ? "익명" : "공개"}
-              </div>
-              <div className="setting-item">
-                <strong>옵션 추가:</strong>{" "}
-                {poll.allowAddOption ? "가능" : "불가능"}
-              </div>
-              <div className="setting-item">
-                <strong>재투표:</strong> {poll.allowRevote ? "가능" : "불가능"}
-              </div>
-              <div className="setting-item">
-                <strong>결과 공개:</strong>{" "}
-                {getResultVisibilityText(poll.resultVisibility)}
+            {/* 사용자에게 중요한 설정만 표시 */}
+            <div className="poll-key-settings">
+              {poll.maxSelect > 1 && (
+                <span className="key-setting">
+                  최대 {poll.maxSelect}개 선택 가능
+                </span>
+              )}
+              {poll.anonymous && (
+                <span className="key-setting anonymous">익명 투표</span>
+              )}
+              {poll.allowRevote && (
+                <span className="key-setting revote">재투표 가능</span>
+              )}
+            </div>
+
+            {/* 상세 정보 */}
+            <div className="poll-advanced-info">
+              <div className="advanced-info-grid">
+                <div className="info-item">
+                  <span className="info-label">생성일</span>
+                  <span className="info-value">
+                    {formatDate(poll.createdAt)}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">복수 선택</span>
+                  <span className="info-value">
+                    {poll.multiple ? "가능" : "불가능"}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">옵션 추가</span>
+                  <span className="info-value">
+                    {poll.allowAddOption ? "가능" : "불가능"}
+                  </span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">결과 공개</span>
+                  <span className="info-value">
+                    {getResultVisibilityText(poll.resultVisibility)}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -373,6 +415,7 @@ function PollDetailModal({
                       selectedOptions.includes(option.id) ? "selected" : ""
                     } ${
                       poll.status !== "OPEN" ||
+                      !user ||
                       (poll.voted && !poll.allowRevote)
                         ? "disabled"
                         : ""
@@ -388,6 +431,7 @@ function PollDetailModal({
                       onChange={() => handleOptionSelect(option.id)}
                       disabled={
                         poll.status !== "OPEN" ||
+                        !user ||
                         (poll.voted && !poll.allowRevote)
                       }
                     />
@@ -402,7 +446,33 @@ function PollDetailModal({
         </div>
 
         <div className="modal-footer">
-          <div className="button-group">
+          {/* 왼쪽: 관리 버튼들 (투표 생성자만) */}
+          <div className="button-group left-buttons">
+            {/* 투표 종료 버튼 */}
+            {poll.status === "OPEN" && poll.createdBy === user?.studentId && (
+              <button
+                className="button warning"
+                onClick={handleClosePoll}
+                disabled={closing}
+              >
+                {closing ? "종료 중..." : "투표 종료"}
+              </button>
+            )}
+
+            {/* 투표 삭제 버튼 */}
+            {poll.createdBy === user?.studentId && (
+              <button
+                className="button danger"
+                onClick={handleDeletePoll}
+                disabled={deleting}
+              >
+                {deleting ? "삭제 중..." : "투표 삭제"}
+              </button>
+            )}
+          </div>
+
+          {/* 오른쪽: 주요 액션 버튼들 */}
+          <div className="button-group right-buttons">
             <button className="button secondary" onClick={onClose}>
               닫기
             </button>
@@ -411,7 +481,9 @@ function PollDetailModal({
             {canShowResults() && (
               <button
                 className="button tertiary"
-                onClick={() => setShowResults(!showResults)}
+                onClick={
+                  showResults ? () => setShowResults(false) : handleShowResults
+                }
               >
                 {showResults ? "투표하기" : "결과보기"}
               </button>
@@ -420,49 +492,22 @@ function PollDetailModal({
             {/* 투표 버튼 */}
             {!showResults &&
               poll.status === "OPEN" &&
-              !poll.voted &&
-              (user ? (
+              user &&
+              (!poll.voted || poll.allowRevote) && (
                 <button
                   className="button primary"
                   onClick={handleVote}
                   disabled={selectedOptions.length === 0 || voting}
                 >
-                  {voting ? "투표 중..." : "투표하기"}
-                </button>
-              ) : (
-                <button
-                  className="button secondary"
-                  onClick={() => alert("투표하려면 로그인이 필요합니다.")}
-                >
-                  로그인 후 투표하기
-                </button>
-              ))}
-
-            {/* 재투표 버튼 */}
-            {!showResults &&
-              poll.status === "OPEN" &&
-              poll.voted &&
-              poll.allowRevote &&
-              user && (
-                <button
-                  className="button primary"
-                  onClick={handleVote}
-                  disabled={selectedOptions.length === 0 || voting}
-                >
-                  {voting ? "재투표 중..." : "재투표하기"}
+                  {voting
+                    ? poll.voted
+                      ? "재투표 중..."
+                      : "투표 중..."
+                    : poll.voted
+                    ? "재투표하기"
+                    : "투표하기"}
                 </button>
               )}
-
-            {/* 투표 종료 버튼 (투표 생성자만) */}
-            {poll.status === "OPEN" && poll.createdBy === user?.studentId && (
-              <button
-                className="button danger"
-                onClick={handleClosePoll}
-                disabled={closing}
-              >
-                {closing ? "종료 중..." : "투표 종료"}
-              </button>
-            )}
           </div>
         </div>
       </div>
