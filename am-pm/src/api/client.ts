@@ -1,4 +1,12 @@
 // src/api/client.ts
+import {
+  PagePollSummaryResponse,
+  PollSearchParam,
+  Pageable,
+  PollCreateRequest,
+  PollSummaryResponse,
+} from "../types";
+
 export const API_BASE = process.env.REACT_APP_API_BASE;
 
 export type ApiResponse<T> = {
@@ -47,4 +55,56 @@ export async function apiFetch<T>(
     data: (parsed as T) ?? null,
     headers: res.headers,
   };
+}
+
+// Poll API functions
+export async function getPolls(
+  params: PollSearchParam = {},
+  pageable: Pageable = { page: 0, size: 10 }
+): Promise<PagePollSummaryResponse> {
+  const searchParams = new URLSearchParams();
+
+  // Add pageable parameters first
+  searchParams.append("page", pageable.page.toString());
+  searchParams.append("size", pageable.size.toString());
+
+  // Add search parameters only if they exist
+  if (params.query && params.query.trim()) {
+    searchParams.append("query", params.query.trim());
+  }
+  if (params.status) {
+    searchParams.append("status", params.status);
+  }
+  if (params.deadlineFrom) {
+    searchParams.append("deadlineFrom", params.deadlineFrom);
+  }
+  if (params.deadlineTo) {
+    searchParams.append("deadlineTo", params.deadlineTo);
+  }
+
+  // Add sort parameters
+  if (pageable.sort && pageable.sort.length > 0) {
+    pageable.sort.forEach((s) => searchParams.append("sort", s));
+  }
+
+  const response = await apiFetch<PagePollSummaryResponse>(
+    `/polls?${searchParams.toString()}`
+  );
+
+  return response.data!;
+}
+
+// Create poll
+export async function createPoll(
+  pollData: PollCreateRequest
+): Promise<PollSummaryResponse> {
+  const response = await apiFetch<PollSummaryResponse>("/polls", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(pollData),
+  });
+
+  return response.data!;
 }

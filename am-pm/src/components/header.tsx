@@ -40,6 +40,13 @@ function Header() {
             >
               <NavLink to="/rank">백준 랭크</NavLink>
             </li>
+            <li
+              className={`nav-item${
+                location.pathname === "/polls" ? " nav-item-current" : ""
+              }`}
+            >
+              <NavLink to="/polls">투표</NavLink>
+            </li>
           </ul>
         </nav>
         {/* 유저 정보 */}
