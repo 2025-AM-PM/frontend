@@ -356,12 +356,13 @@
   position: relative;
 }
 
-.poll-list.searching {
+.poll-list.loading {
   opacity: 0.7;
   pointer-events: none;
 }
 
-.search-overlay {
+.search-overlay,
+.filter-overlay {
   position: absolute;
   inset: 0;
   background: rgba(26, 26, 26, 0.9);
@@ -371,9 +372,22 @@
   z-index: 10;
   border-radius: var(--border-radius-large);
   backdrop-filter: blur(4px);
+  animation: overlayFadeIn 0.2s ease-out;
 }
 
-.search-loading {
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+.search-loading,
+.filter-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -381,6 +395,10 @@
   color: var(--text-secondary);
   font-size: 1.1rem;
   font-weight: 500;
+}
+
+.filter-loading {
+  color: var(--accent-secondary);
 }
 
 .spinner.large {
