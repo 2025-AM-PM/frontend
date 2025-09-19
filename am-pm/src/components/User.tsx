@@ -1,3 +1,4 @@
+import { logout } from "../api/auth";
 import "../styles/user.css";
 import { Link } from "react-router-dom";
 
@@ -20,8 +21,14 @@ function UserInfo({
       {rankImgSrc && (
         <img src={rankImgSrc} alt={rank || undefined} className="tier" />
       )}
-      <span className="user-name">{name}</span>
-      <Link to="./login">로그아웃</Link>
+
+      <Link to="/mypage" className="user-name-link">
+        <span className="user-name">{name}</span>
+      </Link>
+
+      <Link to="/login" onClick={logout}>
+        로그아웃
+      </Link>
     </div>
   );
 }

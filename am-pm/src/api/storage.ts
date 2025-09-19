@@ -23,14 +23,15 @@ export function getAccessToken(): string | null {
 export function setAccessToken(token: string | null) {
   try {
     if (token) localStorage.setItem(StorageKeys.access, token);
-    else localStorage.removeItem(StorageKeys.access);
+    else {
+      localStorage.removeItem(StorageKeys.access);
+    }
   } catch {}
 }
 export function hasAccessToken() {
   return !!getAccessToken();
 }
 
-// User Profile
 export function getStoredUser<T>(): T | null {
   return readJSON<T>(StorageKeys.user);
 }
