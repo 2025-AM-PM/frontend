@@ -25,11 +25,8 @@ function UserInfo({
       <Link to="/mypage" className="user-name-link">
         <span className="user-name">{name}</span>
       </Link>
-      <Link to="./login" onClick={logout}>
 
-      <span className="user-name">{name}</span>
       <Link to="/login" onClick={logout}>
-
         로그아웃
       </Link>
     </div>

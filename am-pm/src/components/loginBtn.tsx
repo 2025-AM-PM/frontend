@@ -1,6 +1,5 @@
 import "../styles/loginBtn.css";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../api/auth";
 
 function LoginBtn() {
   const navigate = useNavigate();
