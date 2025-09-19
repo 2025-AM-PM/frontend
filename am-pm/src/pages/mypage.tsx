@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; //  1. useNavigate 훅을 import 합니다.
+import { useNavigate, Link } from "react-router-dom"; // ✨ Link를 추가합니다.
 import "../styles/mypage.css";
 
 interface UserProfile {
@@ -145,7 +145,10 @@ export default function Mypage() {
   return (
     <main className="login-page" aria-labelledby="mypageTitle">
       <header className="login-hero" aria-hidden="true">
+        {/* ✨ Link to="/"로 감싸서 클릭 시 메인 페이지로 이동하도록 합니다. */}
+        <Link to="/">
         <div className="brand-dot" aria-hidden="true"></div>
+        </Link>
         <h1 id="mypageTitle" className="hero-title">
           마이페이지
         </h1>
