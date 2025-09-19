@@ -13,6 +13,7 @@ export interface MiniBoardProps {
 }
 
 export interface User {
+  studentId: number | null;
   studentName: string | null;
   studentTier: string | null;
   studentNumber: string | null;
@@ -70,4 +71,57 @@ export interface PollCreateRequest {
   resultVisibility: "ALWAYS" | "AFTER_CLOSE" | "AUTHENTICATED" | "ADMIN_ONLY";
   deadlineAt: string;
   options: string[];
+}
+
+// Poll detail types
+export interface PollOptionResponse {
+  id: number;
+  label: string;
+}
+
+export interface PollDetailResponse {
+  id: number;
+  title: string;
+  description: string;
+  status: "OPEN" | "CLOSED";
+  maxSelect: number;
+  multiple: boolean;
+  anonymous: boolean;
+  allowAddOption: boolean;
+  allowRevote: boolean;
+  resultVisibility: "ALWAYS" | "AFTER_CLOSE" | "AUTHENTICATED" | "ADMIN_ONLY";
+  deadlineAt: string;
+  createdBy: number;
+  createdAt: string;
+  updatedAt: string;
+  closedAt?: string;
+  open: boolean;
+  options: PollOptionResponse[];
+  voted: boolean;
+  mySelectedOptionIds: number[] | null;
+}
+
+// Poll voting types
+export interface PollVoteRequest {
+  optionIds: number[];
+}
+
+// Poll result types
+export interface PollVoterResponse {
+  studentId: number;
+  studentName: string;
+}
+
+export interface PollResultOptionResponse {
+  id: number;
+  label: string;
+  count: number;
+  voters: PollVoterResponse[];
+}
+
+export interface PollResultResponse {
+  poll: PollDetailResponse;
+  options: PollResultOptionResponse[];
+  voted: boolean;
+  mySelectedOptionIds: number[] | null;
 }

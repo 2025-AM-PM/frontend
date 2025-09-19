@@ -5,6 +5,9 @@ import {
   Pageable,
   PollCreateRequest,
   PollSummaryResponse,
+  PollDetailResponse,
+  PollResultResponse,
+  PollVoteRequest,
 } from "../types";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
@@ -121,6 +124,57 @@ export async function createPoll(
     },
     body: JSON.stringify(pollData),
   });
+
+  return response.data!;
+}
+
+// Get poll detail
+export async function getPollDetail(
+  pollId: number
+): Promise<PollDetailResponse> {
+  const response = await apiFetch<PollDetailResponse>(`/polls/${pollId}`, {
+    auth: true,
+  });
+
+  return response.data!;
+}
+
+// Get poll results
+export async function getPollResults(
+  pollId: number
+): Promise<PollResultResponse> {
+  const response = await apiFetch<PollResultResponse>(
+    `/polls/${pollId}/results`,
+    {
+      auth: true,
+    }
+  );
+
+  return response.data!;
+}
+
+// Vote on poll
+export async function votePoll(
+  pollId: number,
+  voteData: PollVoteRequest
+): Promise<void> {
+  await apiFetch<void>(`/polls/${pollId}/vote`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(voteData),
+  });
+}
+
+// Close poll
+export async function closePoll(pollId: number): Promise<PollSummaryResponse> {
+  const response = await apiFetch<PollSummaryResponse>(
+    `/polls/${pollId}/close`,
+    {
+      method: "POST",
+    }
+  );
 
   return response.data!;
 }

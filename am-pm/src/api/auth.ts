@@ -4,6 +4,7 @@ import type { User } from "../types";
 
 type LoginReq = { studentNumber: string; studentPassword: string };
 type LoginRes = {
+  studentId: number;
   studentName: string;
   studentNumber: string;
   studentTier: string;
@@ -39,6 +40,7 @@ export async function login(req: LoginReq): Promise<User> {
 
   // 2) 사용자 저장
   const user: User = {
+    studentId: data.studentId || null,
     studentName: data.studentName || null,
     studentNumber: data.studentNumber || null,
     studentTier: data.studentTier || null,
