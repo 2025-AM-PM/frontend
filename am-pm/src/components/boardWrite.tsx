@@ -1,7 +1,16 @@
-import React, { useEffect, useRef, useState, useDeferredValue } from "react";
-import ReactMarkdown, { Components, defaultUrlTransform } from "react-markdown";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useDeferredValue,
+  FC,
+  ComponentProps, // [수정] React에서 ComponentProps를 직접 가져옵니다.
+} from "react";
+import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+// [수정] 문제가 되는 import 문을 완전히 삭제합니다.
+// import { ImgProps } from "react-markdown/lib/ast-to-react";
 
 import { Button } from "../components/button";
 import { Input } from "../components/input";
@@ -11,13 +20,74 @@ import { uploadImageRemote } from "../lib/uploadRemote";
 import { apiFetch } from "../api/client";
 import "../styles/post-editor.css";
 
+const urlCache = new Map<string, string>();
+
+// [수정] ImgProps 대신 React의 내장 타입인 ComponentProps<'img'>를 사용합니다.
+// 이렇게 하면 react-markdown 버전이 바뀌어도 코드가 깨지지 않습니다.
+const CustomImageRenderer: FC<ComponentProps<'img'>> = ({ src, alt, ...props }) => {
+  const [actualSrc, setActualSrc] = useState<string | undefined>(src);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    
+    if (src && src.startsWith("exhibits/images/")) {
+      if (urlCache.has(src)) {
+        setActualSrc(urlCache.get(src));
+        return;
+      }
+
+      const fetchPresignedUrl = async () => {
+        setIsLoading(true);
+        try {
+          
+          const { data: presignedInfo } = await apiFetch<{ presignedUrl: string }>(
+            `/files/download?fileId=${encodeURIComponent(src)}`,
+            {
+              method: 'GET',
+              auth: true,
+            }
+          );
+          if (presignedInfo) {
+            console.log("useEffect 실행됨. preSinged :", presignedInfo.presignedUrl);
+            urlCache.set(src, presignedInfo.presignedUrl);
+            setActualSrc(presignedInfo.presignedUrl);
+          }
+        } catch (error) {
+          console.error(`'${src}'의 Presigned URL을 가져오지 못했습니다.`, error);
+          setActualSrc(src);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchPresignedUrl();
+    } else {
+      setActualSrc(src);
+    }
+  }, [src]);
+
+  if (isLoading) {
+    return <span>이미지 로딩 중...</span>;
+  }
+
+  return (
+    <img
+      {...props}
+      src={actualSrc}
+      alt={alt ?? ""}
+      loading="lazy"
+      decoding="async"
+      className="md-img"
+    />
+  );
+};
+
 export default function BoardWrite() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const deferredContent = useDeferredValue(content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // 커서 위치에 문자열 삽입
   const insertAtCursor = (snippet: string) => {
     const ta = textareaRef.current;
     if (!ta) {
@@ -40,17 +110,38 @@ export default function BoardWrite() {
     });
   };
 
-  // 파일 업로드 → URL → 마크다운 삽입
+  interface UploadUrlResponse {
+    fileId: string;
+    presignedUrl: string;
+  }
+
   const handleFiles = async (files: FileList | File[]) => {
-    const list = Array.from(files);
-    for (const f of list) {
+    for (const f of Array.from(files)) {
       if (!f.type.startsWith("image/")) continue;
-      const url = await uploadImageRemote(f);
-      insertAtCursor(`\n![image](${url})\n`);
+      try {
+        const { data: uploadInfo } = await apiFetch<UploadUrlResponse>('/files/upload', {
+          method: 'GET',
+          auth: true,
+        });
+
+        if (!uploadInfo) {
+          throw new Error("서버로부터 업로드 정보를 받지 못했습니다.");
+        }
+
+        const { fileId, presignedUrl } = uploadInfo;
+        console.log("Presigned URL: ", presignedUrl);
+        insertAtCursor(`
+![image](${fileId})
+`);
+        await uploadImageRemote(presignedUrl, f);
+        console.log("성공적으로 파일을 업로드 했습니다.");
+      } catch (error) {
+        console.error('파일 업로드 실패:', error);
+        alert('파일 업로드 중 문제가 생겼습니다.');
+      }
     }
   };
 
-  // 붙여넣기 이미지 처리
   const onPaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const items = e.clipboardData?.items;
     if (!items) return;
@@ -65,46 +156,36 @@ export default function BoardWrite() {
     }
   };
 
-  // 드래그&드롭 이미지 처리
   const onDrop = async (e: React.DragEvent<HTMLTextAreaElement>) => {
     e.preventDefault();
     if (e.dataTransfer?.files?.length) await handleFiles(e.dataTransfer.files);
   };
-  const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) =>
-    e.preventDefault();
+  const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) => e.preventDefault();
 
   const onSubmit = async () => {
-    // 비동기 처리를 위해 async 사용
     if (!title.trim() || !content.trim()) return;
 
     const postData = {
-      request: { title: title, description: content, exhibitUrl: "" }, // todo: 어떻게 추가할것인지
-      files: [],
+      title: title,
+      description: content,
+      exhibitUrl: ""
     };
 
-    // const API_ENDPOINT =  process.env.REACT_APP_API_BASE+'/exhibits'; // 실제 백엔드 API 주소
-
     try {
-      const { data } = await apiFetch("/exhibits", {
-        // 1. HTTP 메서드 지정
-        method: "POST",
-        // 2. 헤더에 콘텐츠 타입 명시
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // 3. 데이터를 JSON 문자열로 변환하여 body에 담아 전송
+      const { data } = await apiFetch('/exhibits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData),
+        auth: true,
       });
-
-      console.log("게시글 등록 성공:", data);
-      alert("게시글이 성공적으로 등록되었습니다.");
+      console.log('게시글 등록 성공:', data);
+      alert('게시글이 성공적으로 등록되었습니다.');
     } catch (error) {
-      console.error("게시글 등록 실패:", error);
-      alert("게시글 등록 중 오류가 발생했습니다.");
+      console.error('게시글 등록 실패:', error);
+      alert('게시글 등록 중 오류가 발생했습니다.');
     }
   };
 
-  // ⌘/Ctrl + Enter
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "enter") {
@@ -121,28 +202,17 @@ export default function BoardWrite() {
     onSubmit();
   };
 
-  // react-markdown용 컴포넌트 매핑(필요 시 커스터마이징)
   const mdComponents: Components = {
     a: ({ node, ...props }) => (
       <a {...props} target="_blank" rel="noreferrer" />
     ),
-    img: ({ node, ...props }) => (
-      <img {...props} loading="lazy" decoding="async" />
-    ),
-    // 코드 블록 커스터마이징이 필요하면 아래를 확장하면 됨
-    // code: ({inline, className, children, ...props}) => {
-    //   return inline
-    //     ? <code className={className} {...props}>{children}</code>
-    //     : <pre className={className}><code {...props}>{children}</code></pre>;
-    // },
+    img: CustomImageRenderer,
   };
 
   return (
     <section className="pe-wrap">
       <div className="pe-grid">
-        {/* Left: Editor */}
         <form onSubmit={handleSubmit} className="pe-form">
-          {/* Title */}
           <div className="pe-field">
             <Label htmlFor="post-title" className="pe-label">
               Title
@@ -151,15 +221,11 @@ export default function BoardWrite() {
               id="post-title"
               type="text"
               value={title}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setTitle(e.target.value)
-              }
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your post title..."
               className="pe-input"
             />
           </div>
-
-          {/* Content */}
           <div className="pe-field">
             <Label htmlFor="post-body" className="pe-label pe-label--secondary">
               Content (Markdown)
@@ -169,30 +235,11 @@ export default function BoardWrite() {
                 id="post-body"
                 ref={textareaRef}
                 value={content}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                  setContent(e.target.value)
-                }
+                onChange={(e) => setContent(e.target.value)}
                 onPaste={onPaste}
                 onDrop={onDrop}
                 onDragOver={onDragOver}
-                placeholder={`# Start writing your post here...
-
-Write your content in Markdown. You can use:
-
-- **Bold text**
-- *Italic text*
-- [Links](https://example.com)
-- \`inline code\`
-
-\`\`\`javascript
-// Code blocks
-console.log('Hello, world!');
-\`\`\`
-
-> Blockquotes for emphasis
-
-- List items
-- More items`}
+                placeholder={`# Start writing your post here...`}
                 className="pe-textarea"
               />
               <p className="pe-hint">
@@ -200,8 +247,6 @@ console.log('Hello, world!');
               </p>
             </div>
           </div>
-
-          {/* Submit */}
           <Button
             type="submit"
             className="pe-button"
@@ -210,8 +255,6 @@ console.log('Hello, world!');
             포스트 작성
           </Button>
         </form>
-
-        {/* Right: Preview */}
         <aside className="pe-preview" aria-label="Preview">
           <div className="pe-preview-card">
             <div className="pe-preview-head">Preview</div>
@@ -219,7 +262,6 @@ console.log('Hello, world!');
               <ReactMarkdown
                 remarkPlugins={[remarkGfm, remarkBreaks]}
                 components={mdComponents}
-                urlTransform={defaultUrlTransform}
               >
                 {deferredContent || ""}
               </ReactMarkdown>
