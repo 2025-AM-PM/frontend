@@ -4,13 +4,11 @@ import React, {
   useState,
   useDeferredValue,
   FC,
-  ComponentProps, // [수정] React에서 ComponentProps를 직접 가져옵니다.
+  ComponentProps,
 } from "react";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
-// [수정] 문제가 되는 import 문을 완전히 삭제합니다.
-// import { ImgProps } from "react-markdown/lib/ast-to-react";
 
 import { Button } from "../components/button";
 import { Input } from "../components/input";
@@ -20,16 +18,20 @@ import { uploadImageRemote } from "../lib/uploadRemote";
 import { apiFetch } from "../api/client";
 import "../styles/post-editor.css";
 
+// 이미지 url 만료시 재요청 받는 기능 추가해야 함.
 const urlCache = new Map<string, string>();
 
 // [수정] ImgProps 대신 React의 내장 타입인 ComponentProps<'img'>를 사용합니다.
-// 이렇게 하면 react-markdown 버전이 바뀌어도 코드가 깨지지 않습니다.
-const CustomImageRenderer: FC<ComponentProps<'img'>> = ({ src, alt, ...props }) => {
+// 이렇게 하면 react-markdown 버전이 바뀌어도 코드가 깨지지 않습니다
+const CustomImageRenderer: FC<ComponentProps<"img">> = ({
+  src,
+  alt,
+  ...props
+}) => {
   const [actualSrc, setActualSrc] = useState<string | undefined>(src);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    
     if (src && src.startsWith("exhibits/images/")) {
       if (urlCache.has(src)) {
         setActualSrc(urlCache.get(src));
@@ -39,21 +41,25 @@ const CustomImageRenderer: FC<ComponentProps<'img'>> = ({ src, alt, ...props }) 
       const fetchPresignedUrl = async () => {
         setIsLoading(true);
         try {
-          
-          const { data: presignedInfo } = await apiFetch<{ presignedUrl: string }>(
-            `/files/download?fileId=${encodeURIComponent(src)}`,
-            {
-              method: 'GET',
-              auth: true,
-            }
-          );
+          const { data: presignedInfo } = await apiFetch<{
+            presignedUrl: string;
+          }>(`/files/download?fileId=${encodeURIComponent(src)}`, {
+            method: "GET",
+            auth: true,
+          });
           if (presignedInfo) {
-            console.log("useEffect 실행됨. preSinged :", presignedInfo.presignedUrl);
+            console.log(
+              "useEffect 실행됨. preSinged :",
+              presignedInfo.presignedUrl
+            );
             urlCache.set(src, presignedInfo.presignedUrl);
             setActualSrc(presignedInfo.presignedUrl);
           }
         } catch (error) {
-          console.error(`'${src}'의 Presigned URL을 가져오지 못했습니다.`, error);
+          console.error(
+            `'${src}'의 Presigned URL을 가져오지 못했습니다.`,
+            error
+          );
           setActualSrc(src);
         } finally {
           setIsLoading(false);
@@ -119,10 +125,13 @@ export default function BoardWrite() {
     for (const f of Array.from(files)) {
       if (!f.type.startsWith("image/")) continue;
       try {
-        const { data: uploadInfo } = await apiFetch<UploadUrlResponse>('/files/upload', {
-          method: 'GET',
-          auth: true,
-        });
+        const { data: uploadInfo } = await apiFetch<UploadUrlResponse>(
+          "/files/upload",
+          {
+            method: "GET",
+            auth: true,
+          }
+        );
 
         if (!uploadInfo) {
           throw new Error("서버로부터 업로드 정보를 받지 못했습니다.");
@@ -136,8 +145,8 @@ export default function BoardWrite() {
         await uploadImageRemote(presignedUrl, f);
         console.log("성공적으로 파일을 업로드 했습니다.");
       } catch (error) {
-        console.error('파일 업로드 실패:', error);
-        alert('파일 업로드 중 문제가 생겼습니다.');
+        console.error("파일 업로드 실패:", error);
+        alert("파일 업로드 중 문제가 생겼습니다.");
       }
     }
   };
@@ -160,7 +169,8 @@ export default function BoardWrite() {
     e.preventDefault();
     if (e.dataTransfer?.files?.length) await handleFiles(e.dataTransfer.files);
   };
-  const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) => e.preventDefault();
+  const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) =>
+    e.preventDefault();
 
   const onSubmit = async () => {
     if (!title.trim() || !content.trim()) return;
@@ -168,21 +178,21 @@ export default function BoardWrite() {
     const postData = {
       title: title,
       description: content,
-      exhibitUrl: ""
+      exhibitUrl: "",
     };
 
     try {
-      const { data } = await apiFetch('/exhibits', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const { data } = await apiFetch("/exhibits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),
         auth: true,
       });
-      console.log('게시글 등록 성공:', data);
-      alert('게시글이 성공적으로 등록되었습니다.');
+      console.log("게시글 등록 성공:", data);
+      alert("게시글이 성공적으로 등록되었습니다.");
     } catch (error) {
-      console.error('게시글 등록 실패:', error);
-      alert('게시글 등록 중 오류가 발생했습니다.');
+      console.error("게시글 등록 실패:", error);
+      alert("게시글 등록 중 오류가 발생했습니다.");
     }
   };
 
