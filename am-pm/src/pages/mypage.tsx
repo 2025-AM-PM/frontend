@@ -39,7 +39,7 @@ export default function Mypage() {
         return;
       }
 
-      const ORIGIN = "https://ampm-test.duckdns.org";
+      const ORIGIN = "http://localhost:8080";
       const PROFILE_URL = `${ORIGIN}/api/student/mypage`;
 
       try {
@@ -115,18 +115,15 @@ export default function Mypage() {
     // const CHANGE_PASSWORD_URL = `${ORIGIN}/api/student/modify/password`;
 
     try {
-      const { status } = await apiFetch("/student/modify/password", {
+      const { status } = await apiFetch("/students/modify/password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           rawCurrentPassword: passwords.currentPassword,
           newPassword: passwords.newPassword,
           newPasswordConfirm: passwords.confirmPassword,
         }),
       });
-
       if (status !== 200) {
         throw new Error(`오류가 발생했습니다. 다시 시도해주세요`);
       }
@@ -150,7 +147,7 @@ export default function Mypage() {
     }
 
     const ORIGIN = "https://ampm-test.duckdns.org";
-    const ISSUE_CODE_URL = `${ORIGIN}/api/student/issue`;
+    const ISSUE_CODE_URL = `${ORIGIN}/students/issue`;
 
     try {
       const res = await fetch(ISSUE_CODE_URL, {
@@ -196,7 +193,7 @@ export default function Mypage() {
       };
     };
     try {
-      const { status, data } = await apiFetch<info>("/student/info", {
+      const { status, data } = await apiFetch<info>("/students/info", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ solvedAcNickname: inputBaekjoonId }),

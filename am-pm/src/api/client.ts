@@ -200,3 +200,120 @@ export async function deletePoll(pollId: number): Promise<void> {
     method: "DELETE",
   });
 }
+
+// Admin API functions
+export interface SignupApplicationResponse {
+  id: number;
+  studentNumber: string;
+  studentName: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  createdAt: string;
+  approvedAt?: string;
+  rejectedAt?: string;
+}
+
+export interface StudentResponse {
+  id: number;
+  studentNumber: string;
+  studentName: string;
+  role: "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN";
+}
+
+export interface AllStudentResponse {
+  students: StudentResponse[];
+  totalCount: number;
+}
+
+export interface SignupApplicationProcessResponse {
+  total: number;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+}
+
+// Get signup applications
+export async function getSignupApplications(
+  status: "PENDING" | "APPROVED" | "REJECTED"
+): Promise<SignupApplicationResponse[]> {
+  const response = await apiFetch<SignupApplicationResponse[]>(
+    `/admin/signup?status=${status}`,
+    {
+      auth: true,
+    }
+  );
+
+  return response.data || [];
+}
+
+// Approve signup applications
+export async function approveSignupApplications(
+  applicationIds: number[]
+): Promise<SignupApplicationProcessResponse> {
+  const response = await apiFetch<SignupApplicationProcessResponse>(
+    "/admin/signup/approve",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ applicationIds }),
+      auth: true,
+    }
+  );
+
+  return response.data!;
+}
+
+// Reject signup applications
+export async function rejectSignupApplications(
+  applicationIds: number[]
+): Promise<SignupApplicationProcessResponse> {
+  const response = await apiFetch<SignupApplicationProcessResponse>(
+    "/admin/signup/reject",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ applicationIds }),
+      auth: true,
+    }
+  );
+
+  return response.data!;
+}
+
+// Get all students
+export async function getAllStudents(): Promise<AllStudentResponse> {
+  const response = await apiFetch<AllStudentResponse>("/admin/students", {
+    auth: true,
+  });
+
+  return response.data!;
+}
+
+// Update student role
+export async function updateStudentRole(
+  studentId: number,
+  role: "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN"
+): Promise<StudentResponse> {
+  const response = await apiFetch<StudentResponse>(
+    `/admin/students/${studentId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ role }),
+      auth: true,
+    }
+  );
+
+  return response.data!;
+}
+
+// Delete student
+export async function deleteStudent(studentId: number): Promise<void> {
+  await apiFetch<void>(`/admin/students/${studentId}`, {
+    method: "DELETE",
+    auth: true,
+  });
+}

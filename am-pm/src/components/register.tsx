@@ -34,9 +34,9 @@ export default function RegisterPage() {
         studentPassword,
       });
 
-      if (status === 201) {
-        alert("회원가입 성공");
-        navigate("/login");
+      if (status === 200) {
+        alert("신청 완료되었습니다. 관리자의 승인이 필요합니다.");
+        navigate("/");
         return;
       }
 
@@ -219,7 +219,7 @@ export default function RegisterPage() {
 
           {/* Submit */}
           <button type="submit" className="btn btn-primary">
-            회원가입
+            회원가입 신청
           </button>
         </form>
       </section>
