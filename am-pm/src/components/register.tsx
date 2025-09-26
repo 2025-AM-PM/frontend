@@ -28,24 +28,33 @@ export default function RegisterPage() {
       setLoading(true);
       setErr(null);
 
+      console.log("회원가입 요청:", { studentName, studentNumber });
+
       const status = await register({
         studentName,
         studentNumber,
         studentPassword,
       });
 
-      if (status === 200) {
+      console.log("회원가입 응답 상태:", status);
+
+      if (status === 200 || status === 201) {
         alert("신청 완료되었습니다. 관리자의 승인이 필요합니다.");
-        navigate("/");
+        // 강제 페이지 이동 (히스토리 교체)
+        window.location.replace("/");
         return;
       }
 
-      setErr(`회원가입 실패`);
+      console.log("회원가입 실패 - 예상치 못한 상태 코드:", status);
+      setErr(`회원가입 실패 (상태 코드: ${status})`);
     } catch (e: any) {
+      console.error("회원가입 에러:", e);
       if (e?.status === 500) {
         alert("이미 가입된 사용자입니다. 관리자에게 문의하세요");
+      } else if (e?.status === 400) {
+        alert("입력 정보를 다시 확인해주세요.");
       } else {
-        setErr(e?.message || "회원가입 실패");
+        setErr(e?.message || `회원가입 실패 (${e?.status || '알 수 없는 오류'})`);
       }
     } finally {
       setLoading(false);
