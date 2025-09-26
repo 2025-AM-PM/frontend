@@ -13,6 +13,7 @@ import PollList from "./components/pollList";
 import PollCreate from "./components/pollCreate";
 import Mypage from "./pages/mypage";
 import PostDetail from "./components/postDetail";
+import AdminPage from "./pages/AdminPage";
 
 function AppInner() {
   const { setUser } = useAuth();
@@ -46,6 +47,7 @@ function AppInner() {
       />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/mypage" element={<Mypage />} />
+      <Route path="/admin" element={<AdminPage />} />
 
     </Routes>
   );
