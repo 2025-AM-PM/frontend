@@ -1,6 +1,5 @@
 // src/lib/uploadRemote.ts
 const ENDPOINT = process.env.REACT_APP_UPLOAD_ENDPOINT || "/api/uploads";
-// const ENDPOINT = "http://210.117.175.69:3000/api/uploads";
 const API_KEY = process.env.REACT_APP_UPLOAD_API_KEY;
 
 export async function uploadImageRemote(file: File): Promise<string> {
