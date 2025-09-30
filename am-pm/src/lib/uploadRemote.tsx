@@ -5,19 +5,22 @@
  * @param file - 업로드할 File 객체
  * @returns {Promise<boolean>} 업로드 성공 여부
  */
-export async function uploadImageRemote(presignedUrl: string, file: File): Promise<boolean> {
+export async function uploadImageRemote(
+  presignedUrl: string,
+  file: File
+): Promise<boolean> {
   console.log(`'${file.name}' 파일 업로드를 시작합니다...`);
 
   console.log("서버로부터 받은 Presigned URL:", presignedUrl);
 
   try {
     const response = await fetch(presignedUrl, {
-      method: 'PUT',
+      method: "PUT",
       // ❗ [수정 1] FormData 대신 파일 객체를 body에 직접 전달합니다.
       body: file,
       // ❗ [수정 2] 파일의 실제 MIME 타입을 Content-Type 헤더로 설정합니다.
       headers: {
-        'Content-Type': file.type,
+        "Content-Type": file.type,
       },
     });
 
@@ -35,7 +38,7 @@ export async function uploadImageRemote(presignedUrl: string, file: File): Promi
     if (error instanceof Error) {
       console.error(`❌ 파일 업로드 중 오류 발생: ${error.message}`);
     } else {
-      console.error('❌ 알 수 없는 오류 발생:', error);
+      console.error("❌ 알 수 없는 오류 발생:", error);
     }
     return false;
   }

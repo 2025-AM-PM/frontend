@@ -17,7 +17,10 @@ export interface User {
   studentName: string | null;
   studentTier: string | null;
   studentNumber: string | null;
+  role: string | null;
 }
+
+export type StudentRole = "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN";
 
 // Poll related types
 export interface PollSummaryResponse {

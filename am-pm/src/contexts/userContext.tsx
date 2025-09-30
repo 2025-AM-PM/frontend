@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { User } from "../types";
-import { logout } from "../api/auth";
+import { logout, getCurrentUser } from "../api/auth";
 import {
   getStoredUser,
   setStoredUser,
@@ -44,14 +44,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const reloadUser = async () => {
-    // 지금은 로컬만 사용하므로 토큰 없으면 비우고 종료
+    // 토큰 없으면 비우고 종료
     if (!hasAccessToken()) {
       setUser(null);
       return;
     }
-    // 서버에서 최신 유저를 다시 가져오고 싶다면 여기서 /me 호출을 복원
-    // const me = await fetchMe().catch(() => null);
-    // setUser(me ?? null);
+    // 서버에서 최신 유저 정보 가져오기
+    const me = await getCurrentUser().catch(() => null);
+    setUser(me);
   };
 
   const signOut = async () => {

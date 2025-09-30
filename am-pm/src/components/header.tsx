@@ -82,6 +82,16 @@ function Header() {
                 <li>학교정보</li>
               </ul>
             </li>
+
+            {user && user.role && user.role !== "USER" && (
+              <li
+                className={`nav-item${
+                  location.pathname === "/admin" ? " nav-item-current" : ""
+                }`}
+              >
+                <NavLink to="/admin">관리자</NavLink>
+              </li>
+            )}
           </ul>
         </nav>
 

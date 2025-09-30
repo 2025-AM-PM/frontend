@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom"; // ✨ Link를 추가합니다.
 import "../styles/mypage.css";
+import { useAuth } from "../contexts/userContext";
 import { apiFetch } from "../api/client";
 interface UserProfile {
   name: string;
@@ -32,36 +33,24 @@ export default function Mypage() {
 
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const accessToken = localStorage.getItem("access_token");
-      if (!accessToken) {
-        alert("로그인이 필요합니다.");
-        navigate("/login"); // 4. 토큰이 없으면 alert 후 로그인 페이지로 이동시킵니다.
-        return;
-      }
-
-      const ORIGIN = "https://ampm-test.duckdns.org";
-      const PROFILE_URL = `${ORIGIN}/api/student/mypage`;
-
       try {
-        const res = await fetch(PROFILE_URL, {
+        const { data } = await apiFetch<{
+          studentName: string;
+          studentNumber: string;
+        }>("/student/mypage", {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          auth: true,
         });
 
-        if (!res.ok) {
-          throw new Error("사용자 정보를 불러오는데 실패했습니다.");
+        if (data) {
+          setProfile((prevProfile) => ({
+            ...prevProfile,
+            name: data.studentName,
+            studentId: data.studentNumber,
+            // 참고: /api/student/mypage API는 baekjoonId를 반환하지 않으므로,
+            // 이 값은 다른 API를 통해 업데이트하거나 로그인 시점에 받아와야 합니다.
+          }));
         }
-
-        const data = await res.json();
-        setProfile((prevProfile) => ({
-          ...prevProfile,
-          name: data.studentName,
-          studentId: data.studentNumber,
-          // 참고: /api/student/mypage API는 baekjoonId를 반환하지 않으므로,
-          // 이 값은 다른 API를 통해 업데이트하거나 로그인 시점에 받아와야 합니다.
-        }));
       } catch (err: any) {
         console.error("[fetch user profile failed]", err);
         setProfile({
@@ -111,22 +100,16 @@ export default function Mypage() {
       return;
     }
 
-    // const ORIGIN = "https://ampm-test.duckdns.org";
-    // const CHANGE_PASSWORD_URL = `${ORIGIN}/api/student/modify/password`;
-
     try {
-      const { status } = await apiFetch("/student/modify/password", {
+      const { status } = await apiFetch("/students/modify/password", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           rawCurrentPassword: passwords.currentPassword,
           newPassword: passwords.newPassword,
           newPasswordConfirm: passwords.confirmPassword,
         }),
       });
-
       if (status !== 200) {
         throw new Error(`오류가 발생했습니다. 다시 시도해주세요`);
       }
@@ -142,25 +125,16 @@ export default function Mypage() {
   // 1. 백준 인증 코드 발급 함수
   const handleIssueCode = async () => {
     setIsLoading(true);
-    const accessToken = localStorage.getItem("access_token");
-    if (!accessToken) {
-      alert("로그인이 필요합니다.");
-      setIsLoading(false);
-      return;
-    }
-
-    const ORIGIN = "https://ampm-test.duckdns.org";
-    const ISSUE_CODE_URL = `${ORIGIN}/api/student/issue`;
 
     try {
-      const res = await fetch(ISSUE_CODE_URL, {
+      const { data } = await apiFetch<string>("/students/issue", {
         method: "POST",
-        headers: { Authorization: `Bearer ${accessToken}` },
+        auth: true,
       });
-      if (!res.ok) throw new Error("인증 코드 발급에 실패했습니다.");
 
-      const code = await res.text(); // API가 순수 문자열을 반환
-      setVerificationCode(code);
+      if (data) {
+        setVerificationCode(data);
+      }
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -196,7 +170,7 @@ export default function Mypage() {
       };
     };
     try {
-      const { status, data } = await apiFetch<info>("/student/info", {
+      const { status, data } = await apiFetch<info>("/students/info", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ solvedAcNickname: inputBaekjoonId }),
