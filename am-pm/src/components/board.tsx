@@ -60,7 +60,7 @@ function Board() {
   const boardTitles = {
     studyBoards: "스터디",
     jobBoards: "취업 정보",
-    exhibits: "프로젝트 자랑",
+    exhibits: "학교 공지",
     notices: "공지사항",
   };
 

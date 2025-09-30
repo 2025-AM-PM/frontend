@@ -68,6 +68,20 @@ function Header() {
             >
               <NavLink to="/polls">투표</NavLink>
             </li>
+
+            <li
+              className={`nav-item${
+                location.pathname === "/polls" ? " nav-item-current" : ""
+              }`}
+            >
+              <NavLink to="/boards">게시판</NavLink>
+              <ul>
+                <li>스터디</li>
+                <li>공지사항</li>
+                <li>취업정보</li>
+                <li>학교정보</li>
+              </ul>
+            </li>
           </ul>
         </nav>
 
