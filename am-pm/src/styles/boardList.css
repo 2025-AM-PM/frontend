@@ -9,7 +9,7 @@
 .board-container {
   width: 100%;
   min-height: 100vh;
-  height: 100dvh;
+  height: fit-content;
   background: var(--bg);
   color: var(--ink);
   line-height: 1.5;
@@ -104,7 +104,7 @@
 .post-list {
   max-width: 1200px;
   width: 80%;
-  height: 100%;
+  height: fit-content;
   margin: 0 auto 0;
 }
 
