@@ -128,3 +128,41 @@ export interface PollResultResponse {
   voted: boolean;
   mySelectedOptionIds: number[] | null;
 }
+
+export interface PageData {
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  content: Post[];
+  number: number;
+  numberOfElements: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
+export type SortKey =
+  | "createdAt,desc"
+  | "createdAt,asc"
+  | "views,desc"
+  | "title,asc";
+
+export interface FetchParams {
+  page: number;
+  size: number;
+  sort: SortKey;
+  q: string;
+}
+
+export interface BoardListProps {
+  pageSize?: number;
+  onSelectPost?: (post: Post) => void;
+  /**
+   * 서버 API 연동 시 주입:
+   * - 반환은 백엔드 페이징 응답 형식과 동일해야 함.
+   * - 구현 예시: (p) => fetch(`/api/boards?page=${p.page}&size=${p.size}&sort=${p.sort}&q=${encodeURIComponent(p.q)}`).then(r=>r.json())
+   */
+  fetcher?: (params: FetchParams) => Promise<PageData>;
+  /** 헤더 타이틀 (기본: '게시판') */
+  title?: string;
+}
