@@ -15,13 +15,13 @@ button span {
 }
 
 .loginBtn:hover {
-  background-color: #0071e2;
+  background-color: var(--accent-hover);
 }
 
 .loginBtn {
   margin-right: 2rem;
-  border: 2px solid #24b4fb;
-  background-color: #24b4fb;
+  border: 1px var(--border);
+  background-color: var(--accent);
   border-radius: 0.9em;
   cursor: pointer;
   padding: 0.8em 1.2em 0.8em 1em;
