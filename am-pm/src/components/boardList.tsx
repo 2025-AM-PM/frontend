@@ -368,7 +368,7 @@ const BoardList: React.FC<BoardListProps> = ({
   };
 
   return (
-    <div className="board-container">
+    <div className="boardList-container">
       {/* Header */}
       <div className="board-header">
         <h1 className="board-title">{title}</h1>

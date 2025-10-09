@@ -6,7 +6,7 @@
 }
 
 /* Container */
-.board-container {
+.boardList-container {
   width: 100%;
   min-height: 100vh;
   height: fit-content;
@@ -28,6 +28,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
+  margin-bottom: 5rem;
 }
 
 .board-title {
@@ -303,6 +304,7 @@
 }
 
 .search-bar {
+  margin-top: 1rem;
   display: flex;
   gap: 12px;
 }
