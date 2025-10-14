@@ -1,12 +1,3 @@
-:root {
-  --accent: #e0534e;
-  --accent-hover: #cc4943;
-  --ink: #e7ecf3;
-  --muted: #9aa4b2;
-  --surface: #171b22;
-  --border: #2a303a;
-}
-
 /* base */
 .btn {
   display: inline-flex;

@@ -1,0 +1,763 @@
+/* PollList Component Styles - Dark Theme */
+
+/* ============================================
+   CSS Variables & Global Styles
+   ============================================ */
+.poll-container {
+  --primary-bg: #1a1a1a;
+  --secondary-bg: #2a2a2a;
+  --accent-bg: #333333;
+  --border-color: #404040;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #b0b0b0;
+  --text-disabled: #888888;
+  --accent-primary: #22c55e;
+  --accent-secondary: #4a90e2;
+  --accent-danger: #ef4444;
+  --accent-warning: #f59e0b;
+  --border-radius: 8px;
+  --border-radius-large: 12px;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --transition: all 0.3s ease;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+  font-family: "Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, sans-serif;
+  background-color: var(--primary-bg);
+  min-height: 100vh;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ============================================
+   Header Section
+   ============================================ */
+.poll-header {
+  margin-bottom: var(--spacing-xl);
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-md);
+}
+
+.poll-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.025em;
+}
+
+.create-poll-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--accent-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.create-poll-btn:hover {
+  background-color: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================
+   Search & Filter Section
+   ============================================ */
+.poll-filters {
+  margin-bottom: var(--spacing-xl);
+}
+
+.search-form {
+  margin-bottom: var(--spacing-md);
+}
+
+.search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: 400px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem var(--spacing-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  background-color: var(--secondary-bg);
+  color: var(--text-secondary);
+  transition: var(--transition);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--accent-secondary);
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.search-input.searching {
+  border-color: var(--accent-primary);
+  padding-right: 3rem;
+}
+
+.search-input::placeholder {
+  color: var(--text-disabled);
+}
+
+.search-spinner {
+  position: absolute;
+  right: 0.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-top: 2px solid var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Filter Controls */
+.filter-row {
+  display: flex;
+  gap: var(--spacing-xl);
+  align-items: center;
+  margin: var(--spacing-md) 0;
+  flex-wrap: wrap;
+}
+
+.filter-controls {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  margin-top: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-right: var(--spacing-sm);
+  white-space: nowrap;
+}
+
+/* Filter Buttons */
+.status-filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.filter-button {
+  padding: 0.5rem var(--spacing-md);
+  border: 2px solid var(--border-color);
+  background-color: var(--secondary-bg);
+  color: var(--text-muted);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filter-button:hover {
+  border-color: var(--accent-secondary);
+  color: var(--accent-secondary);
+  transform: translateY(-1px);
+}
+
+.filter-button.active {
+  background-color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  color: white;
+  box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+/* Select Inputs */
+.sort-select,
+.date-select {
+  padding: 0.5rem var(--spacing-md);
+  background-color: var(--secondary-bg);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: var(--transition);
+  min-width: 140px;
+}
+
+.sort-select:focus,
+.date-select:focus {
+  outline: none;
+  border-color: var(--accent-secondary);
+}
+
+/* Control Buttons */
+.advanced-filter-toggle,
+.clear-filters-btn {
+  padding: 0.5rem var(--spacing-md);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.advanced-filter-toggle {
+  background-color: var(--secondary-bg);
+  color: var(--text-secondary);
+}
+
+.advanced-filter-toggle:hover {
+  background-color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+  color: white;
+}
+
+.clear-filters-btn {
+  background-color: var(--accent-danger);
+  border-color: var(--accent-danger);
+  color: white;
+}
+
+.clear-filters-btn:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   Advanced Filters
+   ============================================ */
+.advanced-filters {
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-large);
+  padding: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.advanced-filters h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.attribute-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.attribute-filter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.radio-group {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.radio-group label:hover {
+  color: var(--text-secondary);
+}
+
+.radio-group input[type="radio"] {
+  accent-color: var(--accent-secondary);
+  transform: scale(1.1);
+}
+
+/* ============================================
+   Filter Status Display
+   ============================================ */
+.filter-status {
+  margin-bottom: var(--spacing-md);
+}
+
+.active-filters {
+  background-color: var(--secondary-bg);
+  padding: 0.75rem var(--spacing-md);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+}
+
+.filter-count {
+  color: var(--accent-secondary);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* ============================================
+   Poll List Section
+   ============================================ */
+.poll-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  position: relative;
+}
+
+.poll-list.loading {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.search-overlay,
+.filter-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-radius: var(--border-radius-large);
+  backdrop-filter: blur(4px);
+  animation: overlayFadeIn 0.2s ease-out;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(4px);
+  }
+}
+
+.search-loading,
+.filter-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.filter-loading {
+  color: var(--accent-secondary);
+}
+
+.spinner.large {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color);
+  border-top: 3px solid var(--accent-primary);
+}
+
+/* ============================================
+   Poll Item Cards
+   ============================================ */
+.poll-item {
+  background: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-large);
+  padding: var(--spacing-lg);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.poll-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.poll-item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-secondary);
+}
+
+.poll-item:hover::before {
+  transform: scaleX(1);
+}
+
+.poll-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-md);
+}
+
+.poll-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.status-badge {
+  padding: var(--spacing-xs) 0.75rem;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.status-badge.open {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-badge.closed {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Poll Information */
+.poll-info {
+  margin-bottom: var(--spacing-lg);
+}
+
+.poll-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.poll-detail {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.poll-tag {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: var(--border-color);
+  color: var(--text-secondary);
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.poll-dates {
+  color: var(--text-disabled);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.poll-dates div {
+  margin-bottom: 2px;
+}
+
+/* ============================================
+   Poll Action Buttons
+   ============================================ */
+.poll-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.poll-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+}
+
+.view-button {
+  background-color: #6b7280;
+  color: white;
+}
+
+.view-button:hover {
+  background-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+.vote-button {
+  background-color: var(--accent-primary);
+  color: white;
+}
+
+.vote-button:hover {
+  background-color: #16a34a;
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   Pagination
+   ============================================ */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-top: calc(var(--spacing-xl) * 1.5);
+}
+
+.pagination-button {
+  padding: 0.75rem var(--spacing-lg);
+  background-color: var(--accent-secondary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  font-weight: 500;
+  min-width: 80px;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #357abd;
+  transform: translateY(-1px);
+}
+
+.pagination-button:disabled {
+  background-color: var(--border-color);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.page-info {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 0 var(--spacing-md);
+}
+
+/* ============================================
+   Status Messages
+   ============================================ */
+.poll-loading,
+.poll-error,
+.no-polls {
+  text-align: center;
+  padding: calc(var(--spacing-xl) * 2);
+  font-size: 1.1rem;
+  border-radius: var(--border-radius-large);
+}
+
+.poll-loading {
+  color: var(--accent-secondary);
+  background-color: var(--secondary-bg);
+}
+
+.poll-error {
+  color: #f87171;
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.no-polls {
+  color: var(--text-muted);
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 768px) {
+  .poll-container {
+    padding: var(--spacing-md);
+  }
+
+  .poll-header h1 {
+    font-size: 2rem;
+  }
+
+  .header-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .create-poll-btn {
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-md);
+  }
+
+  .status-filters,
+  .sort-filters,
+  .date-filters {
+    width: 100%;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .attribute-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .radio-group {
+    flex-wrap: wrap;
+  }
+
+  .search-input-wrapper {
+    max-width: none;
+  }
+
+  .poll-item-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+
+  .poll-actions {
+    flex-direction: column;
+  }
+
+  .poll-button {
+    width: 100%;
+  }
+
+  .pagination {
+    gap: var(--spacing-sm);
+  }
+
+  .pagination-button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.85rem;
+    min-width: 60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .poll-container {
+    padding: var(--spacing-sm);
+  }
+
+  .poll-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .poll-item {
+    padding: var(--spacing-md);
+  }
+
+  .poll-title {
+    font-size: 1.1rem;
+  }
+
+  .poll-actions {
+    gap: var(--spacing-sm);
+  }
+}
+
+/* ============================================
+   Accessibility & Focus States
+   ============================================ */
+.poll-button:focus-visible,
+.filter-button:focus-visible,
+.pagination-button:focus-visible,
+.create-poll-btn:focus-visible {
+  outline: 2px solid var(--accent-secondary);
+  outline-offset: 2px;
+}
+
+.search-input:focus-visible {
+  outline: 2px solid var(--accent-secondary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

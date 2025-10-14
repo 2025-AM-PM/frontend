@@ -24,4 +24,16 @@ body {
   --muted: #9aa4b2;
   --accent: #e0534e;
   --accent-hover: #cc4943;
+  --input-bg: #0f141a;
+  --placeholder: #7c8a97;
+  --title-hover: #d7eeff;
+  --badge-bg: rgba(60, 160, 231, 0.15);
 }
+
+/* :root {
+  --bg: #12161c;
+  --panel: rgba(18, 22, 28, 0.85);
+  --panel-solid: #161b22;
+  --hover: rgba(60, 160, 231, 0.08);
+  --danger: #ff6b6b;
+} */
