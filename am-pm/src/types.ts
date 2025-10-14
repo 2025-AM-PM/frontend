@@ -7,6 +7,15 @@ export interface Post {
   author: string;
 }
 
+export interface PostDetail {
+  title?: string;
+  author?: string;
+  createdAt?: string;
+  views?: number;
+  likes?: number;
+  markdown: string;
+}
+
 export interface MiniBoardProps {
   boardTitle: string;
   posts: Post[];

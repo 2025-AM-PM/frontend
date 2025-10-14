@@ -6,15 +6,7 @@ import "../styles/post-detail.css";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Header from "./header";
-
-type Post = {
-  title: string;
-  author: string;
-  createdAt: string;
-  views: number;
-  likes: number;
-  markdown: string;
-};
+import { PostDetail as Post } from "../types";
 
 // ── 목데이터 (이미지 포함돼 있어도 아래 img 컴포넌트에서 무시됨)
 const MOCK_MD = `# 알고리즘 스터디 운영 회고
@@ -139,7 +131,7 @@ export default function PostDetail() {
           <div className="pd-meta">
             <span className="pd-meta__item">작성자: {post.author} </span>
             <span className="pd-meta__item">
-              작성날짜: {formatDate(post.createdAt)}
+              작성날짜: {formatDate(post.createdAt ? post.createdAt : "")}
             </span>
             <span className="pd-meta__item">조회수: {post.views}</span>
           </div>
