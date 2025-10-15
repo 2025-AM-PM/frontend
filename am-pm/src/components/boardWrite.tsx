@@ -214,7 +214,7 @@ export default function BoardWrite() {
 
   const mdComponents: Components = {
     a: ({ node, ...props }) => (
-      <a {...props} target="_blank" rel="noreferrer" />
+      <a {...props} target="_blank" rel="noreferrer" aria-label="상세보기" />
     ),
     img: CustomImageRenderer,
   };

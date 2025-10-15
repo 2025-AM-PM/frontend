@@ -101,7 +101,7 @@ export default function PostDetail() {
     code: CodeBlock,
     img: MdImage, // ⬅️ 이 줄이 핵심
     a: ({ node, ...props }) => (
-      <a {...props} target="_blank" rel="noreferrer" />
+      <a {...props} target="_blank" rel="noreferrer" aria-label="상세보기" />
     ),
   };
 

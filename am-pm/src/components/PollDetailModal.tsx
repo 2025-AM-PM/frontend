@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   PollDetailResponse,
   PollResultResponse,
@@ -39,18 +39,13 @@ function PollDetailModal({
     null
   );
 
-  useEffect(() => {
-    fetchPollDetail();
-  }, [pollId]);
-
-  const fetchPollDetail = async () => {
+  const fetchPollDetail = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const pollData = await getPollDetail(pollId);
       setPoll(pollData);
 
-      // 투표 종료된 경우에만 자동으로 결과 보기
       if (pollData.status === "CLOSED") {
         try {
           const resultsData = await getPollResults(pollId);
@@ -61,7 +56,6 @@ function PollDetailModal({
         }
       }
 
-      // 이미 선택한 옵션들을 설정
       setSelectedOptions(pollData.mySelectedOptionIds || []);
     } catch (err) {
       setError(
@@ -70,7 +64,11 @@ function PollDetailModal({
     } finally {
       setLoading(false);
     }
-  };
+  }, [pollId]); // ← 실제로 쓰는 값만
+
+  useEffect(() => {
+    fetchPollDetail();
+  }, [fetchPollDetail]);
 
   const handleOptionSelect = (optionId: number) => {
     if (!poll || poll.status !== "OPEN") return;

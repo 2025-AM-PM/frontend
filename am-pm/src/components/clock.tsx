@@ -22,7 +22,7 @@ function formatClock(now: Date) {
 
 export default function Clock() {
   const [nowMs, setNowMs] = useState<number>(Date.now());
-  const [targetMs, setTargetMs] = useState<number | null>(() => {
+  const [targetMs] = useState<number | null>(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     return saved ? new Date(saved).getTime() : null;
   });

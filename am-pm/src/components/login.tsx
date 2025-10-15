@@ -14,7 +14,7 @@ export default function LoginPage({
   const [studentNumber, setStudentNumber] = useState("");
   const [studentPassword, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [, setErr] = useState<string | null>(null);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

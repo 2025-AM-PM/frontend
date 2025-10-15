@@ -3,13 +3,13 @@ import { useState } from "react";
 
 const onSubmit = () => {};
 
-const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
-  onSubmit();
-};
+// const handleSubmit = (e: React.FormEvent) => {
+//   e.preventDefault();
+//   onSubmit();
+// };
 
 export default function Prove() {
-  const [url, setUrl] = useState("");
+  const [url] = useState("");
 
   return (
     <div className="prove-main">

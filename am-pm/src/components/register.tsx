@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import { register } from "../api/auth";
 
@@ -10,10 +9,8 @@ export default function RegisterPage() {
   const [studentPassword, setPassword] = useState("");
   const [reStudentPassword, setRePassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [, setErr] = useState<string | null>(null);
   const [studentName, setStudentName] = useState("");
-
-  const navigate = useNavigate();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,7 +51,9 @@ export default function RegisterPage() {
       } else if (e?.status === 400) {
         alert("입력 정보를 다시 확인해주세요.");
       } else {
-        setErr(e?.message || `회원가입 실패 (${e?.status || '알 수 없는 오류'})`);
+        setErr(
+          e?.message || `회원가입 실패 (${e?.status || "알 수 없는 오류"})`
+        );
       }
     } finally {
       setLoading(false);
