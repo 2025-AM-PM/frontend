@@ -49,7 +49,7 @@ export async function login(req: LoginReq): Promise<User> {
 
 export async function register(req: RegisterReq): Promise<number> {
   const { status } = await apiFetch<unknown>("/signup", {
-    method: "POST",
+    method: "OPTIONS",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
   });
@@ -69,7 +69,7 @@ export async function getCurrentUser(): Promise<User | null> {
       method: "GET",
       auth: true,
     });
-    
+
     if (!data) return null;
 
     const user: User = {
@@ -79,7 +79,7 @@ export async function getCurrentUser(): Promise<User | null> {
       studentTier: data.studentTier?.toString() || null,
       role: data.role || null,
     };
-    
+
     setStoredUser<User>(user);
     return user;
   } catch (error) {

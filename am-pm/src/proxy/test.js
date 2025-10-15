@@ -1,5 +1,5 @@
 const TARGET_URL =
-  process.env.TARGET_URL || "https://ampm-test.duckdns.org/api/student/signup"; // 필요시 http로 바꿔 테스트
+  process.env.TARGET_URL || "http://ampmjbnu.tplinkdns.com/api/students/login"; // 필요시 http로 바꿔 테스트
 const DEFAULT_TIMEOUT_MS = Number(process.env.TIMEOUT_MS || 8000); // 아주 단순한 argv 파서
 const args = Object.fromEntries(
   process.argv.slice(2).map((a) => {
@@ -22,7 +22,7 @@ async function fetchPost(username, password, name) {
     const payload = {
       studentNumber: username,
       studentPassword: password,
-      studentName: name,
+      // studentName: name,
     };
     const res = await fetch(TARGET_URL, {
       method: "POST",

@@ -11,7 +11,6 @@ import {
 } from "../types";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
-console.log("API_BASE", API_BASE);
 
 export type ApiResponse<T> = {
   status: number;
@@ -52,7 +51,7 @@ export async function apiFetch<T>(
   const credentials: RequestCredentials =
     isMutating || init.withCredentials ? "include" : "omit";
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`/api${path}`, {
     ...init,
     headers,
     credentials,
