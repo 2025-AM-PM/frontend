@@ -46,7 +46,7 @@ jobs:
           test -n "$(ls -A out)" || (echo "No dist/ or build/ contents!" && exit 1)
 
       - name: Rsync to /var/www/ampm-frontend (in-place)
-        uses: burnett01/rsync-deployments@6.0
+        uses: burnett01/rsync-deployments@7.1.0
         with:
           switches: -avzr --delete
           path: out/
