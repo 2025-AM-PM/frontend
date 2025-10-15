@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./am-pm
+        working-directory: am-pm   # ./ 없어도 됨
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,25 +24,28 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          # ↓ 락파일이 서브폴더에 있으니 경로 지정
+          cache-dependency-path: |
+            am-pm/package-lock.json
+            am-pm/npm-shrinkwrap.json
+            am-pm/yarn.lock
 
       - name: Install deps
         run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f yarn.lock ]; then
+            npm i -g yarn && yarn install --frozen-lockfile
+          else
+            npm install
+          fi
 
       - name: Build
         env:
           NODE_OPTIONS: --max_old_space_size=4096
-          # 필요 시 빌드용 환경변수 주입 (둘 중 쓰는 것만 켜기)
-          # VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
-          # REACT_APP_API_BASE: ${{ secrets.REACT_APP_API_BASE }}
-        run: |
-          if npm run | grep -qE '^\s*build'; then
-            npm run build
-          else
-            echo "No build script"; exit 1
-          fi
+        run: npm run build
 
-      - name: Prepare artifact (dist or build)
+      - name: Prepare artifact
         run: |
           mkdir -p out
           [ -d dist ]  && cp -r dist/*  out/ || true
@@ -50,10 +53,10 @@ jobs:
           test -n "$(ls -A out)" || (echo "No dist/ or build/ contents!" && exit 1)
 
       - name: Rsync to /var/www/ampm-frontend (in-place)
-        uses: burnett01/rsync-deployments@7.1.0
+        uses: burnett01/rsync-deployments@7.0.2
         with:
           switches: -avzr --delete
-          path: am-pm/out/
+          path: am-pm/out/                 # uses: 액션은 루트 기준 경로
           remote_path: /var/www/ampm-frontend/
           remote_host: ${{ secrets.SSH_HOST }}
           remote_user: ${{ secrets.SSH_USER }}
@@ -69,7 +72,8 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            sudo chown -R root:www-data /var/www/ampm-frontend
+            # 배포 계정이 쓰게 소유자 유지 권장(필요시 사용자명 교체)
+            sudo chown -R ${USER}:www-data /var/www/ampm-frontend
             sudo find /var/www/ampm-frontend -type d -exec chmod 750 {} \;
             sudo find /var/www/ampm-frontend -type f -exec chmod 640 {} \;
             sudo nginx -t && sudo systemctl reload nginx
