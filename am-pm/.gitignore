@@ -26,7 +26,6 @@ yarn-error.log*
 .env.development
 .env.production
 .env
-.package-lock.json
 
 # Temporary files
 image.png
