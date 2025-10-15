@@ -26,7 +26,8 @@ jobs:
           cache: npm
 
       - name: Install deps
-        run: npm ci
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
       - name: Build
         env:
@@ -52,7 +53,7 @@ jobs:
         uses: burnett01/rsync-deployments@7.1.0
         with:
           switches: -avzr --delete
-          path: out/
+          path: am-pm/out/
           remote_path: /var/www/ampm-frontend/
           remote_host: ${{ secrets.SSH_HOST }}
           remote_user: ${{ secrets.SSH_USER }}
