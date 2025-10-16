@@ -1,7 +1,7 @@
 import "../styles/prove.css";
 import { useState } from "react";
 
-const onSubmit = () => {};
+// const onSubmit = () => {};
 
 // const handleSubmit = (e: React.FormEvent) => {
 //   e.preventDefault();

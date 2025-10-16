@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react"; // [CHANGED]
 import { useNavigate } from "react-router-dom";
-import {
-  PollSummaryResponse,
-  PagePollSummaryResponse,
-  PollSearchParam,
-} from "../types";
+import { PollSummaryResponse, PollSearchParam } from "../types";
 import { getPolls } from "../api/client";
 import { useAuth } from "../contexts/userContext";
 import PollDetailModal from "./PollDetailModal";
@@ -43,113 +39,137 @@ function PollList() {
   // 모달 상태
   const [selectedPollId, setSelectedPollId] = useState<number | null>(null);
 
-  const fetchPolls = async (
-    loadingType: "initial" | "search" | "filter" = "initial"
-  ) => {
-    try {
-      if (loadingType === "search") {
-        setSearching(true);
-      } else if (loadingType === "filter") {
-        setFilterLoading(true);
-      } else {
-        setLoading(true);
-      }
-      const searchParams: PollSearchParam = {};
+  // 로컬 필터링 함수 - 의존성(attributeFilters) 기준으로 메모이즈  [CHANGED]
+  const filterPollsByAttributes = useCallback(
+    (list: PollSummaryResponse[]) => {
+      return list.filter((poll) => {
+        if (
+          attributeFilters.multiple !== null &&
+          poll.multiple !== attributeFilters.multiple
+        )
+          return false;
+        if (
+          attributeFilters.anonymous !== null &&
+          poll.anonymous !== attributeFilters.anonymous
+        )
+          return false;
+        if (
+          attributeFilters.allowAddOption !== null &&
+          poll.allowAddOption !== attributeFilters.allowAddOption
+        )
+          return false;
+        if (
+          attributeFilters.allowRevote !== null &&
+          poll.allowRevote !== attributeFilters.allowRevote
+        )
+          return false;
+        return true;
+      });
+    },
+    [attributeFilters]
+  );
 
-      if (searchQuery.trim()) {
-        searchParams.query = searchQuery.trim();
-      }
-      if (statusFilter) {
-        searchParams.status = statusFilter;
-      }
-
-      // 날짜 필터링 - 마감 기한 기준으로 필터링
-      if (dateFilter) {
-        const now = new Date();
-
-        // 현재 시점부터 필터링 시작 (이미 마감된 투표 제외)
-        searchParams.deadlineFrom = now.toISOString();
-
-        switch (dateFilter) {
-          case "today":
-            // 오늘 자정까지 마감되는 투표
-            const endOfToday = new Date(
-              now.getFullYear(),
-              now.getMonth(),
-              now.getDate(),
-              23,
-              59,
-              59,
-              999
-            );
-            searchParams.deadlineTo = endOfToday.toISOString();
-            break;
-          case "week":
-            // 일주일 후까지 마감되는 투표
-            const weekLater = new Date(now);
-            weekLater.setDate(weekLater.getDate() + 7);
-            searchParams.deadlineTo = weekLater.toISOString();
-            break;
-          case "month":
-            // 한달 후까지 마감되는 투표
-            const monthLater = new Date(now);
-            monthLater.setMonth(monthLater.getMonth() + 1);
-            searchParams.deadlineTo = monthLater.toISOString();
-            break;
+  // 서버에서 목록 가져오기 - 검색어/페이지는 인자로 받아 스테일 클로저 회피  [CHANGED]
+  const fetchPolls = useCallback(
+    async (
+      loadingType: "initial" | "search" | "filter" = "initial",
+      q: string,
+      page: number
+    ) => {
+      try {
+        if (loadingType === "search") {
+          setSearching(true);
+        } else if (loadingType === "filter") {
+          setFilterLoading(true);
+        } else {
+          setLoading(true);
         }
+
+        const searchParams: PollSearchParam = {};
+        if (q.trim()) searchParams.query = q.trim();
+        if (statusFilter) searchParams.status = statusFilter;
+
+        // 날짜 필터링 - 마감 기한 기준
+        if (dateFilter) {
+          const now = new Date();
+          searchParams.deadlineFrom = now.toISOString(); // 이미 마감된 투표 제외
+
+          switch (dateFilter) {
+            case "today": {
+              const endOfToday = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+                23,
+                59,
+                59,
+                999
+              );
+              searchParams.deadlineTo = endOfToday.toISOString();
+              break;
+            }
+            case "week": {
+              const weekLater = new Date(now);
+              weekLater.setDate(weekLater.getDate() + 7);
+              searchParams.deadlineTo = weekLater.toISOString();
+              break;
+            }
+            case "month": {
+              const monthLater = new Date(now);
+              monthLater.setMonth(monthLater.getMonth() + 1);
+              searchParams.deadlineTo = monthLater.toISOString();
+              break;
+            }
+          }
+        }
+
+        const pageableParams: { page: number; size: number; sort?: string[] } =
+          {
+            page,
+            size: 10,
+            sort: [sortBy],
+          };
+
+        const response = await getPolls(searchParams, pageableParams);
+
+        // API 응답을 로컬 속성 필터로 한 번 더 거름
+        const filtered = filterPollsByAttributes(response.content);
+        setPolls(filtered);
+        setTotalPages(response.totalPages);
+      } catch (err) {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "투표 목록을 불러오는데 실패했습니다."
+        );
+      } finally {
+        setLoading(false);
+        setSearching(false);
+        setFilterLoading(false);
       }
+    },
+    // 내부에서 참조하는 값만 deps에! (검색어/페이지는 인자로 받음)  [CHANGED]
+    [statusFilter, dateFilter, sortBy, filterPollsByAttributes]
+  );
 
-      const pageableParams: { page: number; size: number; sort?: string[] } = {
-        page: currentPage,
-        size: 10,
-      };
-
-      // 정렬 옵션 적용
-      pageableParams.sort = [sortBy];
-
-      const response = await getPolls(searchParams, pageableParams);
-
-      // API에서 받은 데이터를 속성 필터로 추가 필터링
-      const filteredPolls = filterPollsByAttributes(response.content);
-      setPolls(filteredPolls);
-      setTotalPages(response.totalPages);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "투표 목록을 불러오는데 실패했습니다."
-      );
-    } finally {
-      setLoading(false);
-      setSearching(false);
-      setFilterLoading(false);
-    }
-  };
-
-  // 컴포넌트 마운트 시 초기 데이터 로딩
+  // 초기 로딩 + 필터/페이지/검색어 변화에 반응  [CHANGED]
   useEffect(() => {
-    fetchPolls("initial");
-  }, []);
+    fetchPolls("filter", searchQuery, currentPage);
+  }, [fetchPolls, searchQuery, currentPage]);
 
-  // 검색어가 아닌 필터들이 변경될 때
-  useEffect(() => {
-    fetchPolls("filter");
-  }, [currentPage, statusFilter, sortBy, dateFilter, attributeFilters]);
-
-  // 실시간 검색을 위한 debounced effect
+  // 실시간 검색 디바운스  [CHANGED]
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setCurrentPage(0);
-      fetchPolls("search");
+      fetchPolls("search", searchQuery, 0);
     }, 300);
-
     return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
+  }, [searchQuery, fetchPolls]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setCurrentPage(0);
-    fetchPolls("search");
+    fetchPolls("search", searchQuery, 0); // [CHANGED]
   };
 
   const handleStatusChange = (status: "OPEN" | "CLOSED" | "") => {
@@ -179,7 +199,7 @@ function PollList() {
   };
 
   const clearAllFilters = () => {
-    // React 18의 자동 배칭을 활용하여 한 번에 상태 업데이트
+    // React 18 자동 배칭
     React.startTransition(() => {
       setSearchQuery("");
       setStatusFilter("");
@@ -192,33 +212,6 @@ function PollList() {
         allowRevote: null,
       });
       setCurrentPage(0);
-    });
-  };
-
-  // 로컬 필터링 함수 (API 필터링 후 클라이언트 사이드에서 추가 필터링)
-  const filterPollsByAttributes = (polls: PollSummaryResponse[]) => {
-    return polls.filter((poll) => {
-      if (
-        attributeFilters.multiple !== null &&
-        poll.multiple !== attributeFilters.multiple
-      )
-        return false;
-      if (
-        attributeFilters.anonymous !== null &&
-        poll.anonymous !== attributeFilters.anonymous
-      )
-        return false;
-      if (
-        attributeFilters.allowAddOption !== null &&
-        poll.allowAddOption !== attributeFilters.allowAddOption
-      )
-        return false;
-      if (
-        attributeFilters.allowRevote !== null &&
-        poll.allowRevote !== attributeFilters.allowRevote
-      )
-        return false;
-      return true;
     });
   };
 
@@ -686,8 +679,8 @@ function PollList() {
           pollId={selectedPollId}
           onClose={() => setSelectedPollId(null)}
           onPollUpdated={() => {
-            // 투표 목록 새로고침
-            fetchPolls("filter");
+            // 투표 목록 새로고침  [CHANGED]
+            fetchPolls("filter", searchQuery, currentPage);
           }}
         />
       )}

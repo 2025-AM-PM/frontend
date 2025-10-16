@@ -5,6 +5,7 @@ import React, {
   useDeferredValue,
   FC,
   ComponentProps,
+  useCallback,
 } from "react";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -172,7 +173,7 @@ export default function BoardWrite() {
   const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) =>
     e.preventDefault();
 
-  const onSubmit = async () => {
+  const onSubmit = useCallback(async () => {
     if (!title.trim() || !content.trim()) return;
 
     const postData = {
@@ -194,7 +195,7 @@ export default function BoardWrite() {
       console.error("게시글 등록 실패:", error);
       alert("게시글 등록 중 오류가 발생했습니다.");
     }
-  };
+  }, [title, content]);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => {
@@ -205,7 +206,7 @@ export default function BoardWrite() {
     };
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
-  }, [title, content]);
+  }, [onSubmit]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

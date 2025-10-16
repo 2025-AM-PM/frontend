@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom"; // ✨ Link를 추가합니다.
 import "../styles/mypage.css";
-import { useAuth } from "../contexts/userContext";
 import { apiFetch } from "../api/client";
 interface UserProfile {
   name: string;

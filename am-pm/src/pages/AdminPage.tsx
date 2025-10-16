@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../contexts/userContext";
 import "../styles/admin.css";
 import type { StudentRole } from "../types";
@@ -31,7 +31,7 @@ export default function AdminPage() {
     new Set()
   );
 
-  const fetchSignupApplications = async () => {
+  const fetchSignupApplications = useCallback(async () => {
     setLoading(true);
     try {
       const applications = await getSignupApplications("PENDING");
@@ -42,9 +42,9 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getAllStudents();
@@ -66,7 +66,7 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.studentId]);
 
   const handleApplicationAction = async (action: "approve" | "reject") => {
     const applicationIds = Array.from(selectedApplications);
@@ -189,7 +189,7 @@ export default function AdminPage() {
     } else {
       fetchStudents();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchStudents, fetchSignupApplications]);
 
   // 관리자 권한 확인
   if (!user || user.role === "USER") {

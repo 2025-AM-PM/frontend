@@ -1,5 +1,5 @@
 import Header from "./header";
-import React, { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import "../styles/project.css"; // 기존 타이틀/필터 CSS 계속 사용
 import { ProjectCardProps } from "../components/projectCard";
 import ProjectsGrid from "../components/projectGrid";
@@ -22,7 +22,7 @@ const raw: ProjectType[] = projectJson as ProjectType[];
 function Project() {
   // const [raw, setRaw] = useState<ProjectType[]>([]);
   const [selectedYear, setSelectedYear] = useState<number | "all">("all");
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   // useEffect(() => {
   //   fetch("../assets/json/project.json")
@@ -37,10 +37,10 @@ function Project() {
   //     });
   // }, []);
 
-  // 연도 목록
+  // 연도 목록 (raw는 모듈 상수이므로 deps 불필요)  // [CHANGED]
   const years = useMemo(
     () => Array.from(new Set(raw.map((p) => p.year))).sort((a, b) => b - a),
-    [raw]
+    [] // [CHANGED]
   );
 
   // 🔁 ProjectType -> ProjectCardWithYear 변환 함수
@@ -57,12 +57,12 @@ function Project() {
     year: p.year,
   });
 
-  // 필터링 + 매핑
+  // 필터링 + 매핑 (raw는 상수이므로 selectedYear만 의존)  // [CHANGED]
   const cards = useMemo(() => {
     const src =
       selectedYear === "all" ? raw : raw.filter((p) => p.year === selectedYear);
     return src.map(toCard);
-  }, [raw, selectedYear]);
+  }, [selectedYear]); // [CHANGED]
 
   const handleYearClick = (y: number | "all") => setSelectedYear(y);
 

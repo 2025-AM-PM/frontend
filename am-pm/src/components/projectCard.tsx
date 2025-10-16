@@ -23,7 +23,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   emoji,
 }) => {
   const CardInner = (
-    <article className="p-card" role="article" aria-label={title}>
+    <article className="p-card" aria-label={title}>
       <div className="p-cover">
         <img src={cover} alt="" loading="lazy" />
         <div className="p-grad"></div>
