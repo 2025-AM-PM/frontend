@@ -12,9 +12,12 @@ concurrency:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
+    # 리포지토리 루트 기준으로 am-pm 디렉터리에서 빌드한다.
     defaults:
       run:
-        working-directory: am-pm # ← 리포지토리 루트가 frontend/am-pm
+        working-directory: am-pm
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,8 +27,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: |
-            am-pm/package-lock.json
+          cache-dependency-path: am-pm/package-lock.json
 
       - name: Install deps
         run: |
@@ -44,15 +46,15 @@ jobs:
 
       - name: Prepare artifact (dist or build → out)
         run: |
+          set -e
           mkdir -p out
           [ -d dist ]  && cp -r dist/*  out/ || true
           [ -d build ] && cp -r build/* out/ || true
           test -n "$(ls -A out)" || (echo "No dist/ or build/ contents!" && exit 1)
+          echo "Prepared files:"
+          ls -lah out | sed -n '1,50p'
 
-      - name: Pack artifact (tar.gz)
-        # working-directory가 frontend/am-pm 이므로 여기서 생성됨
-        run: tar -C out -czf frontend.tar.gz .
-
+      # ⭐ tar 전송이 아니라 out/* 자체를 올린다 (액션의 경로는 '리포지토리 루트' 기준)
       - name: Copy artifact to server (SCP)
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -60,9 +62,8 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          # source 경로는 "저장소 루트" 기준이라 풀경로로!
-          source: "am-pm/frontend.tar.gz"
-          target: "/home/${{ secrets.SSH_USER }}/deploy/"
+          source: "am-pm/out/*"
+          target: "/home/${{ secrets.SSH_USER }}/deploy/incoming"
 
       - name: Deploy on server (SSH)
         uses: appleboy/ssh-action@v1.2.0
@@ -73,16 +74,22 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -euo pipefail
+            # sudo 입력 한 번으로 세션 캐시 오픈
             echo "${{ secrets.SUDO_PASS }}" | sudo -S -p '' -v
+
             echo "🚀 Frontend deploy start"
 
-            PKG="/home/${USER}/deploy/frontend.tar.gz"
+            SRC="/home/${USER}/deploy/incoming"
             TMP="/tmp/ampm-frontend_$(date +%s)"
             DEST="/var/www/ampm-frontend"
 
-            echo "🗂  Prepare temp dir: ${TMP}"
+            echo "📦 Incoming listing (first 50)"
+            ls -lah "${SRC}" | sed -n '1,50p' || true
+
+            echo "🗂  Stage to temp: ${TMP}"
             sudo mkdir -p "${TMP}"
-            sudo tar -xzf "${PKG}" -C "${TMP}"
+            # incoming(사용자 홈 소유) → tmp(루트 소유)로 안전 복사
+            sudo cp -a "${SRC}/." "${TMP}/"
 
             echo "🔁 Replace contents at ${DEST}"
             sudo mkdir -p "${DEST}"
@@ -98,11 +105,11 @@ jobs:
             sudo find "${DEST}" -type d -exec chmod 750 {} \;
             sudo find "${DEST}" -type f -exec chmod 640 {} \;
 
-            echo "🔁 Nginx reload"
-            sudo nginx -t && sudo systemctl reload nginx
+            echo "🧪 Nginx test & reload"
+            sudo nginx -t
+            sudo systemctl reload nginx
 
             echo "🧹 Cleanup"
-            rm -f "${PKG}" || true
             sudo rm -rf "${TMP}"
 
             echo "🎉 Frontend deployment done"
