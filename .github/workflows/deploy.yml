@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: frontend/am-pm # ← 리포지토리 루트가 frontend/am-pm
+        working-directory: am-pm # ← 리포지토리 루트가 frontend/am-pm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
