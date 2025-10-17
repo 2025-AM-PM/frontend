@@ -13,10 +13,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    # 리포지토리 루트 기준으로 am-pm 디렉터리에서 빌드한다.
     defaults:
       run:
-        working-directory: am-pm
+        working-directory: am-pm   # 리포 루트 기준
 
     steps:
       - name: Checkout
@@ -51,10 +50,10 @@ jobs:
           [ -d dist ]  && cp -r dist/*  out/ || true
           [ -d build ] && cp -r build/* out/ || true
           test -n "$(ls -A out)" || (echo "No dist/ or build/ contents!" && exit 1)
-          echo "Prepared files:"
-          ls -lah out | sed -n '1,50p'
+          echo "Prepared files (out/):"
+          ls -lah out | sed -n '1,80p'
 
-      # ⭐ tar 전송이 아니라 out/* 자체를 올린다 (액션의 경로는 '리포지토리 루트' 기준)
+      # ⬇️ 경로 꼬임 방지 포인트: strip_components: 2 (am-pm + out 제거)
       - name: Copy artifact to server (SCP)
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -62,8 +61,10 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          # 이 값은 '리포 루트' 기준 경로
           source: "am-pm/out/*"
           target: "/home/${{ secrets.SSH_USER }}/deploy/incoming"
+          strip_components: 2
 
       - name: Deploy on server (SSH)
         uses: appleboy/ssh-action@v1.2.0
@@ -74,21 +75,25 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -euo pipefail
-            # sudo 입력 한 번으로 세션 캐시 오픈
-            echo "${{ secrets.SUDO_PASS }}" | sudo -S -p '' -v
 
-            echo "🚀 Frontend deploy start"
+            # sudo 1회 인증(비대화식)
+            echo "${{ secrets.SUDO_PASS }}" | sudo -S -p '' -v
 
             SRC="/home/${USER}/deploy/incoming"
             TMP="/tmp/ampm-frontend_$(date +%s)"
             DEST="/var/www/ampm-frontend"
 
-            echo "📦 Incoming listing (first 50)"
-            ls -lah "${SRC}" | sed -n '1,50p' || true
+            echo "📦 Incoming listing (top)"
+            ls -lah "${SRC}" | sed -n '1,80p' || true
+
+            # 산출물 핵심 파일 확인(없으면 실패로 종료)
+            if [ ! -f "${SRC}/index.html" ]; then
+              echo "ERROR: ${SRC}/index.html not found (경로 꼬임 가능)."
+              exit 1
+            fi
 
             echo "🗂  Stage to temp: ${TMP}"
             sudo mkdir -p "${TMP}"
-            # incoming(사용자 홈 소유) → tmp(루트 소유)로 안전 복사
             sudo cp -a "${SRC}/." "${TMP}/"
 
             echo "🔁 Replace contents at ${DEST}"
@@ -100,10 +105,11 @@ jobs:
               sudo cp -a "${TMP}/." "${DEST}/"
             fi
 
-            echo "🔒 Fix permissions"
-            sudo chown -R root:www-data "${DEST}"
-            sudo find "${DEST}" -type d -exec chmod 750 {} \;
-            sudo find "${DEST}" -type f -exec chmod 640 {} \;
+            # 권한: 점검용으로 755/644 (읽기 폭넓게). 필요시 추후 조인다.
+            NGX_USER=$(grep ^user /etc/nginx/nginx.conf | awk '{print $2}' | sed 's/;//' || echo www-data)
+            sudo chown -R root:"$NGX_USER" "${DEST}"
+            sudo find "${DEST}" -type d -exec chmod 755 {} \;
+            sudo find "${DEST}" -type f -exec chmod 644 {} \;
 
             echo "🧪 Nginx test & reload"
             sudo nginx -t
