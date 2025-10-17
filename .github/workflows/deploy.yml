@@ -61,7 +61,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           # source 경로는 "저장소 루트" 기준이라 풀경로로!
-          source: "frontend/am-pm/frontend.tar.gz"
+          source: "am-pm/frontend.tar.gz"
           target: "/home/${{ secrets.SSH_USER }}/deploy/"
 
       - name: Deploy on server (SSH)
