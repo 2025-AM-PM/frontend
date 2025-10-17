@@ -73,6 +73,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -euo pipefail
+            echo "${{ secrets.SUDO_PASS }}" | sudo -S -p '' -v
             echo "🚀 Frontend deploy start"
 
             PKG="/home/${USER}/deploy/frontend.tar.gz"
