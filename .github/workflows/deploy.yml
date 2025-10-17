@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: am-pm   # ./ 없어도 됨
+        working-directory: frontend/am-pm # ← 리포지토리 루트가 frontend/am-pm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,11 +24,10 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          # ↓ 락파일이 서브폴더에 있으니 경로 지정
           cache-dependency-path: |
-            am-pm/package-lock.json
-            am-pm/npm-shrinkwrap.json
-            am-pm/yarn.lock
+            frontend/am-pm/package-lock.json
+            frontend/am-pm/npm-shrinkwrap.json
+            frontend/am-pm/yarn.lock
 
       - name: Install deps
         run: |
@@ -40,30 +39,34 @@ jobs:
             npm install
           fi
 
-      - name: Build
+      - name: Build (React)
         env:
           NODE_OPTIONS: --max_old_space_size=4096
         run: npm run build
 
-      - name: Prepare artifact
+      - name: Prepare artifact (dist or build → out)
         run: |
           mkdir -p out
           [ -d dist ]  && cp -r dist/*  out/ || true
           [ -d build ] && cp -r build/* out/ || true
           test -n "$(ls -A out)" || (echo "No dist/ or build/ contents!" && exit 1)
 
-      - name: Rsync to /var/www/ampm-frontend (in-place)
-        uses: burnett01/rsync-deployments@7.0.2
-        with:
-          switches: -avzr --delete
-          path: am-pm/out/                 # uses: 액션은 루트 기준 경로
-          remote_path: /var/www/ampm-frontend/
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USER }}
-          remote_port: ${{ secrets.SSH_PORT }}
-          remote_key: ${{ secrets.SSH_KEY }}
+      - name: Pack artifact (tar.gz)
+        # working-directory가 frontend/am-pm 이므로 여기서 생성됨
+        run: tar -C out -czf frontend.tar.gz .
 
-      - name: Fix perms & reload nginx
+      - name: Copy artifact to server (SCP)
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          # source 경로는 "저장소 루트" 기준이라 풀경로로!
+          source: "frontend/am-pm/frontend.tar.gz"
+          target: "/home/${{ secrets.SSH_USER }}/deploy/"
+
+      - name: Deploy on server (SSH)
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -71,9 +74,36 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            set -e
-            # 배포 계정이 쓰게 소유자 유지 권장(필요시 사용자명 교체)
-            sudo chown -R ${USER}:www-data /var/www/ampm-frontend
-            sudo find /var/www/ampm-frontend -type d -exec chmod 750 {} \;
-            sudo find /var/www/ampm-frontend -type f -exec chmod 640 {} \;
+            set -euo pipefail
+            echo "🚀 Frontend deploy start"
+
+            PKG="/home/${USER}/deploy/frontend.tar.gz"
+            TMP="/tmp/ampm-frontend_$(date +%s)"
+            DEST="/var/www/ampm-frontend"
+
+            echo "🗂  Prepare temp dir: ${TMP}"
+            sudo mkdir -p "${TMP}"
+            sudo tar -xzf "${PKG}" -C "${TMP}"
+
+            echo "🔁 Replace contents at ${DEST}"
+            sudo mkdir -p "${DEST}"
+            if command -v rsync >/dev/null 2>&1; then
+              sudo rsync -a --delete "${TMP}/" "${DEST}/"
+            else
+              sudo rm -rf "${DEST:?}/"* || true
+              sudo cp -a "${TMP}/." "${DEST}/"
+            fi
+
+            echo "🔒 Fix permissions"
+            sudo chown -R root:www-data "${DEST}"
+            sudo find "${DEST}" -type d -exec chmod 750 {} \;
+            sudo find "${DEST}" -type f -exec chmod 640 {} \;
+
+            echo "🔁 Nginx reload"
             sudo nginx -t && sudo systemctl reload nginx
+
+            echo "🧹 Cleanup"
+            rm -f "${PKG}" || true
+            sudo rm -rf "${TMP}"
+
+            echo "🎉 Frontend deployment done"
