@@ -1,0 +1,532 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-stack);
+  background-color: var(--bg);
+  color: var(--text-white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+     Header & Navigation
+     ========================================================================== */
+
+header {
+  padding: var(--spacing-md);
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 100;
+}
+
+.variant-switcher {
+  display: flex;
+  gap: var(--spacing-xs);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.switcher-link {
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  color: var(--text-muted);
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.switcher-link:hover {
+  color: var(--text-white);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.switcher-link:focus {
+  outline: 2px solid var(--accent-secondary);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+     Main Content
+     ========================================================================== */
+
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl) var(--spacing-md);
+}
+
+.error-section {
+  display: none;
+  width: 100%;
+  max-width: 840px;
+  animation: fadeIn 0.5s ease;
+}
+
+.error-section,
+.error-section:target {
+  display: block;
+}
+
+/* Hide 404 when 500 is targeted (note: DOM order may affect this rule) */
+#error-500:target ~ #error-404 {
+  display: none;
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xl);
+  text-align: center;
+}
+
+/* ==========================================================================
+     Illustration
+     ========================================================================== */
+
+.illustration-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.penguin {
+  width: 200px;
+  height: auto;
+  animation: gentleBob 3s ease-in-out infinite;
+}
+
+.penguin-slipped {
+  animation: wobble 2s ease-in-out infinite;
+}
+
+.flashlight-beam {
+  animation: flicker 2s ease-in-out infinite;
+}
+
+/* Floating chips for 404 */
+.chip {
+  position: absolute;
+  width: 40px;
+  height: auto;
+  opacity: 0.8;
+}
+
+.chip-1 {
+  top: 10%;
+  left: 5%;
+  animation: float1 4s ease-in-out infinite;
+}
+
+.chip-2 {
+  top: 60%;
+  right: 8%;
+  animation: float2 5s ease-in-out infinite;
+}
+
+.chip-3 {
+  bottom: 15%;
+  left: 15%;
+  animation: float3 4.5s ease-in-out infinite;
+}
+
+/* Scattered chips for 500 */
+.chip-scattered-1 {
+  position: absolute;
+  width: 35px;
+  top: 15%;
+  right: 10%;
+  transform: rotate(45deg);
+  animation: scatter1 3s ease-in-out infinite;
+}
+
+.chip-scattered-2 {
+  position: absolute;
+  width: 30px;
+  top: 50%;
+  left: 5%;
+  transform: rotate(-30deg);
+  animation: scatter2 3.5s ease-in-out infinite;
+}
+
+.chip-scattered-3 {
+  position: absolute;
+  width: 38px;
+  bottom: 20%;
+  right: 15%;
+  transform: rotate(120deg);
+  animation: scatter3 4s ease-in-out infinite;
+}
+
+.chip-scattered-4 {
+  position: absolute;
+  width: 32px;
+  bottom: 10%;
+  left: 20%;
+  transform: rotate(-60deg);
+  animation: scatter4 3.8s ease-in-out infinite;
+}
+
+/* ==========================================================================
+     Content
+     ========================================================================== */
+
+.content-wrapper {
+  max-width: 600px;
+}
+
+.error-code {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: -0.05em;
+}
+
+.error-title {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  margin-bottom: var(--spacing-md);
+  color: var(--text-white);
+}
+
+.error-subtitle {
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-xl);
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+     Buttons
+     ========================================================================== */
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.875rem 1.75rem;
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+}
+
+.btn-primary {
+  background-color: var(--accent-primary);
+  color: var(--text-white);
+  box-shadow: 0 4px 12px rgba(224, 83, 78, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: #c94944;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(224, 83, 78, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: var(--accent-secondary);
+  border-color: var(--accent-secondary);
+}
+
+.btn-secondary:hover {
+  background-color: rgba(110, 231, 249, 0.1);
+  transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+.btn:focus {
+  outline: 2px solid var(--accent-secondary);
+  outline-offset: 3px;
+}
+
+/* ==========================================================================
+     Footer
+     ========================================================================== */
+
+footer {
+  padding: var(--spacing-lg) var(--spacing-md);
+  text-align: center;
+}
+
+.footer-content {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-link:hover {
+  color: var(--accent-secondary);
+}
+
+.footer-link:focus {
+  outline: 2px solid var(--accent-secondary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.footer-separator {
+  margin: 0 var(--spacing-sm);
+  opacity: 0.5;
+}
+
+/* ==========================================================================
+     Animations
+     ========================================================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentleBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes wobble {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  25% {
+    transform: rotate(2deg);
+  }
+  75% {
+    transform: rotate(-2deg);
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes float1 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(10px, -15px) rotate(5deg);
+  }
+  66% {
+    transform: translate(-8px, -10px) rotate(-5deg);
+  }
+}
+
+@keyframes float2 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(-12px, -20px) rotate(-8deg);
+  }
+  66% {
+    transform: translate(8px, -12px) rotate(8deg);
+  }
+}
+
+@keyframes float3 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(15px, -18px) rotate(6deg);
+  }
+  66% {
+    transform: translate(-10px, -8px) rotate(-6deg);
+  }
+}
+
+@keyframes scatter1 {
+  0%,
+  100% {
+    transform: rotate(45deg) translate(0, 0);
+  }
+  50% {
+    transform: rotate(50deg) translate(5px, -8px);
+  }
+}
+
+@keyframes scatter2 {
+  0%,
+  100% {
+    transform: rotate(-30deg) translate(0, 0);
+  }
+  50% {
+    transform: rotate(-35deg) translate(-5px, 8px);
+  }
+}
+
+@keyframes scatter3 {
+  0%,
+  100% {
+    transform: rotate(120deg) translate(0, 0);
+  }
+  50% {
+    transform: rotate(125deg) translate(8px, 5px);
+  }
+}
+
+@keyframes scatter4 {
+  0%,
+  100% {
+    transform: rotate(-60deg) translate(0, 0);
+  }
+  50% {
+    transform: rotate(-65deg) translate(-8px, -5px);
+  }
+}
+
+/* ==========================================================================
+     Responsive Design
+     ========================================================================== */
+
+@media (min-width: 768px) {
+  .error-container {
+    flex-direction: row;
+    text-align: left;
+    gap: var(--spacing-2xl);
+  }
+
+  .illustration-wrapper {
+    flex-shrink: 0;
+  }
+
+  .action-buttons {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 767px) {
+  header {
+    position: static;
+    display: flex;
+    justify-content: center;
+  }
+
+  .illustration-wrapper {
+    height: 250px;
+    max-width: 300px;
+  }
+
+  .penguin {
+    width: 160px;
+  }
+}
+
+/* ==========================================================================
+     Accessibility - Reduced Motion
+     ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .penguin,
+  .penguin-slipped,
+  .chip,
+  .chip-scattered-1,
+  .chip-scattered-2,
+  .chip-scattered-3,
+  .chip-scattered-4,
+  .flashlight-beam {
+    animation: none;
+  }
+}
+
+/* ==========================================================================
+     High Contrast Mode Support
+     ========================================================================== */
+
+@media (prefers-contrast: high) {
+  .btn-primary {
+    border: 2px solid var(--text-white);
+  }
+
+  .btn-secondary {
+    border-width: 3px;
+  }
+
+  .switcher-link:focus,
+  .btn:focus,
+  .footer-link:focus {
+    outline-width: 3px;
+  }
+}

@@ -177,9 +177,12 @@ export default function BoardWrite() {
     if (!title.trim() || !content.trim()) return;
 
     const postData = {
-      title: title,
-      description: content,
-      exhibitUrl: "",
+      request: {
+        title: title,
+        description: content,
+        exhibitUrl: "",
+      },
+      files: ["asdas"],
     };
 
     try {

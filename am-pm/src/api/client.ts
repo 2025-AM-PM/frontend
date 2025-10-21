@@ -51,7 +51,7 @@ export async function apiFetch<T>(
   const credentials: RequestCredentials =
     isMutating || init.withCredentials ? "include" : "omit";
 
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${process.env.REACT_APP_API_BASE}/api${path}`, {
     ...init,
     headers,
     credentials,

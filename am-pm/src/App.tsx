@@ -16,6 +16,7 @@ import PostDetail from "./components/postDetail";
 import AdminPage from "./pages/AdminPage";
 import Prove from "./components/prove";
 import BoardList from "./components/boardList";
+import ErrorPage from "./components/error";
 
 function AppInner() {
   const { setUser } = useAuth();
@@ -52,6 +53,7 @@ function AppInner() {
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/prove" element={<Prove />} />
       <Route path="/board/all" element={<BoardList />} />
+      <Route path="/error" element={<ErrorPage />} />
     </Routes>
   );
 }
