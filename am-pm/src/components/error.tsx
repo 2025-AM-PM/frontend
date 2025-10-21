@@ -4,7 +4,7 @@ import "../styles/error.css";
 export default function ErrorPage() {
   return (
     <div>
-      <main role="main">
+      <main className="error-page" role="main">
         {/* 404 */}
         <section id="error-404" className={`error-section`}>
           <div className="error-container">
@@ -214,7 +214,7 @@ export default function ErrorPage() {
               <p className="error-subtitle">여기는 막다른 길이에요</p>
 
               <div className="action-buttons">
-                <Link to="/" className="btn btn-primary">
+                <Link to="/" className="btn-error btn-error-primary">
                   홈으로 가기
                 </Link>
               </div>

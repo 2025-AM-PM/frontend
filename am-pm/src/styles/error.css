@@ -1,36 +1,3 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-stack);
-  background-color: var(--bg);
-  color: var(--text-white);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  line-height: 1.6;
-  overflow-x: hidden;
-}
-
-/* ==========================================================================
-     Header & Navigation
-     ========================================================================== */
-
-header {
-  padding: var(--spacing-md);
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 100;
-}
-
 .variant-switcher {
   display: flex;
   gap: var(--spacing-xs);
@@ -63,29 +30,25 @@ header {
      Main Content
      ========================================================================== */
 
-main {
+.error-page {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: center;
   padding: var(--spacing-xl) var(--spacing-md);
+  font-family: var(--font-stack);
+  background-color: var(--bg);
+  color: var(--text-white);
+  min-height: 100vh;
+  flex-direction: column;
+  line-height: 1.6;
+  overflow-x: hidden;
 }
 
 .error-section {
-  display: none;
+  display: block;
   width: 100%;
   max-width: 840px;
   animation: fadeIn 0.5s ease;
-}
-
-.error-section,
-.error-section:target {
-  display: block;
-}
-
-/* Hide 404 when 500 is targeted (note: DOM order may affect this rule) */
-#error-500:target ~ #error-404 {
-  display: none;
 }
 
 .error-container {
@@ -236,7 +199,7 @@ main {
   align-items: center;
 }
 
-.btn {
+.btn-error {
   display: inline-block;
   padding: 0.875rem 1.75rem;
   text-decoration: none;
@@ -247,7 +210,7 @@ main {
   border: 2px solid transparent;
 }
 
-.btn-primary {
+.btn-error-primary {
   background-color: var(--accent-primary);
   color: var(--text-white);
   box-shadow: 0 4px 12px rgba(224, 83, 78, 0.3);
