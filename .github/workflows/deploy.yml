@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: am-pm   # 리포 루트 기준
+        working-directory: am-pm # 리포 루트 기준
 
     steps:
       - name: Checkout
@@ -29,11 +29,10 @@ jobs:
           cache-dependency-path: am-pm/package-lock.json
 
       - name: Install deps
+        working-directory: am-pm
         run: |
           if [ -f package-lock.json ]; then
             npm ci
-          elif [ -f yarn.lock ]; then
-            npm i -g yarn && yarn install --frozen-lockfile
           else
             npm install
           fi
