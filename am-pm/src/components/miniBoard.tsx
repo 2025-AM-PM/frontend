@@ -18,8 +18,8 @@ const MiniBoard: React.FC<MiniBoardProps> = ({ boardTitle, posts }) => {
   const navigate = useNavigate();
 
   // 클릭 시 해당 게시물의 링크로 이동하는 함수
-  const handleRowClick = (link: string) => {
-    navigate(link);
+  const handleRowClick = (link: Number) => {
+    navigate(`/detail/${link}`);
   };
 
   return (
@@ -39,7 +39,7 @@ const MiniBoard: React.FC<MiniBoardProps> = ({ boardTitle, posts }) => {
             <tr
               key={post.id} // 리액트가 각 항목을 구분하기 위한 고유한 key
               className="clickable-row"
-              onClick={() => handleRowClick(post.link)}
+              onClick={() => handleRowClick(post.id)}
             >
               <td className="td-title">
                 {/* a 태그는 의미상 유지하되, 클릭 이벤트는 tr이 담당합니다. */}

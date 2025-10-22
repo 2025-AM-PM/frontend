@@ -3,7 +3,7 @@ export interface Post {
   title: string;
   createdAt: string;
   view: number;
-  link: string;
+  link?: string;
   author: string;
 }
 
@@ -150,11 +150,7 @@ export interface PageData {
   empty: boolean;
 }
 
-export type SortKey =
-  | "createdAt,desc"
-  | "createdAt,asc"
-  | "views,desc"
-  | "title,asc";
+export type SortKey = "createdAt,desc" | "createdAt,asc" | "views,desc";
 
 export interface FetchParams {
   page: number;

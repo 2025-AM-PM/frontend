@@ -7,7 +7,6 @@ const SORT_OPTIONS: Record<SortKey, string> = {
   "createdAt,desc": "최신순",
   "createdAt,asc": "오래된순",
   "views,desc": "조회수순",
-  "title,asc": "제목순",
 };
 
 const MOCK_POSTS: Post[] = [
@@ -154,10 +153,6 @@ const BoardList: React.FC<BoardListProps> = ({
                 new Date(a.createdAt).getTime() -
                 new Date(b.createdAt).getTime()
               );
-            case "views,desc":
-              return b.view - a.view;
-            case "title,asc":
-              return a.title.localeCompare(b.title);
             default:
               return 0;
           }
