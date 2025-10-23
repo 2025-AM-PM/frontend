@@ -15,6 +15,7 @@ import Mypage from "../pages/mypage";
 import AdminPage from "../pages/AdminPage";
 import BoardList from "../components/boardList";
 import ErrorPage from "../components/error";
+import Prove from "../components/prove";
 
 function LoginRoute() {
   const { setUser } = useAuth();
@@ -77,7 +78,7 @@ export const router = createBrowserRouter([
   { path: "/register", Component: RegisterPage },
   { path: "/mypage", Component: Mypage },
   { path: "/admin", Component: AdminPage },
-  { path: "/prove", Component: Mypage },
+  { path: "/prove", Component: Prove },
   { path: "/board/all", Component: BoardList },
   { path: "*", Component: ErrorPage },
 ]);
