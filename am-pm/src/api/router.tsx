@@ -34,12 +34,20 @@ export const router = createBrowserRouter([
   {
     path: "/board/:category/write",
     element: <BoardWrite />,
+    errorElement: <ErrorPage />,
     action: async ({ request }) => {
       const form = await request.formData();
 
       const title = String(form.get("title") || "").trim();
       const content = String(form.get("description") || "").trim();
       const exhibitUrl = String(form.get("exhibitUrl") || "");
+
+      if (!title || !content) {
+        return JSON.stringify({
+          fieldError: "Title and description are required.",
+          status: 400,
+        });
+      }
 
       const postData = {
         title: title,
@@ -56,12 +64,14 @@ export const router = createBrowserRouter([
         });
 
         if (!res.status) {
-          return redirect("/error");
+          throw new Response("Create failed", { status: res.status });
         }
 
         return redirect("/board/all");
       } catch (e) {
-        return redirect("/error");
+        throw e instanceof Response
+          ? e
+          : new Response("Unexpected error", { status: 500 });
       }
     },
   },
