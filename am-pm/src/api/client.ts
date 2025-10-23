@@ -318,6 +318,13 @@ export async function deleteStudent(studentId: number): Promise<void> {
   });
 }
 
-// export async function getRepository(url: string): Promise<Post>{
-//   const response = await apiFetch<Post>()
-// }
+export async function getBoardData() {
+  const body = {
+    page: 0,
+    size: 10,
+    sort: [],
+  };
+  await apiFetch<Post[]>("/exhibits", {
+    method: "GET",
+  });
+}
