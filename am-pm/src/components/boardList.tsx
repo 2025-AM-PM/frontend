@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "../styles/boardList.css";
 import { Post, PageData, BoardListProps, SortKey } from "../types";
+import Header from "./header";
 
 /** ===== Constants ===== */
 const SORT_OPTIONS: Record<SortKey, string> = {
@@ -364,6 +365,7 @@ const BoardList: React.FC<BoardListProps> = ({
 
   return (
     <div className="boardList-container">
+      <Header />
       {/* Header */}
       <div className="board-header">
         <h1 className="board-title">{title}</h1>

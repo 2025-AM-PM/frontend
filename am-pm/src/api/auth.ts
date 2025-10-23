@@ -17,7 +17,7 @@ type RegisterReq = {
 };
 
 export async function login(req: LoginReq): Promise<User> {
-  const { data, headers } = await apiFetch<LoginRes>("/students/login", {
+  const { data, headers } = await apiFetch<LoginRes>("/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
