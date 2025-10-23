@@ -3,7 +3,6 @@ import { NavLink, useLocation } from "react-router-dom";
 import UserInfo from "./User";
 import { User } from "../types";
 import LoginBtn from "./loginBtn";
-// ⬇️ 로컬 스토리지 유틸만 사용
 import { getStoredUser } from "../api/storage";
 import { useEffect, useState } from "react";
 

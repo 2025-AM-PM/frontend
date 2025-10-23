@@ -1,6 +1,9 @@
 import { apiFetch } from "./client";
 import { setAccessToken, setStoredUser, StorageKeys } from "./storage";
 import type { User } from "../types";
+import { useAuthStore } from "../stores/authStore";
+
+let refreshPromise: Promise<string | null> | null = null;
 
 type LoginReq = { studentNumber: string; studentPassword: string };
 type LoginRes = {
@@ -94,4 +97,28 @@ export function logout(): void {
   setAccessToken(null);
   setStoredUser<User>(null);
   console.log("[logout] after", localStorage.getItem(StorageKeys.access));
+}
+
+export async function refreshAccessToken(): Promise<string | null> {
+  if (refreshPromise) return refreshPromise; // single-flight
+
+  refreshPromise = (async () => {
+    const res = await fetch(`${process.env.REACT_APP_API_BASE}/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+
+    const data = await res.json(); // { accessToken: string }
+    const accessToken = data?.accessToken ?? null;
+
+    useAuthStore.getState().setToken(accessToken);
+    return accessToken;
+  })();
+
+  try {
+    return await refreshPromise;
+  } finally {
+    refreshPromise = null;
+  }
 }

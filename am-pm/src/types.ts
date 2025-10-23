@@ -21,6 +21,14 @@ export interface MiniBoardProps {
   posts: Post[];
 }
 
+export interface AuthState {
+  accessToken: string | null;
+  user: StudentRole | null;
+  setToken: (token: string | null) => void;
+  setUser: (user: StudentRole | null) => void;
+  logOut: () => void;
+}
+
 export interface User {
   studentId: number | null;
   studentName: string | null;
@@ -29,7 +37,7 @@ export interface User {
   role: string | null;
 }
 
-export type StudentRole = "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN";
+export type StudentRole = "USER" | "ADMIN" | string;
 
 // Poll related types
 export interface PollSummaryResponse {
