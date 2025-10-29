@@ -216,7 +216,7 @@ export interface StudentResponse {
   id: number;
   studentNumber: string;
   studentName: string;
-  role: "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN";
+  role: "USER" | "ADMIN" | string;
 }
 
 export interface AllStudentResponse {
@@ -293,7 +293,7 @@ export async function getAllStudents(): Promise<AllStudentResponse> {
 // Update student role
 export async function updateStudentRole(
   studentId: number,
-  role: "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN"
+  role: "USER" | "ADMIN" | string
 ): Promise<StudentResponse> {
   const response = await apiFetch<StudentResponse>(
     `/admin/students/${studentId}`,
