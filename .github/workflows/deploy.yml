@@ -1,0 +1,121 @@
+name: Frontend Deploy (in-place)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-frontend
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: am-pm   # 리포 루트 기준
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: am-pm/package-lock.json
+
+      - name: Install deps
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f yarn.lock ]; then
+            npm i -g yarn && yarn install --frozen-lockfile
+          else
+            npm install
+          fi
+
+      - name: Build (React)
+        env:
+          NODE_OPTIONS: --max_old_space_size=4096
+        run: npm run build
+
+      - name: Prepare artifact (dist or build → out)
+        run: |
+          set -e
+          mkdir -p out
+          [ -d dist ]  && cp -r dist/*  out/ || true
+          [ -d build ] && cp -r build/* out/ || true
+          test -n "$(ls -A out)" || (echo "No dist/ or build/ contents!" && exit 1)
+          echo "Prepared files (out/):"
+          ls -lah out | sed -n '1,80p'
+
+      # ⬇️ 경로 꼬임 방지 포인트: strip_components: 2 (am-pm + out 제거)
+      - name: Copy artifact to server (SCP)
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          # 이 값은 '리포 루트' 기준 경로
+          source: "am-pm/out/*"
+          target: "/home/${{ secrets.SSH_USER }}/deploy/incoming"
+          strip_components: 2
+
+      - name: Deploy on server (SSH)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -euo pipefail
+
+            # sudo 1회 인증(비대화식)
+            echo "${{ secrets.SUDO_PASS }}" | sudo -S -p '' -v
+
+            SRC="/home/${USER}/deploy/incoming"
+            TMP="/tmp/ampm-frontend_$(date +%s)"
+            DEST="/var/www/ampm-frontend"
+
+            echo "📦 Incoming listing (top)"
+            ls -lah "${SRC}" | sed -n '1,80p' || true
+
+            # 산출물 핵심 파일 확인(없으면 실패로 종료)
+            if [ ! -f "${SRC}/index.html" ]; then
+              echo "ERROR: ${SRC}/index.html not found (경로 꼬임 가능)."
+              exit 1
+            fi
+
+            echo "🗂  Stage to temp: ${TMP}"
+            sudo mkdir -p "${TMP}"
+            sudo cp -a "${SRC}/." "${TMP}/"
+
+            echo "🔁 Replace contents at ${DEST}"
+            sudo mkdir -p "${DEST}"
+            if command -v rsync >/dev/null 2>&1; then
+              sudo rsync -a --delete "${TMP}/" "${DEST}/"
+            else
+              sudo rm -rf "${DEST:?}/"* || true
+              sudo cp -a "${TMP}/." "${DEST}/"
+            fi
+
+            # 권한: 점검용으로 755/644 (읽기 폭넓게). 필요시 추후 조인다.
+            NGX_USER=$(grep ^user /etc/nginx/nginx.conf | awk '{print $2}' | sed 's/;//' || echo www-data)
+            sudo chown -R root:"$NGX_USER" "${DEST}"
+            sudo find "${DEST}" -type d -exec chmod 755 {} \;
+            sudo find "${DEST}" -type f -exec chmod 644 {} \;
+
+            echo "🧪 Nginx test & reload"
+            sudo nginx -t
+            sudo systemctl reload nginx
+
+            echo "🧹 Cleanup"
+            sudo rm -rf "${TMP}"
+
+            echo "🎉 Frontend deployment done"

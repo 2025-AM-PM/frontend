@@ -1,0 +1,19 @@
+.clock-only {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 0;
+}
+
+.digits {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(40px, 9vw, 96px);
+  color: #fff; /* 숫자만 흰색으로 */
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  user-select: none;
+}

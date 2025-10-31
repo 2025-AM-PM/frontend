@@ -1,96 +1,185 @@
 .header {
-    width: 100%;
-    height: 5rem; /* .container의 높이와 동일하게 설정 */
+  width: 100%;
+  height: 5rem; /* .container의 높이와 동일 */
 }
 
 .container {
-    width: 80%;
-    height: 4rem; 
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center; 
+  width: 80%;
+  height: 5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 
-   
-    position: fixed;
-    top: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    
-    background-color: rgba(28, 33, 40, 0.6);
-    backdrop-filter: blur(10px); 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
-    
-    border-radius: 1rem;
-    padding: 0.5rem;
+  position: fixed;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+
+  background-color: rgba(28, 33, 40, 0.6);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  border-radius: 1rem;
+  padding: 0.5rem;
 }
 
 .logo {
-    height: 100%;
-    aspect-ratio: 1/1;
-    background-color: black;
-    border-radius: 50%;
-    background-image: url('../assets/logo.png');
-    background-size: cover;
-    background-position: center;
-    margin-left: 2rem;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  background-color: black;
+  border-radius: 50%;
+  background-image: url("../assets/logo.png");
+  background-size: cover;
+  background-position: center;
+  margin-left: 2rem;
 }
 
+/* -------------------------------
+   * Nav (통합 리팩토링)
+   * 구조 예시
+   * <nav class="nav">
+   *   <ul class="nav__list">
+   *     <li class="nav__item nav__item--current"><a class="nav__link">Home</a></li>
+   *     <li class="nav__item nav__item--has-submenu">
+   *       <a class="nav__link">Services</a>
+   *       <ul class="nav__submenu">
+   *         <li class="nav__submenu-item"><a class="nav__submenu-link">Item 1</a></li>
+   *       </ul>
+   *     </li>
+   *   </ul>
+   * </nav>
+   * ------------------------------- */
 .nav {
-    width: 50%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  /* 가운데 정렬 느낌이 필요하면 주석 해제
+    justify-content: center;
+    */
 }
 
-.nav li{
-    list-style: none;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    
+/* 1) 1차 메뉴 라인 */
+.nav__list {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
+  list-style: none;
 }
 
-.nav-item {
-    border-radius: 1rem;
+.nav__item {
+  position: relative; /* 드롭다운 기준점 */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 1rem; /* 기존 hover 배경 둥글게 */
 }
 
-.nav-item a {
-    padding: 0 1rem;
-    text-decoration: none;
-    color: #62748E;
-    font-weight: 600;
-    font-size: 1rem;
-    line-height: 1.5rem;
-    font-family: 'Noto Sans', sans-serif;
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 1rem;
+  text-decoration: none;
+  color: #62748e;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-family: "Noto Sans", sans-serif;
+  transition: transform 0.15s ease, color 0.15s ease,
+    background-color 0.15s ease;
 }
 
-.nav-list {
-    margin: 0;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    gap: 1rem;
-}
-
-.nav-item:hover {
+.nav__item:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.nav-item:hover a {
-    color: white;
-    transform: scale(1.1);
+.nav__item:hover .nav__link {
+  color: #fff;
+  transform: scale(1.05); /* 1.1 -> 1.05로 살짝 완화 */
 }
 
-
-.nav-item-current {
+/* 현재 페이지 */
+.nav__item--current {
   background-color: rgba(255, 255, 255, 0.1);
 }
+.nav__item--current .nav__link {
+  color: #fff;
+  transform: scale(1.05);
+}
 
-.nav-item-current a {
-  color: white;
-  transform: scale(1.1);
+/* 2) 드롭다운 (2차 메뉴) */
+.nav__item--has-submenu > .nav__submenu {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.5rem); /* 1차 메뉴 아래로 살짝 띄움 */
+  min-width: 250px;
+  margin: 0;
+  padding: 0.75rem 0;
+  list-style: none;
+
+  background-color: rgba(18, 22, 28, 0.85);
+  border-radius: 1rem;
+  border-color: #2a313a;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+
+  /* 기본 숨김 */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.15s ease, transform 0.15s ease,
+    visibility 0.15s step-end;
+  z-index: 101; /* .container보다 위 */
+}
+
+.nav__item--has-submenu:hover > .nav__submenu,
+.nav__item--has-submenu:focus-within > .nav__submenu {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.15s ease, transform 0.15s ease, visibility 0s;
+}
+
+/* 2차 메뉴 내부 아이템 */
+.nav__submenu-item {
+  width: 100%;
+  padding: 0; /* 링크에 패딩을 주므로 여기선 0 */
+}
+
+.nav__submenu-link {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 1rem;
+
+  text-decoration: none;
+  color: #e6edf3; /* 어두운 텍스트 */
+  font-size: 0.95rem;
+  line-height: 1.5rem;
+  font-family: "Noto Sans", sans-serif;
+
+  transition: padding-left 0.3s ease, color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+/* 2차 메뉴 hover 스타일 (원본의 왼쪽 보더 강조 모티프 유지) */
+.nav__submenu-link:hover {
+  padding-left: 1.5rem; /* 살짝 오른쪽으로 밀리게 */
+  border-left: 2px solid #3ca0e7;
+  color: #3ca0e7;
+  background-color: rgba(60, 160, 231, 0.08);
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+/* 3) 접근성 개선(키보드 포커스 표시) */
+.nav__link:focus,
+.nav__submenu-link:focus {
+  outline: 2px solid #3ca0e7;
+  outline-offset: 2px;
+  border-radius: 0.5rem;
 }

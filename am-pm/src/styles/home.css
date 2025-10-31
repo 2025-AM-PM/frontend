@@ -1,5 +1,16 @@
 .main {
-    margin: 0;
-    padding: 0;
-    height: 400vw;
+  display: flex;
+  flex-direction: column;
+  gap: 10rem;
+  min-height: 100vh; /* 표준 */
+  min-height: 100dvh; /* 모바일 주소창 대응 */
+}
+
+.project-title {
+  margin: 0 auto 2rem;
+  text-align: center;
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-size: clamp(22px, 3.6vw, 42px);
 }
