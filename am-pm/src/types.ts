@@ -23,9 +23,9 @@ export interface MiniBoardProps {
 
 export interface AuthState {
   accessToken: string | null;
-  user: StudentRole | null;
+  user: User | null;
   setToken: (token: string | null) => void;
-  setUser: (user: StudentRole | null) => void;
+  setUser: (user: User | null) => void;
   logOut: () => void;
 }
 
@@ -34,7 +34,7 @@ export interface User {
   studentName: string | null;
   studentTier: string | null;
   studentNumber: string | null;
-  role: string | null;
+  role: StudentRole | null;
 }
 
 export type StudentRole = "USER" | "ADMIN" | string;

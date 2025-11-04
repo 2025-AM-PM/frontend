@@ -9,7 +9,9 @@ import {
   PollResultResponse,
   PollVoteRequest,
   Post,
+  User,
 } from "../types";
+import { useAuthStore } from "../stores/authStore";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
 
@@ -327,4 +329,14 @@ export async function getBoardData() {
   await apiFetch<Post[]>("/exhibits", {
     method: "GET",
   });
+}
+
+export async function loadMe() {
+  // 서버 응답 스키마에 맞춰 조정
+  const res = await apiFetch<User>("/students/me", {
+    method: "GET",
+    auth: true,
+  });
+  // 예) { data: { studentName, studentTier, role, ... } }
+  useAuthStore.getState().setUser(res.data);
 }
