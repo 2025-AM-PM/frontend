@@ -12,6 +12,7 @@ import {
   User,
 } from "../types";
 import { useAuthStore } from "../stores/authStore";
+import { refreshAccessToken } from "./auth";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
 
@@ -33,6 +34,8 @@ export async function apiFetch<T>(
   const isMutating =
     method !== "GET" && method !== "HEAD" && method !== "OPTIONS";
 
+  const isAuthEndpoint = path.startsWith("/auth/");
+
   // ## 개선 3: 헤더 병합 로직 간소화
   const headers = new Headers({
     //Accept: "application/json",
@@ -44,7 +47,7 @@ export async function apiFetch<T>(
     headers.set("Content-Type", "application/json");
   }
 
-  if (isMutating || init.auth) {
+  if (!isAuthEndpoint && (isMutating || init.auth)) {
     const tk = getAccessToken();
     if (tk && !headers.has("Authorization")) {
       headers.set("Authorization", `Bearer ${tk}`);
@@ -54,11 +57,23 @@ export async function apiFetch<T>(
   const credentials: RequestCredentials =
     isMutating || init.withCredentials ? "include" : "omit";
 
-  const res = await fetch(`${process.env.REACT_APP_API_BASE}/api${path}`, {
-    ...init,
-    headers,
-    credentials,
-  });
+  const url = `${process.env.REACT_APP_API_BASE}/api${path}`;
+  const doFetch = () => fetch(url, { ...init, method, headers, credentials });
+
+  let res = await doFetch();
+  // const res = await fetch(`${process.env.REACT_APP_API_BASE}/api${path}`, {
+  //   ...init,
+  //   headers,
+  //   credentials,
+  // });
+
+  if (!isAuthEndpoint && res.status === 401 && (isMutating || init.auth)) {
+    const newTk = await refreshAccessToken(); // 쿠키 기반으로 accessToken 재발급 시도
+    if (newTk) {
+      headers.set("Authorization", `Bearer ${newTk}`);
+      res = await doFetch(); // 딱 1회만 재시도
+    }
+  }
 
   const contentType = res.headers.get("content-type") || "";
   const raw = await res.text();
