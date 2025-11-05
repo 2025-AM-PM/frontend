@@ -26,7 +26,7 @@ export interface AuthState {
   user: User | null;
   setToken: (token: string | null) => void;
   setUser: (user: User | null) => void;
-  logOut: () => void;
+  logOut: () => Promise<void>;
 }
 
 export interface User {

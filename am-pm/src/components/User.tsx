@@ -1,4 +1,4 @@
-import { logout } from "../api/auth";
+import { useAuthStore } from "../stores/authStore";
 import "../styles/user.css";
 import { Link } from "react-router-dom";
 
@@ -26,7 +26,7 @@ function UserInfo({
         <span className="user-name">{name}</span>
       </Link>
 
-      <Link to="/login" onClick={logout}>
+      <Link to="/login" onClick={useAuthStore.getState().logOut}>
         로그아웃
       </Link>
     </div>

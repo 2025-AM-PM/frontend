@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { produce } from "immer";
 import { AuthState } from "../types";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { apiFetch } from "../api/client";
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -11,7 +12,19 @@ export const useAuthStore = create<AuthState>()(
 
       setToken: (token) => set({ accessToken: token }),
       setUser: (user) => set({ user }),
-      logOut: () => set({ accessToken: null, user: null }),
+      logOut: async () => {
+        try {
+          await apiFetch<{ ok: boolean }>("/auth/logout", {
+            method: "POST",
+            auth: false,
+            withCredentials: true,
+          });
+        } catch (e) {
+          console.log(e);
+        } finally {
+          set({ accessToken: null, user: null });
+        }
+      },
     }),
     {
       name: "auth", // localStorage key
