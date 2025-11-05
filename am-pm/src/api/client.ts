@@ -11,7 +11,7 @@ import {
   Post,
   User,
 } from "../types";
-import { useAuthStore } from "../stores/authStore";
+import { authStoreApi, useAuthStore } from "../stores/authStore";
 import { refreshAccessToken } from "./auth";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
@@ -48,7 +48,7 @@ export async function apiFetch<T>(
   }
 
   if (!isAuthEndpoint && (isMutating || init.auth)) {
-    const tk = getAccessToken();
+    const tk = authStoreApi.getState().accessToken;
     if (tk && !headers.has("Authorization")) {
       headers.set("Authorization", `Bearer ${tk}`);
     }
