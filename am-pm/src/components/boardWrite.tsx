@@ -18,6 +18,7 @@ import { uploadImageRemote } from "../lib/uploadRemote";
 import { apiFetch } from "../api/client";
 import "../styles/post-editor.css";
 import { Form } from "react-router-dom";
+import Header from "./header";
 
 // 이미지 url 만료시 재요청 받는 기능 추가해야 함.
 const urlCache = new Map<string, string>();
@@ -225,6 +226,7 @@ export default function BoardWrite() {
 
   return (
     <section className="pe-wrap">
+      <Header />
       <div className="pe-grid">
         <Form method="post" className="pe-form" replace>
           <div className="pe-field">

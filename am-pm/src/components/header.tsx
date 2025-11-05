@@ -97,7 +97,7 @@ function Header() {
               }
             >
               <NavLink
-                to="/boards"
+                to="/board/info/write"
                 className="nav__link"
                 aria-haspopup="true"
                 aria-expanded={isCurrentPath("/boards") ? true : undefined}

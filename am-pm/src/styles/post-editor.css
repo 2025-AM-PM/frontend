@@ -103,6 +103,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
+  margin-top: 5rem;
 }
 
 /* 오른쪽 프리뷰 카드 */
