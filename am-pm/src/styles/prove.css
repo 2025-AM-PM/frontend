@@ -18,4 +18,9 @@
 .url-input {
   width: 25%;
   height: 3rem;
+  color: white;
+}
+
+.prove-preview {
+  color: white;
 }
