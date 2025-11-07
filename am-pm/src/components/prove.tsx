@@ -1,9 +1,38 @@
 import "../styles/prove.css";
 import { useState } from "react";
 import { getReadMe } from "../api/getRepo";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import rehypeRaw from "rehype-raw";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
+
+const sanitizeSchema = {
+  ...defaultSchema,
+  // img/a 등 필요한 태그/속성 허용(필요에 맞게 확장 가능)
+  attributes: {
+    ...defaultSchema.attributes,
+    img: [
+      ...(defaultSchema.attributes?.img || []),
+      // 일반적으로 쓰는 속성들 추가
+      ["src"],
+      ["alt"],
+      ["title"],
+      ["width"],
+      ["height"],
+      ["loading"],
+      ["decoding"],
+      ["style"],
+    ],
+    a: [
+      ...(defaultSchema.attributes?.a || []),
+      ["href"],
+      ["title"],
+      ["target"],
+      ["rel"],
+    ],
+  },
+};
 
 export default function Prove() {
   const [url, setUrl] = useState("");
@@ -30,6 +59,16 @@ export default function Prove() {
     }
   };
 
+  // 선택: img 렌더링 커스텀 (lazy 등)
+  const Img = (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img
+      {...props}
+      loading="lazy"
+      decoding="async"
+      style={{ maxWidth: "100%" }}
+    />
+  );
+
   return (
     <div className="prove-main">
       <form className="prove-form" onSubmit={onSubmit}>
@@ -49,7 +88,15 @@ export default function Prove() {
 
       <div className="prove-preview">
         {content ? (
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkBreaks]}
+            rehypePlugins={[rehypeRaw, [rehypeSanitize, sanitizeSchema]]}
+            urlTransform={defaultUrlTransform}
+            components={{
+              img: Img,
+              a: (p) => <a {...p} target="_blank" rel="noreferrer" />,
+            }}
+          >
             {content}
           </ReactMarkdown>
         ) : (
