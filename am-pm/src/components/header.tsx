@@ -1,10 +1,7 @@
 import "../styles/header.css";
 import { NavLink, useLocation } from "react-router-dom";
 import UserInfo from "./User";
-import { User } from "../types";
 import LoginBtn from "./loginBtn";
-import { getStoredUser } from "../api/storage";
-import { useEffect, useState } from "react";
 import { useAuthStore } from "../stores/authStore";
 
 function Header() {

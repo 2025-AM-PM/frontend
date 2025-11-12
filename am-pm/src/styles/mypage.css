@@ -73,6 +73,10 @@
   font-size: 0.95rem;
 }
 
+.card-title {
+  margin-bottom: 1rem;
+}
+
 .verification-steps {
   width: 100%;
   display: flex;

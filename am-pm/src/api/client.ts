@@ -1,4 +1,3 @@
-import { getAccessToken } from "./storage";
 import {
   PagePollSummaryResponse,
   PollSearchParam,
@@ -8,7 +7,6 @@ import {
   PollDetailResponse,
   PollResultResponse,
   PollVoteRequest,
-  Post,
   User,
 } from "../types";
 import { authStoreApi, useAuthStore } from "../stores/authStore";
@@ -23,8 +21,6 @@ export type ApiResponse<T> = {
 };
 
 type Extra = { auth?: boolean; withCredentials?: boolean };
-
-// ApiResponse, Extra, getAccessToken, API_BASE 등은 기존과 동일하다고 가정
 
 export async function apiFetch<T>(
   path: string,
@@ -335,16 +331,16 @@ export async function deleteStudent(studentId: number): Promise<void> {
   });
 }
 
-export async function getBoardData() {
-  const body = {
-    page: 0,
-    size: 10,
-    sort: [],
-  };
-  await apiFetch<Post[]>("/exhibits", {
-    method: "GET",
-  });
-}
+// export async function getBoardData() {
+//   const body = {
+//     page: 0,
+//     size: 10,
+//     sort: [],
+//   };
+//   await apiFetch<Post[]>("/exhibits", {
+//     method: "GET",
+//   });
+// }
 
 export async function loadMe() {
   // 서버 응답 스키마에 맞춰 조정

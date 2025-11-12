@@ -66,6 +66,7 @@ export default function Prove() {
       loading="lazy"
       decoding="async"
       style={{ maxWidth: "100%" }}
+      alt="post-image"
     />
   );
 
@@ -94,7 +95,7 @@ export default function Prove() {
             urlTransform={defaultUrlTransform}
             components={{
               img: Img,
-              a: (p) => <a {...p} target="_blank" rel="noreferrer" />,
+              // a: (p) => <a {...p} />,
             }}
           >
             {content}

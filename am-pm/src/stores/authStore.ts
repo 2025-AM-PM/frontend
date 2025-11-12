@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { produce } from "immer";
 import { AuthState } from "../types";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { apiFetch } from "../api/client";
