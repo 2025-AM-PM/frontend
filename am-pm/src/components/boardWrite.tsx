@@ -45,7 +45,7 @@ const CustomImageRenderer: FC<ComponentProps<"img">> = ({
           const { data: presignedInfo } = await apiFetch<{
             presignedUrl: string;
           }>(`/files/download?fileId=${encodeURIComponent(src)}`, {
-            method: "GET",
+            method: "POST",
             auth: true,
           });
           if (presignedInfo) {
@@ -129,7 +129,7 @@ export default function BoardWrite() {
         const { data: uploadInfo } = await apiFetch<UploadUrlResponse>(
           "/files/upload",
           {
-            method: "GET",
+            method: "Post",
             auth: true,
           }
         );
@@ -140,8 +140,9 @@ export default function BoardWrite() {
 
         const { fileId, presignedUrl } = uploadInfo;
         console.log("Presigned URL: ", presignedUrl);
+        const logicalPath = `exhibits/images/${fileId}`;
         insertAtCursor(`
-![image](${fileId})
+![image](${logicalPath})
 `);
         await uploadImageRemote(presignedUrl, f);
         console.log("성공적으로 파일을 업로드 했습니다.");
