@@ -53,7 +53,7 @@ export async function apiFetch<T>(
   const credentials: RequestCredentials =
     isMutating || init.withCredentials ? "include" : "omit";
 
-  const url = `${path}`;
+  const url = `/api/${path}`;
   const doFetch = () => fetch(url, { ...init, method, headers, credentials });
 
   let res = await doFetch();
