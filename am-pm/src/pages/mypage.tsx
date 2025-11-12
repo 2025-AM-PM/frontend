@@ -2,21 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom"; // ✨ Link를 추가합니다.
 import "../styles/mypage.css";
 import { apiFetch } from "../api/client";
-interface UserProfile {
-  name: string;
-  studentId: string;
-  baekjoonId: string;
-}
+import { useAuthStore } from "../stores/authStore";
 
 export default function Mypage() {
   const navigate = useNavigate(); // 2. useNavigate를 초기화합니다.
 
   // 3. 초기 상태를 요청대로 빈 문자열("")로 설정합니다.
-  const [profile, setProfile] = useState<UserProfile>({
-    name: "",
-    studentId: "",
-    baekjoonId: "",
-  });
+  // const [setProfile] = useState<UserProfile>({
+  //   name: "",
+  //   studentId: "",
+  //   baekjoonId: "",
+  // });
+
+  const user = useAuthStore((s) => s.user);
 
   const [isPasswordFormVisible, setIsPasswordFormVisible] = useState(false);
   const [passwords, setPasswords] = useState({
@@ -29,34 +27,34 @@ export default function Mypage() {
   const [verificationCode, setVerificationCode] = useState<string | null>(null); // 서버에서 받은 인증 코드
   const [isVerified, setIsVerified] = useState(false); // 최종 인증 완료 여부
   const [inputBaekjoonId, setInputBaekjoonId] = useState(""); // 사용자가 직접 입력하는 백준 아이디
+  const accessToken = useAuthStore((s) => s.accessToken);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const { data } = await apiFetch<{
-          studentName: string;
-          studentNumber: string;
-        }>("/student/mypage", {
-          method: "GET",
-          auth: true,
-        });
-
-        if (data) {
-          setProfile((prevProfile) => ({
-            ...prevProfile,
-            name: data.studentName,
-            studentId: data.studentNumber,
-            // 참고: /api/student/mypage API는 baekjoonId를 반환하지 않으므로,
-            // 이 값은 다른 API를 통해 업데이트하거나 로그인 시점에 받아와야 합니다.
-          }));
-        }
+        // const { data } = await apiFetch<{
+        //   studentName: string;
+        //   studentNumber: string;
+        // }>("/student/mypage", {
+        //   method: "GET",
+        //   auth: true,
+        // });
+        // if (data) {
+        //   setProfile((prevProfile) => ({
+        //     ...prevProfile,
+        //     name: data.studentName,
+        //     studentId: data.studentNumber,
+        //     // 참고: /api/student/mypage API는 baekjoonId를 반환하지 않으므로,
+        //     // 이 값은 다른 API를 통해 업데이트하거나 로그인 시점에 받아와야 합니다.
+        //   }));
+        // }
       } catch (err: any) {
         console.error("[fetch user profile failed]", err);
-        setProfile({
-          name: "오류",
-          studentId: "오류",
-          baekjoonId: "오류",
-        });
+        // setProfile({
+        //   name: "오류",
+        //   studentId: "오류",
+        //   baekjoonId: "오류",
+        // });
       }
     };
 
@@ -92,7 +90,6 @@ export default function Mypage() {
       return;
     }
 
-    const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
       alert("로그인이 필요합니다. 다시 로그인해주세요.");
       navigate("/login");
@@ -135,7 +132,7 @@ export default function Mypage() {
         setVerificationCode(data);
       }
     } catch (err: any) {
-      alert(err.message);
+      alert(err);
     } finally {
       setIsLoading(false);
     }
@@ -186,10 +183,10 @@ export default function Mypage() {
       setVerificationCode(null);
       if (!data) throw new Error("errolr");
 
-      setProfile((prev) => ({
-        ...prev,
-        baekjoonId: data.solvedAcInformationResponse.handle,
-      }));
+      // setProfile((prev) => ({
+      //   ...prev,
+      //   baekjoonId: data.solvedAcInformationResponse.handle,
+      // }));
     } catch (err: any) {
       alert(err.message);
     } finally {
@@ -227,11 +224,11 @@ export default function Mypage() {
         <div className="profile-info">
           <div className="field">
             <label className="field-label">이름</label>
-            <div className="text-field-display">{profile.name}</div>
+            <div className="text-field-display">{user?.studentName}</div>
           </div>
           <div className="field">
             <label className="field-label">학번</label>
-            <div className="text-field-display">{profile.studentId}</div>
+            <div className="text-field-display">{user?.studentId}</div>
           </div>
         </div>
 
@@ -299,9 +296,9 @@ export default function Mypage() {
         <h2 className="card-title">백준 계정</h2>
         <div className="profile-info">
           <div className="field">
-            <label className="field-label">백준 아이디</label>
+            {/* <label className="field-label">백준 아이디</label> */}
             <div className="text-field-display">
-              {profile.baekjoonId || "아직 등록되지 않았습니다."}
+              {user?.studentTier || "아직 등록되지 않았습니다."}
             </div>
           </div>
         </div>

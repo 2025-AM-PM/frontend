@@ -15,7 +15,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: am-pm   # 리포 루트 기준
+        working-directory: am-pm # 리포 루트 기준
 
     steps:
       - name: Checkout
@@ -32,8 +32,6 @@ jobs:
         run: |
           if [ -f package-lock.json ]; then
             npm ci
-          elif [ -f yarn.lock ]; then
-            npm i -g yarn && yarn install --frozen-lockfile
           else
             npm install
           fi
@@ -53,7 +51,6 @@ jobs:
           echo "Prepared files (out/):"
           ls -lah out | sed -n '1,80p'
 
-      # ⬇️ 경로 꼬임 방지 포인트: strip_components: 2 (am-pm + out 제거)
       - name: Copy artifact to server (SCP)
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -61,7 +58,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          # 이 값은 '리포 루트' 기준 경로
+
           source: "am-pm/out/*"
           target: "/home/${{ secrets.SSH_USER }}/deploy/incoming"
           strip_components: 2
@@ -83,7 +80,7 @@ jobs:
             TMP="/tmp/ampm-frontend_$(date +%s)"
             DEST="/var/www/ampm-frontend"
 
-            echo "📦 Incoming listing (top)"
+            echo "Incoming listing (top)"
             ls -lah "${SRC}" | sed -n '1,80p' || true
 
             # 산출물 핵심 파일 확인(없으면 실패로 종료)
@@ -92,11 +89,11 @@ jobs:
               exit 1
             fi
 
-            echo "🗂  Stage to temp: ${TMP}"
+            echo "Stage to temp: ${TMP}"
             sudo mkdir -p "${TMP}"
             sudo cp -a "${SRC}/." "${TMP}/"
 
-            echo "🔁 Replace contents at ${DEST}"
+            echo "Replace contents at ${DEST}"
             sudo mkdir -p "${DEST}"
             if command -v rsync >/dev/null 2>&1; then
               sudo rsync -a --delete "${TMP}/" "${DEST}/"
@@ -111,11 +108,11 @@ jobs:
             sudo find "${DEST}" -type d -exec chmod 755 {} \;
             sudo find "${DEST}" -type f -exec chmod 644 {} \;
 
-            echo "🧪 Nginx test & reload"
+            echo "Nginx test & reload"
             sudo nginx -t
             sudo systemctl reload nginx
 
-            echo "🧹 Cleanup"
+            echo "Cleanup"
             sudo rm -rf "${TMP}"
 
-            echo "🎉 Frontend deployment done"
+            echo "Frontend deployment done"

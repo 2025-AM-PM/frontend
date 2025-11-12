@@ -3,7 +3,7 @@ export interface Post {
   title: string;
   createdAt: string;
   view: number;
-  link: string;
+  link?: string;
   author: string;
 }
 
@@ -21,15 +21,23 @@ export interface MiniBoardProps {
   posts: Post[];
 }
 
+export interface AuthState {
+  accessToken: string | null;
+  user: User | null;
+  setToken: (token: string | null) => void;
+  setUser: (user: User | null) => void;
+  logOut: () => Promise<void>;
+}
+
 export interface User {
   studentId: number | null;
   studentName: string | null;
   studentTier: string | null;
   studentNumber: string | null;
-  role: string | null;
+  role: StudentRole | null;
 }
 
-export type StudentRole = "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN";
+export type StudentRole = "USER" | "ADMIN" | string;
 
 // Poll related types
 export interface PollSummaryResponse {
@@ -150,11 +158,7 @@ export interface PageData {
   empty: boolean;
 }
 
-export type SortKey =
-  | "createdAt,desc"
-  | "createdAt,asc"
-  | "views,desc"
-  | "title,asc";
+export type SortKey = "createdAt,desc" | "createdAt,asc" | "views,desc";
 
 export interface FetchParams {
   page: number;

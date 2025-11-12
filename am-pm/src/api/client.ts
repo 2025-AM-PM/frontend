@@ -1,4 +1,3 @@
-import { getAccessToken } from "./storage";
 import {
   PagePollSummaryResponse,
   PollSearchParam,
@@ -8,7 +7,10 @@ import {
   PollDetailResponse,
   PollResultResponse,
   PollVoteRequest,
+  User,
 } from "../types";
+import { authStoreApi, useAuthStore } from "../stores/authStore";
+import { refreshAccessToken } from "./auth";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
 
@@ -20,8 +22,6 @@ export type ApiResponse<T> = {
 
 type Extra = { auth?: boolean; withCredentials?: boolean };
 
-// ApiResponse, Extra, getAccessToken, API_BASE 등은 기존과 동일하다고 가정
-
 export async function apiFetch<T>(
   path: string,
   init: RequestInit & Extra = {}
@@ -29,6 +29,8 @@ export async function apiFetch<T>(
   const method = (init.method || "GET").toUpperCase();
   const isMutating =
     method !== "GET" && method !== "HEAD" && method !== "OPTIONS";
+
+  const isAuthEndpoint = path.startsWith("/auth/");
 
   // ## 개선 3: 헤더 병합 로직 간소화
   const headers = new Headers({
@@ -41,8 +43,8 @@ export async function apiFetch<T>(
     headers.set("Content-Type", "application/json");
   }
 
-  if (isMutating || init.auth) {
-    const tk = getAccessToken();
+  if (!isAuthEndpoint && (isMutating || init.auth)) {
+    const tk = authStoreApi.getState().accessToken;
     if (tk && !headers.has("Authorization")) {
       headers.set("Authorization", `Bearer ${tk}`);
     }
@@ -51,11 +53,23 @@ export async function apiFetch<T>(
   const credentials: RequestCredentials =
     isMutating || init.withCredentials ? "include" : "omit";
 
-  const res = await fetch(`/api${path}`, {
-    ...init,
-    headers,
-    credentials,
-  });
+  const url = `${process.env.REACT_APP_API_BASE}/api${path}`;
+  const doFetch = () => fetch(url, { ...init, method, headers, credentials });
+
+  let res = await doFetch();
+  // const res = await fetch(`${process.env.REACT_APP_API_BASE}/api${path}`, {
+  //   ...init,
+  //   headers,
+  //   credentials,
+  // });
+
+  if (!isAuthEndpoint && res.status === 401 && (isMutating || init.auth)) {
+    const newTk = await refreshAccessToken(); // 쿠키 기반으로 accessToken 재발급 시도
+    if (newTk) {
+      headers.set("Authorization", `Bearer ${newTk}`);
+      res = await doFetch(); // 딱 1회만 재시도
+    }
+  }
 
   const contentType = res.headers.get("content-type") || "";
   const raw = await res.text();
@@ -215,7 +229,7 @@ export interface StudentResponse {
   id: number;
   studentNumber: string;
   studentName: string;
-  role: "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN";
+  role: "USER" | "ADMIN" | string;
 }
 
 export interface AllStudentResponse {
@@ -292,7 +306,7 @@ export async function getAllStudents(): Promise<AllStudentResponse> {
 // Update student role
 export async function updateStudentRole(
   studentId: number,
-  role: "USER" | "STAFF" | "PRESIDENT" | "SYSTEM_ADMIN"
+  role: "USER" | "ADMIN" | string
 ): Promise<StudentResponse> {
   const response = await apiFetch<StudentResponse>(
     `/admin/students/${studentId}`,
@@ -315,4 +329,25 @@ export async function deleteStudent(studentId: number): Promise<void> {
     method: "DELETE",
     auth: true,
   });
+}
+
+// export async function getBoardData() {
+//   const body = {
+//     page: 0,
+//     size: 10,
+//     sort: [],
+//   };
+//   await apiFetch<Post[]>("/exhibits", {
+//     method: "GET",
+//   });
+// }
+
+export async function loadMe() {
+  // 서버 응답 스키마에 맞춰 조정
+  const res = await apiFetch<User>("/students/me", {
+    method: "GET",
+    auth: true,
+  });
+  // 예) { data: { studentName, studentTier, role, ... } }
+  useAuthStore.getState().setUser(res.data);
 }

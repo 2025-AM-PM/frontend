@@ -5,7 +5,6 @@ import React, {
   useDeferredValue,
   FC,
   ComponentProps,
-  useCallback,
 } from "react";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -18,6 +17,8 @@ import { Label } from "../components/label";
 import { uploadImageRemote } from "../lib/uploadRemote";
 import { apiFetch } from "../api/client";
 import "../styles/post-editor.css";
+import { Form } from "react-router-dom";
+import Header from "./header";
 
 // 이미지 url 만료시 재요청 받는 기능 추가해야 함.
 const urlCache = new Map<string, string>();
@@ -173,45 +174,48 @@ export default function BoardWrite() {
   const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) =>
     e.preventDefault();
 
-  const onSubmit = useCallback(async () => {
-    if (!title.trim() || !content.trim()) return;
+  // const onSubmit = useCallback(async () => {
+  //   if (!title.trim() || !content.trim()) return;
 
-    const postData = {
-      title: title,
-      description: content,
-      exhibitUrl: "",
-    };
+  //   const postData = {
+  //     request: {
+  //       title: title,
+  //       description: content,
+  //       exhibitUrl: "",
+  //     },
+  //     files: [],
+  //   };
 
-    try {
-      const { data } = await apiFetch("/exhibits", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(postData),
-        auth: true,
-      });
-      console.log("게시글 등록 성공:", data);
-      alert("게시글이 성공적으로 등록되었습니다.");
-    } catch (error) {
-      console.error("게시글 등록 실패:", error);
-      alert("게시글 등록 중 오류가 발생했습니다.");
-    }
-  }, [title, content]);
+  //   try {
+  //     const { data } = await apiFetch("/exhibits", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(postData),
+  //       auth: true,
+  //     });
+  //     console.log("게시글 등록 성공:", data);
+  //     alert("게시글이 성공적으로 등록되었습니다.");
+  //   } catch (error) {
+  //     console.error("게시글 등록 실패:", error);
+  //     alert("게시글 등록 중 오류가 발생했습니다.");
+  //   }
+  // }, [title, content]);
 
-  useEffect(() => {
-    const h = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "enter") {
-        e.preventDefault();
-        onSubmit();
-      }
-    };
-    window.addEventListener("keydown", h);
-    return () => window.removeEventListener("keydown", h);
-  }, [onSubmit]);
+  // useEffect(() => {
+  //   // const h = (e: KeyboardEvent) => {
+  //   //   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "enter") {
+  //   //     e.preventDefault();
+  //   //     onSubmit();
+  //   //   }
+  //   // };
+  //   window.addEventListener("keydown", h);
+  //   return () => window.removeEventListener("keydown", h);
+  // });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit();
-  };
+  // const handleSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   onSubmit();
+  // };
 
   const mdComponents: Components = {
     a: ({ node, ...props }) => (
@@ -222,8 +226,9 @@ export default function BoardWrite() {
 
   return (
     <section className="pe-wrap">
+      <Header />
       <div className="pe-grid">
-        <form onSubmit={handleSubmit} className="pe-form">
+        <Form method="post" className="pe-form" replace>
           <div className="pe-field">
             <Label htmlFor="post-title" className="pe-label">
               Title
@@ -235,6 +240,8 @@ export default function BoardWrite() {
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your post title..."
               className="pe-input"
+              required
+              name="title"
             />
           </div>
           <div className="pe-field">
@@ -252,6 +259,8 @@ export default function BoardWrite() {
                 onDragOver={onDragOver}
                 placeholder={`# Start writing your post here...`}
                 className="pe-textarea"
+                required
+                name="description"
               />
               <p className="pe-hint">
                 Supports Markdown. Paste or drag images to upload.
@@ -265,7 +274,7 @@ export default function BoardWrite() {
           >
             포스트 작성
           </Button>
-        </form>
+        </Form>
         <aside className="pe-preview" aria-label="Preview">
           <div className="pe-preview-card">
             <div className="pe-preview-head">Preview</div>
