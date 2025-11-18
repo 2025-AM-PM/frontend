@@ -1,91 +1,72 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom"; // ✨ Link를 추가합니다.
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import "../styles/mypage.css";
 import { apiFetch } from "../api/client";
 import { useAuthStore } from "../stores/authStore";
 
+type PasswordFormValues = {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
+type BaekjoonFormValues = {
+  baekjoonId: string;
+};
+
+type StudentInfoResponse = {
+  studentNumber: string;
+  solvedAcInformationResponse: {
+    handle: string;
+    solvedCount: number;
+    tier: number;
+    rating: number;
+  };
+};
+
 export default function Mypage() {
-  const navigate = useNavigate(); // 2. useNavigate를 초기화합니다.
-
-  // 3. 초기 상태를 요청대로 빈 문자열("")로 설정합니다.
-  // const [setProfile] = useState<UserProfile>({
-  //   name: "",
-  //   studentId: "",
-  //   baekjoonId: "",
-  // });
-
+  const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
-
-  const [isPasswordFormVisible, setIsPasswordFormVisible] = useState(false);
-  const [passwords, setPasswords] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
-
-  const [isLoading, setIsLoading] = useState(false); // API 호출 로딩 상태
-  const [verificationCode, setVerificationCode] = useState<string | null>(null); // 서버에서 받은 인증 코드
-  const [isVerified, setIsVerified] = useState(false); // 최종 인증 완료 여부
-  const [inputBaekjoonId, setInputBaekjoonId] = useState(""); // 사용자가 직접 입력하는 백준 아이디
   const accessToken = useAuthStore((s) => s.accessToken);
 
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        // const { data } = await apiFetch<{
-        //   studentName: string;
-        //   studentNumber: string;
-        // }>("/student/mypage", {
-        //   method: "GET",
-        //   auth: true,
-        // });
-        // if (data) {
-        //   setProfile((prevProfile) => ({
-        //     ...prevProfile,
-        //     name: data.studentName,
-        //     studentId: data.studentNumber,
-        //     // 참고: /api/student/mypage API는 baekjoonId를 반환하지 않으므로,
-        //     // 이 값은 다른 API를 통해 업데이트하거나 로그인 시점에 받아와야 합니다.
-        //   }));
-        // }
-      } catch (err: any) {
-        console.error("[fetch user profile failed]", err);
-        // setProfile({
-        //   name: "오류",
-        //   studentId: "오류",
-        //   baekjoonId: "오류",
-        // });
-      }
-    };
+  const [isPasswordFormVisible, setIsPasswordFormVisible] = useState(false);
+  const [verificationCode, setVerificationCode] = useState<string | null>(null);
+  const [isVerified, setIsVerified] = useState(false);
+  const [isIssuingCode, setIsIssuingCode] = useState(false);
 
-    fetchUserProfile();
-  }, [navigate]); // 5. useEffect 의존성 배열에 navigate를 추가합니다. (권장사항)
+  // 비밀번호 변경 폼 (RHF)
+  const {
+    register: registerPassword,
+    handleSubmit: handlePasswordSubmit,
+    reset: resetPasswordForm,
+    formState: { errors: passwordErrors, isSubmitting: isPasswordSubmitting },
+  } = useForm<PasswordFormValues>({
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
 
-  const handlePasswordInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = e.target;
-    setPasswords((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // 백준 인증 폼 (RHF)
+  const {
+    register: registerBaekjoon,
+    handleSubmit: handleBaekjoonSubmit,
+    formState: { errors: baekjoonErrors, isSubmitting: isBaekjoonSubmitting },
+  } = useForm<BaekjoonFormValues>({
+    defaultValues: { baekjoonId: "" },
+  });
 
   const togglePasswordForm = () => {
-    setIsPasswordFormVisible(!isPasswordFormVisible);
+    setIsPasswordFormVisible((prev) => !prev);
     if (isPasswordFormVisible) {
-      setPasswords({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
+      resetPasswordForm();
     }
   };
 
-  const handlePasswordSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (passwords.newPassword !== passwords.confirmPassword) {
+  const onPasswordSubmit = async (values: PasswordFormValues) => {
+    if (values.newPassword !== values.confirmPassword) {
       alert("새 비밀번호가 일치하지 않습니다.");
       return;
     }
@@ -101,13 +82,15 @@ export default function Mypage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          rawCurrentPassword: passwords.currentPassword,
-          newPassword: passwords.newPassword,
-          newPasswordConfirm: passwords.confirmPassword,
+          rawCurrentPassword: values.currentPassword,
+          newPassword: values.newPassword,
+          newPasswordConfirm: values.confirmPassword,
         }),
+        auth: true,
       });
+
       if (status !== 200) {
-        throw new Error(`오류가 발생했습니다. 다시 시도해주세요`);
+        throw new Error("오류가 발생했습니다. 다시 시도해주세요");
       }
 
       alert("비밀번호가 성공적으로 변경되었습니다.");
@@ -118,95 +101,85 @@ export default function Mypage() {
     }
   };
 
-  // 1. 백준 인증 코드 발급 함수
+  // 백준 인증 코드 발급
   const handleIssueCode = async () => {
-    setIsLoading(true);
+    setIsIssuingCode(true);
 
     try {
-      const { data } = await apiFetch<string>("/students/issue", {
+      const res = await apiFetch<string>("/students/issue", {
         method: "POST",
         auth: true,
       });
 
-      if (data) {
-        setVerificationCode(data);
+      if (res.status === 200) {
+        setVerificationCode(res?.data);
+        console.log("[setVerificationCode]", res.data);
       }
     } catch (err: any) {
-      alert(err);
+      console.error("[issue code failed]", err);
+      alert(err?.message || "인증 코드 발급에 실패했습니다.");
     } finally {
-      setIsLoading(false);
+      setIsIssuingCode(false);
     }
   };
 
-  const handleFinalVerification = async () => {
-    // 이제 profile.baekjoonId 대신 사용자가 입력한 inputBaekjoonId를 확인합니다.
-    if (!inputBaekjoonId) {
+  // 백준 최종 인증
+  const handleFinalVerification = async ({
+    baekjoonId,
+  }: BaekjoonFormValues) => {
+    if (!baekjoonId) {
       alert("백준 아이디를 입력해주세요.");
       return;
     }
 
-    console.log("서버로 전송하는 백준 아이디:", `'${inputBaekjoonId}'`);
-
-    setIsLoading(true);
-    const accessToken = localStorage.getItem("access_token");
     if (!accessToken) {
       alert("로그인이 필요합니다.");
-      setIsLoading(false);
       navigate("/login");
       return;
     }
 
-    type info = {
-      studentNumber: string;
-      solvedAcInformationResponse: {
-        handle: string;
-        solvedCount: number;
-        tier: number;
-        rating: number;
-      };
-    };
-    try {
-      const { status, data } = await apiFetch<info>("/students/info", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ solvedAcNickname: inputBaekjoonId }),
-      });
+    console.log("서버로 전송하는 백준 아이디:", `'${baekjoonId}'`);
 
-      if (status !== 200)
+    try {
+      const { status, data } = await apiFetch<StudentInfoResponse>(
+        "/students/info",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ solvedAcNickname: baekjoonId }),
+          auth: true,
+        }
+      );
+
+      if (status !== 200) {
         throw new Error(
           "인증에 실패했습니다. 아이디와 코드를 다시 확인해주세요."
         );
+      }
 
-      // const data = await res.json();
+      if (!data) {
+        throw new Error("서버 응답이 올바르지 않습니다.");
+      }
+
       alert("백준 계정 인증에 성공했습니다!");
       setIsVerified(true);
+
       setVerificationCode(null);
-      if (!data) throw new Error("errolr");
-
-      // setProfile((prev) => ({
-      //   ...prev,
-      //   baekjoonId: data.solvedAcInformationResponse.handle,
-      // }));
+      // 필요하다면 여기에 user store 갱신 로직 추가 가능
     } catch (err: any) {
-      alert(err.message);
-    } finally {
-      setIsLoading(false);
+      console.error("[baekjoon verify failed]", err);
+      alert(err?.message || "백준 계정 인증에 실패했습니다.");
     }
   };
 
-  // 3. 인증 코드 복사 함수
   const handleCopyCode = () => {
-    if (verificationCode) {
-      navigator.clipboard
-        .writeText(verificationCode)
-        .then(() => alert("인증 코드가 복사되었습니다!"))
-        .catch(() => alert("복사에 실패했습니다."));
-    }
-  };
+    if (!verificationCode) return;
 
-  //   const handleVerifyBaekjoon = () => {
-  //     alert("백준 인증 기능을 구현할 예정입니다.");
-  //   };
+    navigator.clipboard
+      .writeText(verificationCode)
+      .then(() => alert("인증 코드가 복사되었습니다!"))
+      .catch(() => alert("복사에 실패했습니다."));
+  };
 
   return (
     <main className="login-page" aria-labelledby="mypageTitle">
@@ -219,6 +192,7 @@ export default function Mypage() {
         </h1>
       </header>
 
+      {/* 프로필 영역 */}
       <section className="auth-card" aria-label="User profile information">
         <h2 className="card-title">내 프로필</h2>
         <div className="profile-info">
@@ -233,43 +207,75 @@ export default function Mypage() {
         </div>
 
         {isPasswordFormVisible && (
-          <form onSubmit={handlePasswordSubmit} className="password-form">
+          <form
+            onSubmit={handlePasswordSubmit(onPasswordSubmit)}
+            className="password-form"
+          >
             <div className="field">
               <label className="field-label">현재 비밀번호</label>
               <input
                 type="password"
-                name="currentPassword"
                 className="text-field"
-                value={passwords.currentPassword}
-                onChange={handlePasswordInputChange}
-                required
+                {...registerPassword("currentPassword", {
+                  required: "현재 비밀번호를 입력해주세요.",
+                })}
               />
+              {passwordErrors.currentPassword && (
+                <p className="error-message">
+                  {passwordErrors.currentPassword.message}
+                </p>
+              )}
             </div>
             <div className="field">
               <label className="field-label">새 비밀번호</label>
               <input
                 type="password"
-                name="newPassword"
                 className="text-field"
-                value={passwords.newPassword}
-                onChange={handlePasswordInputChange}
-                required
+                {...registerPassword("newPassword", {
+                  required: "새 비밀번호를 입력해주세요.",
+                  maxLength: {
+                    value: 12,
+                    message: "최대 12자까지 입력 가능합니다.",
+                  },
+                  minLength: {
+                    value: 8,
+                    message: "최소 8자 이상 입력해주세요.",
+                  },
+                  pattern: {
+                    // 특수문자가 반드시 포함되어야 한다는 패턴 정규식으로 작성
+                    value: /^(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/,
+                    message: "특수문자를 포함해야 합니다.",
+                  },
+                })}
               />
+              {passwordErrors.newPassword && (
+                <p className="error-message">
+                  {passwordErrors.newPassword.message}
+                </p>
+              )}
             </div>
             <div className="field">
               <label className="field-label">새 비밀번호 확인</label>
               <input
                 type="password"
-                name="confirmPassword"
                 className="text-field"
-                value={passwords.confirmPassword}
-                onChange={handlePasswordInputChange}
-                required
+                {...registerPassword("confirmPassword", {
+                  required: "새 비밀번호를 다시 입력해주세요.",
+                })}
               />
+              {passwordErrors.confirmPassword && (
+                <p className="error-message">
+                  {passwordErrors.confirmPassword.message}
+                </p>
+              )}
             </div>
             <div className="form-actions">
-              <button type="submit" className="btn btn-primary">
-                변경사항 저장
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isPasswordSubmitting}
+              >
+                {isPasswordSubmitting ? "변경 중..." : "변경사항 저장"}
               </button>
               <button
                 type="button"
@@ -292,11 +298,11 @@ export default function Mypage() {
         )}
       </section>
 
+      {/* 백준 계정 영역 */}
       <section className="auth-card" aria-label="Baekjoon account information">
         <h2 className="card-title">백준 계정</h2>
         <div className="profile-info">
           <div className="field">
-            {/* <label className="field-label">백준 아이디</label> */}
             <div className="text-field-display">
               {user?.studentTier || "아직 등록되지 않았습니다."}
             </div>
@@ -308,17 +314,26 @@ export default function Mypage() {
             인증 완료
           </button>
         ) : verificationCode ? (
-          // ✨ --- 이 부분을 아래 코드로 교체하세요 ---
-          <div className="verification-steps">
+          // 인증 코드 발급 이후 UI
+          <form
+            className="verification-steps"
+            onSubmit={handleBaekjoonSubmit(handleFinalVerification)}
+          >
             <div className="field">
               <label className="field-label">인증할 백준 아이디</label>
               <input
                 type="text"
                 className="text-field"
-                value={inputBaekjoonId}
-                onChange={(e) => setInputBaekjoonId(e.target.value)}
                 placeholder="solved.ac 닉네임을 입력하세요"
+                {...registerBaekjoon("baekjoonId", {
+                  required: "solved.ac 닉네임을 입력해주세요.",
+                })}
               />
+              {baekjoonErrors.baekjoonId && (
+                <p className="error-message">
+                  {baekjoonErrors.baekjoonId.message}
+                </p>
+              )}
             </div>
             <p className="verification-guide">
               위 아이디의{" "}
@@ -333,26 +348,30 @@ export default function Mypage() {
             </p>
             <div className="code-box">
               <span className="code-text">{verificationCode}</span>
-              <button onClick={handleCopyCode} className="btn-copy">
+              <button
+                type="button"
+                onClick={handleCopyCode}
+                className="btn-copy"
+              >
                 복사
               </button>
             </div>
             <button
+              type="submit"
               className="btn btn-primary full-width-btn"
-              onClick={handleFinalVerification}
-              disabled={isLoading}
+              disabled={isBaekjoonSubmitting}
             >
-              {isLoading ? "확인 중..." : "인증 완료하기"}
+              {isBaekjoonSubmitting ? "확인 중..." : "인증 완료하기"}
             </button>
-          </div>
+          </form>
         ) : (
-          // 초기 상태
+          // 초기 상태: 인증하기 버튼
           <button
             className="btn btn-primary full-width-btn"
             onClick={handleIssueCode}
-            disabled={isLoading}
+            disabled={isIssuingCode}
           >
-            {isLoading ? "코드 발급 중..." : "인증하기"}
+            {isIssuingCode ? "코드 발급 중..." : "인증하기"}
           </button>
         )}
       </section>

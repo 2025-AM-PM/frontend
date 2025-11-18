@@ -31,7 +31,7 @@ fun main() {
 }
 \`\`\`
 
-![실제 스크린샷](https://example.com/ignored.jpg)
+![실제 스크린샷](https://spnimage.edaily.co.kr/images/photo/files/NP/S/2025/09/PS25092900031.jpg)
 
 마지막으로, 질문/피드백은 댓글로 남겨 주세요 :)`;
 
@@ -99,7 +99,7 @@ export default function PostDetail() {
   // react-markdown용 매핑: 링크 target, 이미지 제거, 코드 기본 처리
   const mdComponents: Components = {
     code: CodeBlock,
-    img: MdImage, // ⬅️ 이 줄이 핵심
+    img: MdImage,
     a: ({ node, ...props }) => (
       <a {...props} target="_blank" rel="noreferrer" aria-label="상세보기" />
     ),

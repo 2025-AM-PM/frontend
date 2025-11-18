@@ -53,7 +53,7 @@ export async function apiFetch<T>(
   const credentials: RequestCredentials =
     isMutating || init.withCredentials ? "include" : "omit";
 
-  const url = `/api${path}`;
+  const url = `${process.env.REACT_APP_API_BASE}/api${path}`;
   const doFetch = () => fetch(url, { ...init, method, headers, credentials });
 
   let res = await doFetch();
@@ -75,13 +75,18 @@ export async function apiFetch<T>(
   const raw = await res.text();
   let parsed: any = null;
 
-  if (raw && contentType.includes("application/json")) {
-    try {
-      parsed = JSON.parse(raw);
-    } catch (e) {
-      // ## 개선 2: JSON 파싱 에러를 무시하지 않음
-      console.error("Failed to parse JSON response:", e);
-      // 혹은 여기서 특정 에러를 throw 할 수도 있습니다.
+  if (raw) {
+    if (contentType.includes("application/json")) {
+      try {
+        parsed = JSON.parse(raw);
+      } catch (e) {
+        console.error("Failed to parse JSON response:", e);
+        // JSON 파싱 실패 시에도 원본 문자열은 살려둔다.
+        parsed = raw;
+      }
+    } else {
+      // JSON이 아니면 raw 문자열 그대로 사용
+      parsed = raw;
     }
   }
 
