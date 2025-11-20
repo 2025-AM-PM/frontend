@@ -150,10 +150,13 @@ export async function refreshAccessToken(): Promise<string | null> {
   if (refreshPromise) return refreshPromise; // single-flight
 
   refreshPromise = (async () => {
-    const res = await fetch(`/api/auth/reissue`, {
-      method: "POST",
-      credentials: "include",
-    });
+    const res = await fetch(
+      `${process.env.REACT_APP_API_BASE}/api/auth/reissue`,
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
     if (!res.ok) return null;
 
     let token = pickBearerFromHeaders(res.headers);

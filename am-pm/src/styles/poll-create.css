@@ -216,7 +216,7 @@ input[type="text"],
 input[type="number"],
 input[type="date"],
 input[type="time"],
-textarea,
+/* textarea, */
 select {
   width: 100%;
   padding: 0.625rem 0.875rem;
@@ -233,7 +233,7 @@ select {
 }
 
 input:focus,
-textarea:focus,
+/* textarea:focus, */
 select:focus {
   outline: none;
   border-color: #3b82f6;
@@ -255,7 +255,7 @@ textarea:focus::placeholder {
 }
 
 /* textarea 전용 스타일 */
-textarea {
+/* textarea {
   resize: vertical;
   min-height: 80px;
   max-height: 160px;
@@ -263,7 +263,7 @@ textarea {
 
 textarea:focus {
   min-height: 100px;
-}
+} */
 
 /* 카운터 스타일 */
 .form-group small {
