@@ -98,7 +98,7 @@ export async function login(req: LoginReq): Promise<User> {
 }
 
 export async function register(req: RegisterReq): Promise<number> {
-  const { status } = await apiFetch<unknown>("/signup", {
+  const { status } = await apiFetch<unknown>("/auth/signup", {
     method: "OPTIONS",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
