@@ -53,7 +53,7 @@ export async function apiFetch<T>(
   const credentials: RequestCredentials =
     isMutating || init.withCredentials ? "include" : "omit";
 
-  const url = `${process.env.REACT_APP_API_BASE}/api${path}`;
+  const url = `${process.env.REACT_APP_API_BASE ?? ""}/api${path}`;
   const doFetch = () => fetch(url, { ...init, method, headers, credentials });
 
   let res = await doFetch();
