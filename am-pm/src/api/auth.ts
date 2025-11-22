@@ -1,5 +1,5 @@
 import { apiFetch, loadMe } from "./client";
-import { setAccessToken, setStoredUser, StorageKeys } from "./storage";
+import { setStoredUser } from "./storage";
 import type { User } from "../types";
 import { useAuthStore } from "../stores/authStore";
 import { pickBearerFromHeaders } from "./auth_helper";
@@ -91,7 +91,7 @@ export async function login(req: LoginReq): Promise<User> {
   }
 
   if (!user) {
-    logout();
+    logOut();
     throw new Error("로그인 실패: 사용자 정보를 불러오지 못했습니다.");
   }
   return user;
@@ -99,7 +99,7 @@ export async function login(req: LoginReq): Promise<User> {
 
 export async function register(req: RegisterReq): Promise<number> {
   const { status } = await apiFetch<unknown>("/auth/signup", {
-    method: "OPTIONS",
+    method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(req),
   });
@@ -139,19 +139,19 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 /** 서버 호출 없이 클라이언트 상태만 정리 */
-export function logout(): void {
-  console.log("[logout] before", localStorage.getItem(StorageKeys.access));
-  setAccessToken(null);
-  setStoredUser<User>(null);
-  console.log("[logout] after", localStorage.getItem(StorageKeys.access));
-}
+// export function logout(): void {
+//   console.log("[logout] before", localStorage.getItem(StorageKeys.access));
+//   setAccessToken(null);
+//   setStoredUser<User>(null);
+//   console.log("[logout] after", localStorage.getItem(StorageKeys.access));
+// }
 
 export async function refreshAccessToken(): Promise<string | null> {
   if (refreshPromise) return refreshPromise; // single-flight
 
   refreshPromise = (async () => {
     const res = await fetch(
-      `${process.env.REACT_APP_API_BASE}/api/auth/reissue`,
+      `${process.env.REACT_APP_API_BASE ?? ""}/api/auth/reissue`,
       {
         method: "POST",
         credentials: "include",

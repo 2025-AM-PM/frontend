@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PollCreateRequest } from "../types";
 import { createPoll } from "../api/client";
-import { useAuth } from "../contexts/userContext";
+// import { useAuth } from "../contexts/userContext";
 import "../styles/poll-create.css";
+import { useAuthStore } from "../stores/authStore";
 
 function PollCreate() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const user = useAuthStore.getState().user;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

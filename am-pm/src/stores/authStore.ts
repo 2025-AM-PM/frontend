@@ -22,13 +22,14 @@ export const useAuthStore = create<AuthState>()(
           console.log(e);
         } finally {
           set({ accessToken: null, user: null });
+          localStorage.clear();
         }
       },
     }),
     {
       name: "auth", // localStorage key
       storage: createJSONStorage(() => localStorage),
-      // ✅ 토큰은 저장하지 않고 user만 저장
+
       partialize: (state) => ({ user: state.user }),
       version: 1,
     }

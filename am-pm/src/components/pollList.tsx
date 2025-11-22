@@ -2,14 +2,15 @@ import React, { useState, useEffect, useCallback } from "react"; // [CHANGED]
 import { useNavigate } from "react-router-dom";
 import { PollSummaryResponse, PollSearchParam } from "../types";
 import { getPolls } from "../api/client";
-import { useAuth } from "../contexts/userContext";
+// import { useAuth } from "../contexts/userContext";
 import PollDetailModal from "./PollDetailModal";
 import Header from "./header";
 import "../styles/pollList.css";
+import { useAuthStore } from "../stores/authStore";
 
 function PollList() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const user = useAuthStore.getState().user;
   const [polls, setPolls] = useState<PollSummaryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [searching, setSearching] = useState(false);
