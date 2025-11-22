@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useAuth } from "../contexts/userContext";
+import { useState, useEffect, useCallback } from "react";
 import "../styles/admin.css";
 import type { StudentRole } from "../types";
 import {
@@ -12,13 +11,14 @@ import {
   type SignupApplicationResponse,
   type StudentResponse,
 } from "../api/client";
+import { useAuthStore } from "../stores/authStore";
 
 // Using types from API client
 type SignupApplication = SignupApplicationResponse;
 type Student = StudentResponse;
 
 export default function AdminPage() {
-  const { user } = useAuth();
+  const user = useAuthStore.getState().user;
   const [activeTab, setActiveTab] = useState<"applications" | "students">(
     "applications"
   );

@@ -11,8 +11,9 @@ import {
   closePoll,
   deletePoll,
 } from "../api/client";
-import { useAuth } from "../contexts/userContext";
+// import { useAuth } from "../contexts/userContext";
 import "../styles/pollDetailModal.css";
+import { useAuthStore } from "../stores/authStore";
 
 interface PollDetailModalProps {
   pollId: number;
@@ -25,7 +26,7 @@ function PollDetailModal({
   onClose,
   onPollUpdated,
 }: PollDetailModalProps) {
-  const { user } = useAuth();
+  const user = useAuthStore.getState().user;
   const [poll, setPoll] = useState<PollDetailResponse | null>(null);
   const [results, setResults] = useState<PollResultResponse | null>(null);
   const [loading, setLoading] = useState(true);

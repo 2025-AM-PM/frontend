@@ -1,12 +1,13 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { User } from "../types";
-import { logout, getCurrentUser } from "../api/auth";
+import { getCurrentUser } from "../api/auth";
 import {
   getStoredUser,
   setStoredUser,
   hasAccessToken,
   StorageKeys,
 } from "../api/storage";
+import { useAuthStore } from "../stores/authStore";
 
 type AuthCtx = {
   user: User | null;
@@ -17,6 +18,8 @@ type AuthCtx = {
 };
 
 const AuthContext = createContext<AuthCtx | null>(null);
+
+const { logOut } = useAuthStore.getState();
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   // 1) localStorage에 있으면 즉시 하이드레이션 (네트워크 없이)
@@ -55,7 +58,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signOut = async () => {
-    await logout(); // localStorage 비움
+    await logOut(); // localStorage 비움
     setUser(null); // 현재 탭 UI 즉시 반영
     window.location.replace("/login"); // 뒤로가기 방지
   };

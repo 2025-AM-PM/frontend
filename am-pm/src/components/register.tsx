@@ -1,68 +1,55 @@
+// RegisterPage.tsx
 import React, { useState } from "react";
+import {
+  Form,
+  useSubmit,
+  useNavigation,
+  useActionData,
+} from "react-router-dom";
+import { useForm } from "react-hook-form";
 import "../styles/login.css";
-import { register } from "../api/auth";
+
+type RegisterFormValues = {
+  studentNumber: string;
+  studentName: string;
+  studentPassword: string;
+  reStudentPassword: string;
+};
+
+type ActionData = {
+  error?: string;
+};
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showRePassword, setShowRePassword] = useState(false);
-  const [studentNumber, setStudentNumber] = useState("");
-  const [studentPassword, setPassword] = useState("");
-  const [reStudentPassword, setRePassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [, setErr] = useState<string | null>(null);
-  const [studentName, setStudentName] = useState("");
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (loading) return;
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    mode: "onSubmit",
+  });
 
-    if (!checkPassword(studentPassword, reStudentPassword)) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
-    }
+  const submit = useSubmit();
+  const navigation = useNavigation();
+  const actionData = useActionData() as ActionData | undefined;
+  const isSubmitting = navigation.state === "submitting";
 
-    try {
-      setLoading(true);
-      setErr(null);
+  const onValid = (data: RegisterFormValues) => {
+    const formData = new FormData();
+    formData.append("studentNumber", data.studentNumber);
+    formData.append("studentName", data.studentName);
+    formData.append("studentPassword", data.studentPassword);
+    formData.append("reStudentPassword", data.reStudentPassword);
 
-      console.log("회원가입 요청:", { studentName, studentNumber });
-
-      const status = await register({
-        studentName,
-        studentNumber,
-        studentPassword,
-      });
-
-      console.log("회원가입 응답 상태:", status);
-
-      if (status === 200 || status === 201) {
-        alert("신청 완료되었습니다. 관리자의 승인이 필요합니다.");
-        // 강제 페이지 이동 (히스토리 교체)
-        window.location.replace("/");
-        return;
-      }
-
-      console.log("회원가입 실패 - 예상치 못한 상태 코드:", status);
-      setErr(`회원가입 실패 (상태 코드: ${status})`);
-    } catch (e: any) {
-      console.error("회원가입 에러:", e);
-      if (e?.status === 500) {
-        alert("이미 가입된 사용자입니다. 관리자에게 문의하세요");
-      } else if (e?.status === 400) {
-        alert("입력 정보를 다시 확인해주세요.");
-      } else {
-        setErr(
-          e?.message || `회원가입 실패 (${e?.status || "알 수 없는 오류"})`
-        );
-      }
-    } finally {
-      setLoading(false);
-    }
+    // RHF 유효성 검사를 통과한 경우에만 router action으로 전송
+    submit(formData, { method: "post" });
   };
 
-  const checkPassword = (password: string, rePassowrd: string) => {
-    return password === rePassowrd;
-  };
+  const passwordValue = watch("studentPassword");
 
   return (
     <main className="login-page" aria-labelledby="loginTitle">
@@ -80,52 +67,72 @@ export default function RegisterPage() {
         <h2 className="card-title">회원가입</h2>
         <p className="card-sub">학번, 비밀번호, 이름을 입력해주세요</p>
 
-        <form className="auth-form" noValidate onSubmit={onSubmit}>
+        {/* RHF + Router Form */}
+        <Form
+          className="auth-form"
+          method="post"
+          noValidate
+          onSubmit={handleSubmit(onValid)}
+        >
           {/* 학번 */}
           <div className="field">
-            <label htmlFor="email" className="field-label">
+            <label htmlFor="studentNumber" className="field-label">
               학번
             </label>
             <input
-              id="email"
+              id="studentNumber"
               type="text"
-              autoComplete="name"
+              autoComplete="username"
               placeholder="학번을 입력해주세요"
               className="text-field"
-              value={studentNumber}
-              onChange={(e) => setStudentNumber(e.currentTarget.value)}
+              {...register("studentNumber", {
+                required: "학번을 입력해주세요.",
+              })}
             />
+            {errors.studentNumber && (
+              <p className="field-error">{errors.studentNumber.message}</p>
+            )}
           </div>
 
+          {/* 이름 */}
           <div className="field">
-            <label htmlFor="name" className="field-label">
+            <label htmlFor="studentName" className="field-label">
               이름
             </label>
             <input
-              id="name"
-              type="name"
-              autoComplete="email"
+              id="studentName"
+              type="text"
+              autoComplete="name"
               placeholder="이름을 입력해주세요"
               className="text-field"
-              value={studentName}
-              onChange={(e) => setStudentName(e.currentTarget.value)}
+              {...register("studentName", {
+                required: "이름을 입력해주세요.",
+              })}
             />
+            {errors.studentName && (
+              <p className="field-error">{errors.studentName.message}</p>
+            )}
           </div>
 
-          {/* Password with show/hide only */}
+          {/* 비밀번호 */}
           <div className="field">
-            <label htmlFor="password" className="field-label">
+            <label htmlFor="studentPassword" className="field-label">
               비밀번호
             </label>
             <div className="password-wrap">
               <input
-                id="password"
+                id="studentPassword"
                 type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 className="text-field with-icon"
-                value={studentPassword}
-                onChange={(e) => setPassword(e.currentTarget.value)}
+                {...register("studentPassword", {
+                  required: "비밀번호를 입력해주세요.",
+                  minLength: {
+                    value: 8,
+                    message: "비밀번호는 8자 이상이어야 합니다.",
+                  },
+                })}
               />
               <button
                 type="button"
@@ -167,21 +174,28 @@ export default function RegisterPage() {
                 )}
               </button>
             </div>
+            {errors.studentPassword && (
+              <p className="field-error">{errors.studentPassword.message}</p>
+            )}
           </div>
 
+          {/* 비밀번호 재입력 */}
           <div className="field">
-            <label htmlFor="password" className="field-label">
+            <label htmlFor="reStudentPassword" className="field-label">
               비밀번호 재입력
             </label>
             <div className="password-wrap">
               <input
-                id="password"
+                id="reStudentPassword"
                 type={showRePassword ? "text" : "password"}
-                autoComplete="current-password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 className="text-field with-icon"
-                value={reStudentPassword}
-                onChange={(e) => setRePassword(e.currentTarget.value)}
+                {...register("reStudentPassword", {
+                  required: "비밀번호를 다시 입력해주세요.",
+                  validate: (value) =>
+                    value === passwordValue || "비밀번호가 일치하지 않습니다.",
+                })}
               />
               <button
                 type="button"
@@ -223,13 +237,27 @@ export default function RegisterPage() {
                 )}
               </button>
             </div>
+            {errors.reStudentPassword && (
+              <p className="field-error">{errors.reStudentPassword.message}</p>
+            )}
           </div>
 
+          {/* 서버 공통 에러 (라우팅 action에서 내려준 에러) */}
+          {actionData?.error && (
+            <p className="form-error" role="alert">
+              {actionData.error}
+            </p>
+          )}
+
           {/* Submit */}
-          <button type="submit" className="btn btn-primary">
-            회원가입 신청
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "회원가입 신청 중..." : "회원가입 신청"}
           </button>
-        </form>
+        </Form>
       </section>
 
       {/* Footer */}

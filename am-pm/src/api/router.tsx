@@ -16,6 +16,7 @@ import AdminPage from "../pages/AdminPage";
 import BoardList from "../components/boardList";
 import ErrorPage from "../components/error";
 import Prove from "../components/prove";
+import { register as registerApi } from "./auth";
 
 function LoginRoute() {
   const { setUser } = useAuth();
@@ -78,6 +79,60 @@ export const router = createBrowserRouter([
   {
     path: "/",
     Component: HomePage,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+    errorElement: <ErrorPage />,
+    action: async ({ request }) => {
+      const form = await request.formData();
+
+      const studentNumber = String(form.get("studentNumber") || "").trim();
+      const studentName = String(form.get("studentName") || "").trim();
+      const studentPassword = String(form.get("studentPassword") || "");
+
+      try {
+        const status = await registerApi({
+          studentName,
+          studentNumber,
+          studentPassword,
+        });
+
+        if (status === 200 || status === 201) {
+          alert(
+            "회원가입이 완료되었습니다. 관리자 승인 이후 로그인 할 수 있습니다."
+          );
+          return redirect("/login");
+        }
+
+        // API에서 비정상 status를 돌려준 경우 → 에러 페이지
+        throw new Response("회원가입 실패", {
+          status: status || 500,
+          statusText: `회원가입 실패 (status: ${status})`,
+        });
+      } catch (e: any) {
+        if (e instanceof Response) {
+          throw e;
+        }
+
+        const status = e?.status || 500;
+
+        if (status === 500) {
+          throw new Response(
+            "이미 가입된 사용자입니다. 관리자에게 문의하세요.",
+            { status: 500 }
+          );
+        }
+
+        if (status === 400) {
+          throw new Response("입력 정보를 다시 확인해주세요.", {
+            status: 400,
+          });
+        }
+
+        throw new Response("Unexpected error", { status });
+      }
+    },
   },
   { path: "/projects", Component: Project },
   { path: "/rank", Component: Rank },
