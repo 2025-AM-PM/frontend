@@ -161,7 +161,7 @@ function Header() {
           {user ? (
             <UserInfo
               name={user.studentName || ""}
-              rank={user.studentTier || ""}
+              rank={user.studentTier || null}
             />
           ) : (
             <LoginBtn />

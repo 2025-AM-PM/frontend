@@ -7,20 +7,19 @@ function UserInfo({
   rank,
 }: {
   name: string | null;
-  rank: string | null;
+  rank: string | number | null;
 }) {
   let rankImgSrc = "";
+  let tierImage = rank ? rank.toString() : "noob";
   try {
-    rankImgSrc = require(`../assets/${rank}.png`);
+    rankImgSrc = require(`../assets/${tierImage}.png`);
   } catch (e) {
     rankImgSrc = require(`../assets/noob.png`);
   }
 
   return (
     <div className="user">
-      {rankImgSrc && (
-        <img src={rankImgSrc} alt={rank || undefined} className="tier" />
-      )}
+      {rankImgSrc && <img src={rankImgSrc} alt={tierImage} className="tier" />}
 
       <Link to="/mypage" className="user-name-link">
         <span className="user-name">{name}</span>

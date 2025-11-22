@@ -32,7 +32,7 @@ export interface AuthState {
 export interface User {
   studentId: number | null;
   studentName: string | null;
-  studentTier: string | null;
+  studentTier: string | number | null;
   studentNumber: string | null;
   role: StudentRole | null;
 }
