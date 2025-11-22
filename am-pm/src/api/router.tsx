@@ -1,5 +1,10 @@
 // router.tsx
-import { createBrowserRouter, redirect, useNavigate } from "react-router-dom";
+import {
+  createBrowserRouter,
+  redirect,
+  useNavigate,
+  Navigate,
+} from "react-router-dom";
 import BoardWrite from "../components/boardWrite";
 import { apiFetch } from "./client";
 import HomePage from "../pages/Home";
@@ -29,6 +34,24 @@ function LoginRoute() {
       }}
     />
   );
+}
+
+function AdminRoute() {
+  const { user } = useAuth();
+
+  // 로그인 안 되어 있으면 로그인 페이지로
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // 로그인은 됐지만 권한이 없으면 홈으로 (또는 에러 페이지로 변경 가능)
+  if (user.role !== "SYSTEM_ADMIN") {
+    return <ErrorPage />;
+    // 혹은: return <ErrorPage />;
+  }
+
+  // 권한이 맞을 때만 실제 AdminPage 렌더링
+  return <AdminPage />;
 }
 
 export const router = createBrowserRouter([
@@ -142,7 +165,7 @@ export const router = createBrowserRouter([
   { path: "/login", element: <LoginRoute /> },
   { path: "/register", Component: RegisterPage },
   { path: "/mypage", Component: Mypage },
-  { path: "/admin", Component: AdminPage },
+  { path: "/admin", element: <AdminRoute /> },
   { path: "/prove", Component: Prove },
   { path: "/board/all", Component: BoardList },
   { path: "*", Component: ErrorPage },

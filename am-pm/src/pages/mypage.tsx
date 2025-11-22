@@ -166,6 +166,10 @@ export default function Mypage() {
 
       setVerificationCode(null);
       // 필요하다면 여기에 user store 갱신 로직 추가 가능
+      if (user) {
+        user.studentTier = data.solvedAcInformationResponse.tier;
+        useAuthStore.getState().setUser(user);
+      }
     } catch (err: any) {
       console.error("[baekjoon verify failed]", err);
       alert(err?.message || "백준 계정 인증에 실패했습니다.");

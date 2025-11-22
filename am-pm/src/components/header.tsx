@@ -6,25 +6,7 @@ import { useAuthStore } from "../stores/authStore";
 
 function Header() {
   const location = useLocation();
-  const user = useAuthStore((s) => s.user);
-
-  // // 로컬 스토리지에서 즉시 하이드레이션
-  // const [user, setUser] = useState<User | null>(() => getStoredUser<User>());
-
-  // // 라우트 변경/탭 포커스/스토리지 변경 시 동기화
-  // useEffect(() => {
-  //   const sync = () => setUser(getStoredUser<User>());
-  //   // 1) 라우트 변경마다 동기화
-  //   sync();
-  //   // 2) 다른 탭에서 변경되면 반영
-  //   window.addEventListener("storage", sync);
-  //   // 3) 창에 다시 포커스 들어올 때 동기화
-  //   window.addEventListener("focus", sync);
-  //   return () => {
-  //     window.removeEventListener("storage", sync);
-  //     window.removeEventListener("focus", sync);
-  //   };
-  // }, [location.pathname]);
+  const user = useAuthStore.getState().user;
 
   // 현재 경로 매칭 유틸 (exact 또는 하위 경로 포함)
   const isCurrentPath = (base: string, exact = false) => {
@@ -161,7 +143,7 @@ function Header() {
           {user ? (
             <UserInfo
               name={user.studentName || ""}
-              rank={user.studentTier || ""}
+              rank={user.studentTier || 0}
             />
           ) : (
             <LoginBtn />

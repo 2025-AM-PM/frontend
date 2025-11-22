@@ -1,5 +1,5 @@
 // RegisterPage.tsx
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Form,
   useSubmit,
@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import "../styles/login.css";
+import { koreanToEng } from "../lib/koreantoEng";
 
 type RegisterFormValues = {
   studentNumber: string;
@@ -28,6 +29,7 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     mode: "onSubmit",
@@ -39,11 +41,14 @@ export default function RegisterPage() {
   const isSubmitting = navigation.state === "submitting";
 
   const onValid = (data: RegisterFormValues) => {
+    const normalizedPassword = koreanToEng(data.studentPassword);
+    const normalizedRePassword = koreanToEng(data.reStudentPassword);
+
     const formData = new FormData();
     formData.append("studentNumber", data.studentNumber);
     formData.append("studentName", data.studentName);
-    formData.append("studentPassword", data.studentPassword);
-    formData.append("reStudentPassword", data.reStudentPassword);
+    formData.append("studentPassword", normalizedPassword);
+    formData.append("reStudentPassword", normalizedRePassword);
 
     // RHF 유효성 검사를 통과한 경우에만 router action으로 전송
     submit(formData, { method: "post" });
@@ -133,6 +138,13 @@ export default function RegisterPage() {
                     message: "비밀번호는 8자 이상이어야 합니다.",
                   },
                 })}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const normalized = koreanToEng(raw);
+                  setValue("studentPassword", normalized, {
+                    shouldValidate: true,
+                  });
+                }}
               />
               <button
                 type="button"
@@ -194,8 +206,16 @@ export default function RegisterPage() {
                 {...register("reStudentPassword", {
                   required: "비밀번호를 다시 입력해주세요.",
                   validate: (value) =>
-                    value === passwordValue || "비밀번호가 일치하지 않습니다.",
+                    koreanToEng(value) === koreanToEng(passwordValue) ||
+                    "비밀번호가 일치하지 않습니다.",
                 })}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  const normalized = koreanToEng(raw);
+                  setValue("reStudentPassword", normalized, {
+                    shouldValidate: true,
+                  });
+                }}
               />
               <button
                 type="button"

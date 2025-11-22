@@ -1,12 +1,12 @@
 [
-    { "name": "메시", "correct": 2504, "submissions": 3320 },
-    { "name": "호날두", "correct": 1547, "submissions": 2760 },
-    { "name": "야말", "correct": 1024, "submissions": 2450 },
-    { "name": "손흥민", "correct": 934, "submissions": 1456 },
-    { "name": "황희찬", "correct": 820, "submissions": 1230 },
-    { "name": "이강인", "correct": 790, "submissions": 1200 },
-    { "name": "조규성", "correct": 760, "submissions": 1180 },
-    { "name": "김민재", "correct": 730, "submissions": 1160 },
-    { "name": "이재성", "correct": 700, "submissions": 1140 },
-    { "name": "정우영", "correct": 670, "submissions": 1120 }
+    { "name": "메시", "studentId": "20210001", "tier": "Challenger", "correct": 2504, "submissions": 3320 },
+    { "name": "호날두", "studentId": "20210002", "tier": "Grandmaster", "correct": 1547, "submissions": 2760 },
+    { "name": "야말", "studentId": "20230003", "tier": "Master", "correct": 1024, "submissions": 2450 },
+    { "name": "손흥민", "studentId": "20190007", "tier": "Diamond", "correct": 934, "submissions": 1456 },
+    { "name": "황희찬", "studentId": "20200011", "tier": "Platinum", "correct": 820, "submissions": 1230 },
+    { "name": "이강인", "studentId": "20220018", "tier": "Gold", "correct": 790, "submissions": 1200 },
+    { "name": "조규성", "studentId": "20200009", "tier": "Silver", "correct": 760, "submissions": 1180 },
+    { "name": "김민재", "studentId": "20190004", "tier": "Bronze", "correct": 730, "submissions": 1160 },
+    { "name": "이재성", "studentId": "20180010", "tier": "Iron", "correct": 700, "submissions": 1140 },
+    { "name": "정우영", "studentId": "20210022", "tier": "Iron", "correct": 670, "submissions": 1120 }
   ]
