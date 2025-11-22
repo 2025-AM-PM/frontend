@@ -11,7 +11,7 @@ type LoginRes = {
   studentId: number;
   studentName: string;
   studentNumber: string;
-  studentTier: string;
+  studentTier: number;
   role?: string;
 };
 type RegisterReq = {
@@ -126,7 +126,7 @@ export async function getCurrentUser(): Promise<User | null> {
       studentId: data.studentId || null,
       studentName: data.studentName || null,
       studentNumber: data.studentNumber || null,
-      studentTier: data.studentTier?.toString() || null,
+      studentTier: data.studentTier || null,
       role: data.role || null,
     };
 

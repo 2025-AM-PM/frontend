@@ -1,16 +1,11 @@
+import calculateTier from "../lib/calculateTier";
 import { useAuthStore } from "../stores/authStore";
 import "../styles/user.css";
 import { Link } from "react-router-dom";
 
-function UserInfo({
-  name,
-  rank,
-}: {
-  name: string | null;
-  rank: string | number | null;
-}) {
+function UserInfo({ name, rank }: { name: string | null; rank: number | 0 }) {
   let rankImgSrc = "";
-  let tierImage = rank ? rank.toString() : "noob";
+  let tierImage = calculateTier(rank);
   try {
     rankImgSrc = require(`../assets/${tierImage}.png`);
   } catch (e) {
