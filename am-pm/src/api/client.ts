@@ -57,11 +57,6 @@ export async function apiFetch<T>(
   const doFetch = () => fetch(url, { ...init, method, headers, credentials });
 
   let res = await doFetch();
-  // const res = await fetch(`${process.env.REACT_APP_API_BASE}/api${path}`, {
-  //   ...init,
-  //   headers,
-  //   credentials,
-  // });
 
   if (!isAuthEndpoint && res.status === 401 && (isMutating || init.auth)) {
     const newTk = await refreshAccessToken(); // 쿠키 기반으로 accessToken 재발급 시도
