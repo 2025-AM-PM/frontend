@@ -1,6 +1,6 @@
 import "../styles/prove.css";
 import { useState } from "react";
-import { get } from "react-readit";
+import { get, parse } from "react-readit";
 import ReactMarkdown, { Components, defaultUrlTransform } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
@@ -92,68 +92,77 @@ export default function Prove() {
     );
   };
 
+  const ensureTrailingSlash = (s: string) => (s.endsWith("/") ? s : `${s}/`);
+
+  const toRawBaseUrl = (repoUrl: string, ref = "HEAD", dir = ""): string => {
+    const { owner, repo } = parse(repoUrl);
+    const cleanDir = dir ? ensureTrailingSlash(dir.replace(/^\/+/, "")) : "";
+    return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${cleanDir}`;
+  };
+
   const resolveImageSrc = (
     src: string | undefined,
-    baseUrl: string
+    rawBaseUrl: string
   ): string | undefined => {
     if (!src) return src;
 
-    // data URI는 그대로 사용
-    if (/^data:/i.test(src)) {
-      return src;
-    }
+    // data URI는 그대로
+    if (/^data:/i.test(src)) return src;
 
+    // README에서 "/images/a.png"는 레포 루트 의미로 처리(도메인 루트 방지)
+    const normalizeRepoRoot = (s: string) =>
+      s.startsWith("/") ? s.slice(1) : s;
+
+    // 절대 URL이면 github.com blob/tree 만 raw로 치환
     try {
-      let url: URL;
-
-      // 절대 URL (http, https, //) 이면 그대로 파싱
       if (/^https?:\/\//i.test(src) || /^\/\//.test(src)) {
-        url = new URL(src);
-      } else {
-        // 상대 경로이면 baseUrl 기준으로
-        if (!baseUrl) return src;
-        url = new URL(src, baseUrl);
-      }
+        const u = new URL(src);
 
-      // GitHub의 /blob/ 경로를 /raw/ 로 변환
-      if (url.hostname === "github.com") {
-        const parts = url.pathname.split("/").filter(Boolean); // ["owner","repo","blob","branch","path","to","file.png"]
-        const blobIndex = parts.indexOf("blob");
-        if (blobIndex !== -1 && parts.length > blobIndex + 1) {
-          parts[blobIndex] = "raw"; // blob -> raw
-          url.pathname = "/" + parts.join("/");
+        if (u.hostname === "github.com") {
+          const seg = u.pathname.split("/").filter(Boolean); // [owner, repo, blob|tree, ref, ...]
+          const owner = seg[0];
+          const repo = seg[1];
+          const kind = seg[2];
+          const ref = seg[3] || "HEAD";
+          const rest = seg.slice(4).join("/");
+
+          if (owner && repo && (kind === "blob" || kind === "tree")) {
+            return `https://raw.githubusercontent.com/${owner}/${repo}/${ref}/${rest}`;
+          }
         }
+
+        return u.toString();
       }
 
-      return url.toString();
+      // 상대 경로는 rawBaseUrl 기준으로 합치기
+      return new URL(
+        normalizeRepoRoot(src),
+        ensureTrailingSlash(rawBaseUrl)
+      ).toString();
     } catch {
       return src;
     }
   };
 
+  const rawBaseUrl = toRawBaseUrl(url); // url = repo 주소
+
   const MdImage =
     (baseUrl: string): ImgRenderer =>
-    ({ node, alt, src, ...props }) => {
-      const resolvedSrc = resolveImageSrc(src as string | undefined, baseUrl);
-
-      return (
+    ({ alt, src, ...props }) =>
+      (
         <img
           {...props}
-          src={resolvedSrc}
+          src={resolveImageSrc(src as string | undefined, baseUrl)}
           alt={alt ?? ""}
           loading="lazy"
           decoding="async"
           className="md-img"
         />
       );
-    };
-
-  // 예: url 입력값을 그대로 base로 쓴다면 (앞에서 만든 getGithubImageBaseUrl 써도 되고)
-  // const imageBaseUrl = getGithubImageBaseUrl(url); // 없다면 그냥 url 또는 "" 사용
 
   const mdComponents: Components = {
     code: CodeBlock,
-    img: MdImage(url),
+    img: MdImage(rawBaseUrl),
     a: ({ node, ...props }) => (
       <a {...props} target="_blank" rel="noreferrer" aria-label="상세보기" />
     ),
