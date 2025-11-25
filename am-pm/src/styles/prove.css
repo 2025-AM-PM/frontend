@@ -1,26 +1,198 @@
-.prove-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+.prove-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  min-height: 100vh;
+  color: #fff;
+  background-color: #13161c;
 }
-.prove-form {
+
+.prove-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.prove-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, #fff, #ccc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.prove-subtitle {
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.prove-input-section {
+  background-color: #1e232b;
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #ccc;
+}
+
+.prove-input {
   width: 100%;
-  height: 10%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background-color: #2a2f38;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.prove-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.url-input-wrapper {
   display: flex;
-  flex-direction: row;
+  gap: 12px;
+}
+
+.preview-btn {
+  padding: 0 24px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.preview-btn:hover {
+  background-color: #2563eb;
+}
+
+.preview-btn:disabled {
+  background-color: #4b5563;
+  cursor: not-allowed;
+}
+
+.prove-error {
+  color: #ef4444;
+  margin-top: 12px;
+  font-size: 0.9rem;
+}
+
+.prove-preview-section {
+  background-color: #1e232b;
+  padding: 30px;
+  border-radius: 16px;
+  min-height: 200px;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #333;
+}
+
+.preview-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.submit-btn {
+  padding: 10px 24px;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: #059669;
+}
+
+.prove-empty-state {
+  display: flex;
   justify-content: center;
-  gap: 3rem;
+  align-items: center;
+  height: 200px;
+  color: #666;
+  font-size: 1.1rem;
+  border: 2px dashed #333;
+  border-radius: 8px;
 }
 
-.url-input {
-  width: 25%;
-  height: 3rem;
-  color: white;
+/* Markdown Styles (inherit from post-detail or define basics) */
+.markdown-body {
+  color: #e5e7eb;
+  line-height: 1.6;
 }
 
-.prove-preview {
-  color: white;
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.markdown-body p {
+  margin-bottom: 16px;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 24px;
+  margin-bottom: 16px;
+}
+
+.markdown-body a {
+  color: #60a5fa;
+  text-decoration: none;
+}
+
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+
+.markdown-body blockquote {
+  border-left: 4px solid #4b5563;
+  padding-left: 16px;
+  margin: 16px 0;
+  color: #9ca3af;
+}
+
+.markdown-body img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.md-inline-code {
+  background-color: #374151;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
 }
