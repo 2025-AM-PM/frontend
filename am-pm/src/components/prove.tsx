@@ -92,21 +92,68 @@ export default function Prove() {
     );
   };
 
-  const MdImage: ImgRenderer = ({ node, alt, ...props }) => {
-    return (
-      <img
-        {...props}
-        alt={alt ?? ""}
-        loading="lazy"
-        decoding="async"
-        className="md-img"
-      />
-    );
+  const resolveImageSrc = (
+    src: string | undefined,
+    baseUrl: string
+  ): string | undefined => {
+    if (!src) return src;
+
+    // data URI는 그대로 사용
+    if (/^data:/i.test(src)) {
+      return src;
+    }
+
+    try {
+      let url: URL;
+
+      // 절대 URL (http, https, //) 이면 그대로 파싱
+      if (/^https?:\/\//i.test(src) || /^\/\//.test(src)) {
+        url = new URL(src);
+      } else {
+        // 상대 경로이면 baseUrl 기준으로
+        if (!baseUrl) return src;
+        url = new URL(src, baseUrl);
+      }
+
+      // GitHub의 /blob/ 경로를 /raw/ 로 변환
+      if (url.hostname === "github.com") {
+        const parts = url.pathname.split("/").filter(Boolean); // ["owner","repo","blob","branch","path","to","file.png"]
+        const blobIndex = parts.indexOf("blob");
+        if (blobIndex !== -1 && parts.length > blobIndex + 1) {
+          parts[blobIndex] = "raw"; // blob -> raw
+          url.pathname = "/" + parts.join("/");
+        }
+      }
+
+      return url.toString();
+    } catch {
+      return src;
+    }
   };
+
+  const MdImage =
+    (baseUrl: string): ImgRenderer =>
+    ({ node, alt, src, ...props }) => {
+      const resolvedSrc = resolveImageSrc(src as string | undefined, baseUrl);
+
+      return (
+        <img
+          {...props}
+          src={resolvedSrc}
+          alt={alt ?? ""}
+          loading="lazy"
+          decoding="async"
+          className="md-img"
+        />
+      );
+    };
+
+  // 예: url 입력값을 그대로 base로 쓴다면 (앞에서 만든 getGithubImageBaseUrl 써도 되고)
+  // const imageBaseUrl = getGithubImageBaseUrl(url); // 없다면 그냥 url 또는 "" 사용
 
   const mdComponents: Components = {
     code: CodeBlock,
-    img: MdImage,
+    img: MdImage(url),
     a: ({ node, ...props }) => (
       <a {...props} target="_blank" rel="noreferrer" aria-label="상세보기" />
     ),
@@ -116,7 +163,9 @@ export default function Prove() {
     <div className="prove-container">
       <div className="prove-header">
         <h1 className="prove-title">프로젝트 등록</h1>
-        <p className="prove-subtitle">GitHub README를 불러와 프로젝트를 등록하세요.</p>
+        <p className="prove-subtitle">
+          GitHub README를 불러와 프로젝트를 등록하세요.
+        </p>
       </div>
 
       <div className="prove-input-section">
@@ -140,8 +189,8 @@ export default function Prove() {
               onChange={(e) => setUrl(e.target.value)}
               className="prove-input"
             />
-            <button 
-              onClick={onPreview} 
+            <button
+              onClick={onPreview}
               className="preview-btn"
               disabled={loading}
             >
@@ -157,7 +206,9 @@ export default function Prove() {
           <>
             <div className="preview-header">
               <h2>미리보기</h2>
-              <button onClick={onSubmit} className="submit-btn">작성하기</button>
+              <button onClick={onSubmit} className="submit-btn">
+                작성하기
+              </button>
             </div>
             <div className="markdown-body">
               <ReactMarkdown
