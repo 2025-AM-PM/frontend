@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "../styles/boardList.css";
-import { Post, PageData, BoardListProps, SortKey } from "../types";
+import { PageData, BoardListProps, SortKey } from "../types";
 import Header from "./header";
 import { apiFetch } from "../api/client";
 
@@ -80,13 +80,10 @@ const BoardList: React.FC<BoardListProps> = ({
         const params = new URLSearchParams();
 
         const categoryParam = searchParams.get("category");
-        // page, size, sort는 searchParams에서 직접 가져오지 않고 현재 상태/prop 사용
-        // const page = searchParams.get("page");
-        // const size = searchParams.get("size");
-        // const sort = searchParams.get("sort");
 
         if (categoryParam) {
-          params.append("category", categoryParam);
+          const category = categoryParam.toUpperCase();
+          params.append("category", category);
         }
 
         if (searchQuery) {
@@ -112,7 +109,8 @@ const BoardList: React.FC<BoardListProps> = ({
 
   useEffect(() => {
     load();
-  }, [currentPage, sortBy, searchQuery, pageSize]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, sortBy, searchQuery, pageSize, searchParams]);
 
   /** 렌더 조각들 */
   const SkeletonRows = useMemo(() => {
@@ -175,6 +173,7 @@ const BoardList: React.FC<BoardListProps> = ({
             <span className="post-title">{post.title}</span>
           </div>
           <div className="post-meta">
+            <div className="post-author">{post.author}</div>
             <div className="post-views">
               <svg
                 width="16"

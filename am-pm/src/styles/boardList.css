@@ -163,6 +163,12 @@
   flex-shrink: 0;
 }
 
+.post-author {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .post-views {
   display: flex;
   align-items: center;
