@@ -174,49 +174,6 @@ export default function BoardWrite() {
   const onDragOver = (e: React.DragEvent<HTMLTextAreaElement>) =>
     e.preventDefault();
 
-  // const onSubmit = useCallback(async () => {
-  //   if (!title.trim() || !content.trim()) return;
-
-  //   const postData = {
-  //     request: {
-  //       title: title,
-  //       description: content,
-  //       exhibitUrl: "",
-  //     },
-  //     files: [],
-  //   };
-
-  //   try {
-  //     const { data } = await apiFetch("/exhibits", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(postData),
-  //       auth: true,
-  //     });
-  //     console.log("게시글 등록 성공:", data);
-  //     alert("게시글이 성공적으로 등록되었습니다.");
-  //   } catch (error) {
-  //     console.error("게시글 등록 실패:", error);
-  //     alert("게시글 등록 중 오류가 발생했습니다.");
-  //   }
-  // }, [title, content]);
-
-  // useEffect(() => {
-  //   // const h = (e: KeyboardEvent) => {
-  //   //   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "enter") {
-  //   //     e.preventDefault();
-  //   //     onSubmit();
-  //   //   }
-  //   // };
-  //   window.addEventListener("keydown", h);
-  //   return () => window.removeEventListener("keydown", h);
-  // });
-
-  // const handleSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   onSubmit();
-  // };
-
   const mdComponents: Components = {
     a: ({ node, ...props }) => (
       <a {...props} target="_blank" rel="noreferrer" aria-label="상세보기" />

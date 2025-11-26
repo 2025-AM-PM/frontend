@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
     path: "/board/:category/write",
     element: <BoardWrite />,
     errorElement: <ErrorPage />,
-    action: async ({ request }) => {
+    action: async ({ request, params }) => {
       const form = await request.formData();
 
       const title = String(form.get("title") || "").trim();
@@ -77,6 +77,7 @@ export const router = createBrowserRouter([
         title: title,
         description: content,
         exhibitUrl: exhibitUrl,
+        category: params.category,
       };
 
       try {
@@ -91,7 +92,7 @@ export const router = createBrowserRouter([
           throw new Response("Create failed", { status: res.status });
         }
 
-        return redirect("/board/all");
+        return redirect(`/board/?category=${params.category}`);
       } catch (e) {
         throw e instanceof Response
           ? e

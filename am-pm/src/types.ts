@@ -195,4 +195,5 @@ export interface BoardListProps {
   fetcher?: (params: FetchParams) => Promise<PageData>;
   /** 헤더 타이틀 (기본: '게시판') */
   title?: string;
+  category?: string;
 }

@@ -29,12 +29,36 @@ const BoardList: React.FC<BoardListProps> = ({
   pageSize = 8,
   onSelectPost,
   fetcher,
-  title = "게시판",
+  category,
+  title,
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
+
+  const categoryParam = useMemo(() => {
+    return category ?? searchParams.get("category") ?? "";
+  }, [category, searchParams]);
+
+  const categoryLabel = useMemo(() => {
+    const c = categoryParam.trim();
+    if (!c) return "";
+    // 예시: all/free/notice 같은 값들을 이쁘게
+    const map: Record<string, string> = {
+      all: "전체",
+      notice: "공지사항",
+      study: "스터디",
+      job: "취업 정보",
+      info: "학교 정보",
+    };
+    return map[c.toLowerCase()] ?? c;
+  }, [categoryParam]);
+
+  const pageTitle = useMemo(() => {
+    if (title) return title; // props title이 오면 그걸 우선
+    return categoryLabel ? `${categoryLabel} 게시판` : "게시판";
+  }, [title, categoryLabel]);
 
   // URL에서 page 가져오기 (기본값 0)
   const currentPage = parseInt(searchParams.get("page") || "0", 10);
@@ -79,11 +103,10 @@ const BoardList: React.FC<BoardListProps> = ({
         // API 연동
         const params = new URLSearchParams();
 
-        const categoryParam = searchParams.get("category");
+        const categoryParam = category || searchParams.get("category");
 
         if (categoryParam) {
-          const category = categoryParam.toUpperCase();
-          params.append("category", category);
+          params.append("category", categoryParam.toUpperCase());
         }
 
         if (searchQuery) {
@@ -290,7 +313,7 @@ const BoardList: React.FC<BoardListProps> = ({
       <Header />
       {/* Header */}
       <div className="board-header">
-        <h1 className="board-title">{title}</h1>
+        <h1 className="board-title">{pageTitle}</h1>
 
         <div className="sort-dropdown" ref={sortRef}>
           <button
