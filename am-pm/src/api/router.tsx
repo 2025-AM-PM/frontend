@@ -161,7 +161,7 @@ export const router = createBrowserRouter([
   { path: "/rank", Component: Rank },
   { path: "/polls", Component: PollList },
   { path: "/polls/create", Component: PollCreate },
-  { path: "/detail", Component: PostDetail },
+  { path: "/detail/:id", Component: PostDetail },
   { path: "/login", element: <LoginRoute /> },
   { path: "/register", Component: RegisterPage },
   { path: "/mypage", Component: Mypage },

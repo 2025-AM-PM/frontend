@@ -7,42 +7,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import Header from "./header";
 import { PostDetail as Post } from "../types";
-
-// ── 목데이터 (이미지 포함돼 있어도 아래 img 컴포넌트에서 무시됨)
-const MOCK_MD = `# 알고리즘 스터디 운영 회고
-
-스터디를 **12주** 동안 운영하며 배운 점을 정리했습니다.
-
-## 우리가 잘한 점
-- 꾸준한 회고
-- 문제 난이도 밸런스 조절
-- PR 리뷰 문화
-
-## 아쉬웠던 점
-1. 일정 충돌
-2. 공지 미흡
-
-> *다음 시즌에는 일정과 공지 자동화를 도입합니다.*
-
-### 코드 스니펫
-\`\`\`kotlin
-fun main() {
-  println("Hello, Kotlin!")
-}
-\`\`\`
-
-![실제 스크린샷](https://spnimage.edaily.co.kr/images/photo/files/NP/S/2025/09/PS25092900031.jpg)
-
-마지막으로, 질문/피드백은 댓글로 남겨 주세요 :)`;
-
-const MOCK_POST: Post = {
-  title: "알고리즘 스터디 운영 회고",
-  author: "김학생",
-  createdAt: "2025-09-12T14:20:00+09:00",
-  views: 147,
-  likes: 24,
-  markdown: MOCK_MD,
-};
+import { useParams } from "react-router-dom";
+import { apiFetch } from "../api/client";
 
 function formatDate(iso: string) {
   const d = new Date(iso);
@@ -57,9 +23,8 @@ function formatDate(iso: string) {
 type CodeRenderer = NonNullable<Components["code"]>;
 type ImgRenderer = NonNullable<Components["img"]>;
 
-// const ImgOmitted: ImgRenderer = () => null;
-
 export default function PostDetail() {
+  const { id } = useParams();
   const [post, setPost] = useState<Post | null>(null);
 
   const CodeBlock: CodeRenderer = ({ children, className }) => {
@@ -78,11 +43,14 @@ export default function PostDetail() {
     );
   };
 
-  // 가짜 로딩 → 목데이터 주입
   useEffect(() => {
-    const t = setTimeout(() => setPost(MOCK_POST), 150);
-    return () => clearTimeout(t);
-  }, []);
+    if (!id) return;
+    apiFetch<Post>(`/posts/${id}`).then((res) => {
+      if (res.data) {
+        setPost(res.data);
+      }
+    });
+  }, [id]);
 
   const MdImage: ImgRenderer = ({ node, alt, ...props }) => {
     return (
@@ -129,7 +97,9 @@ export default function PostDetail() {
           </div>
 
           <div className="pd-meta">
-            <span className="pd-meta__item">작성자: {post.author} </span>
+            <span className="pd-meta__item">
+              작성자: {post.createBy.studentName}{" "}
+            </span>
             <span className="pd-meta__item">
               작성날짜: {formatDate(post.createdAt ? post.createdAt : "")}
             </span>
@@ -146,7 +116,7 @@ export default function PostDetail() {
             components={mdComponents}
             urlTransform={defaultUrlTransform}
           >
-            {post.markdown}
+            {post.content}
           </ReactMarkdown>
         </article>
 

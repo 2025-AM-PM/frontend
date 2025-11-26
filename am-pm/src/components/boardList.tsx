@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import "../styles/boardList.css";
 import { PageData, BoardListProps, SortKey } from "../types";
 import Header from "./header";
@@ -156,13 +156,15 @@ const BoardList: React.FC<BoardListProps> = ({
     </div>
   );
 
+  const navigate = useNavigate();
+
   const PostRows = useMemo(() => {
     if (!data) return null;
     return data.content.map((post) => (
       <div className="post-card" key={post.id}>
         <div
           className="post-row"
-          onClick={() => onSelectPost?.(post)}
+          onClick={() => navigate(`/detail/${post.id}`)}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {

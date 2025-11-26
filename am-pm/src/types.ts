@@ -11,12 +11,26 @@ export interface Post {
 }
 
 export interface PostDetail {
-  title?: string;
-  author?: string;
-  createdAt?: string;
-  views?: number;
-  likes?: number;
-  markdown: string;
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  likes: number;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  createBy: {
+    id: number;
+    studentNumber: string;
+    studentName: string;
+    role: string;
+  };
+  updatedBy: {
+    id: number;
+    studentNumber: string;
+    studentName: string;
+    role: string;
+  };
 }
 
 export interface MiniBoardProps {
