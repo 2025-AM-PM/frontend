@@ -64,7 +64,7 @@ export const router = createBrowserRouter([
 
       const title = String(form.get("title") || "").trim();
       const content = String(form.get("description") || "").trim();
-      const exhibitUrl = String(form.get("exhibitUrl") || "");
+      const category = String(params.category || "").trim();
 
       if (!title || !content) {
         return JSON.stringify({
@@ -75,13 +75,12 @@ export const router = createBrowserRouter([
 
       const postData = {
         title: title,
-        description: content,
-        exhibitUrl: exhibitUrl,
-        category: params.category,
+        content: content,
+        category: category.toUpperCase(),
       };
 
       try {
-        const res = await apiFetch("/exhibits", {
+        const res = await apiFetch("/posts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(postData),
