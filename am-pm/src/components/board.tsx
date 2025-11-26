@@ -1,6 +1,5 @@
 import "../styles/board.css";
 import MiniBoard from "./miniBoard";
-import { Post } from "../types";
 
 function Board() {
   const boardData = {
@@ -69,12 +68,12 @@ function Board() {
       <div className="board-container">
         {Object.entries(boardData).map(([key, posts]) => {
           // MiniBoard에 전달할 게시글 데이터 객체 생성
-          const normalizepPost: Post[] = posts.map((post) => ({
+          const normalizedPosts = posts.map((post) => ({
             id: post.id,
             title: post.title,
             author: post.writter || "익명",
             createdAt: post.createdAt,
-            view: post.view,
+            views: post.view,
             link: post.link,
           }));
 
@@ -83,7 +82,7 @@ function Board() {
             <MiniBoard
               key={key} // key는 필수입니다.
               boardTitle={boardTitles[key as keyof typeof boardTitles]}
-              posts={normalizepPost} // 게시글 데이터를 배열로 감싸서 전달
+              posts={normalizedPosts} // 게시글 데이터를 배열로 감싸서 전달
             />
           );
         })}

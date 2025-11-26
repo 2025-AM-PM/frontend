@@ -2,9 +2,12 @@ export interface Post {
   id: number; // 고유한 key로 사용될 id
   title: string;
   createdAt: string;
-  view: number;
+  views: number;
   link?: string;
-  author: string;
+  author?: string;
+  category?: string;
+  likes?: number;
+  updatedAt?: string;
 }
 
 export interface PostDetail {

@@ -167,6 +167,6 @@ export const router = createBrowserRouter([
   { path: "/mypage", Component: Mypage },
   { path: "/admin", element: <AdminRoute /> },
   { path: "/prove", Component: Prove },
-  { path: "/board/all", Component: BoardList },
+  { path: "/board", Component: BoardList },
   { path: "*", Component: ErrorPage },
 ]);

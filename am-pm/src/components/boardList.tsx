@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import "../styles/boardList.css";
 import { Post, PageData, BoardListProps, SortKey } from "../types";
 import Header from "./header";
+import { apiFetch } from "../api/client";
 
 /** ===== Constants ===== */
 const SORT_OPTIONS: Record<SortKey, string> = {
@@ -9,73 +11,6 @@ const SORT_OPTIONS: Record<SortKey, string> = {
   "createdAt,asc": "오래된순",
   "views,desc": "조회수순",
 };
-
-const MOCK_POSTS: Post[] = [
-  {
-    id: 1,
-    title: "[공지] 커뮤니티 이용 규칙 안내",
-    view: 1234,
-    createdAt: "2025-09-28T10:30:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-  {
-    id: 2,
-    title: "새로운 기능 업데이트 소식",
-    view: 856,
-    createdAt: "2025-09-27T15:20:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-  {
-    id: 3,
-    title: "React 18의 새로운 기능들에 대한 심층 분석",
-    view: 542,
-    createdAt: "2025-09-26T09:15:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-  {
-    id: 4,
-    title: "CSS Grid vs Flexbox: 언제 무엇을 사용해야 할까?",
-    view: 423,
-    createdAt: "2025-09-25T14:45:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-  {
-    id: 5,
-    title: "TypeScript 실전 팁 모음",
-    view: 389,
-    createdAt: "2025-09-24T11:30:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-  {
-    id: 6,
-    title: "웹 접근성을 위한 ARIA 속성 가이드",
-    view: 267,
-    createdAt: "2025-09-23T16:20:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-  {
-    id: 7,
-    title: "Next.js 앱 성능 최적화 전략",
-    view: 198,
-    createdAt: "2025-09-22T13:10:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-  {
-    id: 8,
-    title: "디자인 시스템 구축하기",
-    view: 156,
-    createdAt: "2025-09-21T10:05:00.000Z",
-    link: "/",
-    author: "테스트유저",
-  },
-];
 
 /** ===== Utils ===== */
 function formatDate(dateString: string) {
@@ -96,10 +31,14 @@ const BoardList: React.FC<BoardListProps> = ({
   fetcher,
   title = "게시판",
 }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<PageData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(0);
+
+  // URL에서 page 가져오기 (기본값 0)
+  const currentPage = parseInt(searchParams.get("page") || "0", 10);
+
   const [sortBy, setSortBy] = useState<SortKey>("createdAt,desc");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortOpen, setSortOpen] = useState<boolean>(false);
@@ -117,6 +56,12 @@ const BoardList: React.FC<BoardListProps> = ({
     return () => document.removeEventListener("click", onClick);
   }, []);
 
+  /** 페이지 변경 핸들러 */
+  const handlePageChange = (newPage: number) => {
+    searchParams.set("page", newPage.toString());
+    setSearchParams(searchParams);
+  };
+
   /** 데이터 로딩 */
   const load = async () => {
     setLoading(true);
@@ -131,51 +76,32 @@ const BoardList: React.FC<BoardListProps> = ({
         });
         setData(page);
       } else {
-        // === Mock 동작 (로컬 필터/정렬/페이지네이션) ===
-        await new Promise((r) => setTimeout(r, 500)); // 스켈레톤 시연용
+        // API 연동
+        const params = new URLSearchParams();
 
-        let filtered = MOCK_POSTS;
-        if (searchQuery) {
-          const q = searchQuery.toLowerCase();
-          filtered = MOCK_POSTS.filter((p) =>
-            p.title.toLowerCase().includes(q)
-          );
+        const categoryParam = searchParams.get("category");
+        // page, size, sort는 searchParams에서 직접 가져오지 않고 현재 상태/prop 사용
+        // const page = searchParams.get("page");
+        // const size = searchParams.get("size");
+        // const sort = searchParams.get("sort");
+
+        if (categoryParam) {
+          params.append("category", categoryParam);
         }
 
-        const sorted = [...filtered].sort((a, b) => {
-          switch (sortBy) {
-            case "createdAt,desc":
-              return (
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime()
-              );
-            case "createdAt,asc":
-              return (
-                new Date(a.createdAt).getTime() -
-                new Date(b.createdAt).getTime()
-              );
-            default:
-              return 0;
-          }
-        });
+        if (searchQuery) {
+          params.append("q", searchQuery);
+        }
 
-        const totalPages = Math.ceil(sorted.length / pageSize) || 1;
-        const safePage = Math.min(currentPage, Math.max(0, totalPages - 1));
-        const start = safePage * pageSize;
-        const pageContent = sorted.slice(start, start + pageSize);
+        params.append("page", currentPage.toString());
+        params.append("size", pageSize.toString());
+        params.append("sort", sortBy);
 
-        setData({
-          totalElements: sorted.length,
-          totalPages,
-          size: pageSize,
-          content: pageContent,
-          number: safePage,
-          numberOfElements: pageContent.length,
-          first: safePage === 0,
-          last: safePage === totalPages - 1,
-          empty: pageContent.length === 0,
-        });
-        if (safePage !== currentPage) setCurrentPage(safePage);
+        // 응답이 PageData 형태라고 가정
+        const res = await apiFetch<PageData>(`/posts?${params.toString()}`);
+        if (res.data) {
+          setData(res.data);
+        }
       }
     } catch {
       setError(true);
@@ -186,7 +112,6 @@ const BoardList: React.FC<BoardListProps> = ({
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, sortBy, searchQuery, pageSize]);
 
   /** 렌더 조각들 */
@@ -265,7 +190,7 @@ const BoardList: React.FC<BoardListProps> = ({
                 <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
                 <circle cx="12" cy="12" r="3" />
               </svg>
-              <span>{formatNumber(post.view)}</span>
+              <span>{formatNumber(post.views)}</span>
             </div>
             <div className="post-date">{formatDate(post.createdAt)}</div>
           </div>
@@ -276,23 +201,22 @@ const BoardList: React.FC<BoardListProps> = ({
 
   /** 페이지네이션 */
   const Pagination = useMemo(() => {
-    if (!data || data.totalPages <= 1) return null;
+    if (!data) return null;
+
+    const blockSize = 10; // 1~10, 11~20 ...
+    const currentBlock = Math.floor(currentPage / blockSize);
+    const startPage = currentBlock * blockSize;
+    const endPage = Math.min(data.totalPages - 1, startPage + blockSize - 1);
 
     const btns: number[] = [];
-    const maxVisible = 5;
-    let start = Math.max(0, currentPage - Math.floor(maxVisible / 2));
-    let end = Math.min(data.totalPages - 1, start + maxVisible - 1);
-    if (end - start < maxVisible - 1) start = Math.max(0, end - maxVisible + 1);
-    for (let i = start; i <= end; i++) btns.push(i);
+    for (let i = startPage; i <= endPage; i++) btns.push(i);
 
     return (
       <div className="pagination">
         <button
           className="page-button"
           disabled={data.first}
-          onClick={() =>
-            !data.first && setCurrentPage((p) => Math.max(0, p - 1))
-          }
+          onClick={() => !data.first && handlePageChange(currentPage - 1)}
           aria-label="이전 페이지"
         >
           <svg
@@ -313,7 +237,7 @@ const BoardList: React.FC<BoardListProps> = ({
           <button
             key={`page-${i}`}
             className={`page-button ${i === currentPage ? "active" : ""}`}
-            onClick={() => setCurrentPage(i)}
+            onClick={() => handlePageChange(i)}
             aria-current={i === currentPage ? "page" : undefined}
           >
             {i + 1}
@@ -323,10 +247,7 @@ const BoardList: React.FC<BoardListProps> = ({
         <button
           className="page-button"
           disabled={data.last}
-          onClick={() =>
-            !data.last &&
-            setCurrentPage((p) => Math.min(data.totalPages - 1, p + 1))
-          }
+          onClick={() => !data.last && handlePageChange(currentPage + 1)}
           aria-label="다음 페이지"
         >
           <svg
@@ -349,7 +270,7 @@ const BoardList: React.FC<BoardListProps> = ({
   /** 이벤트 핸들러들 */
   const onSubmitSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setCurrentPage(0);
+    handlePageChange(0); // 검색 시 0페이지로 리셋
     load();
   };
 
@@ -359,7 +280,7 @@ const BoardList: React.FC<BoardListProps> = ({
 
   const onSelectSort = (value: SortKey) => {
     setSortBy(value);
-    setCurrentPage(0);
+    handlePageChange(0); // 정렬 변경 시 0페이지로 리셋
     setSortOpen(false);
   };
 
@@ -441,6 +362,9 @@ const BoardList: React.FC<BoardListProps> = ({
         {loading ? SkeletonRows : data?.empty ? EmptyState : PostRows}
       </div>
 
+      {/* Pagination */}
+      {Pagination}
+
       {/* Search */}
       <div className="search-section">
         <form className="search-bar" onSubmit={onSubmitSearch}>
@@ -470,9 +394,6 @@ const BoardList: React.FC<BoardListProps> = ({
           </button>
         </form>
       </div>
-
-      {/* Pagination */}
-      {Pagination}
     </div>
   );
 };

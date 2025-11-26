@@ -86,7 +86,7 @@ function Header() {
               <ul className="nav__submenu" role="menu">
                 <li className="nav__submenu-item" role="none">
                   <NavLink
-                    to="/boards/study"
+                    to="/board?category=study"
                     className="nav__submenu-link"
                     role="menuitem"
                   >
@@ -95,7 +95,7 @@ function Header() {
                 </li>
                 <li className="nav__submenu-item" role="none">
                   <NavLink
-                    to="/boards/notice"
+                    to="/board?category=notice"
                     className="nav__submenu-link"
                     role="menuitem"
                   >
@@ -104,7 +104,7 @@ function Header() {
                 </li>
                 <li className="nav__submenu-item" role="none">
                   <NavLink
-                    to="/boards/jobs"
+                    to="/board?category=job"
                     className="nav__submenu-link"
                     role="menuitem"
                   >
@@ -113,7 +113,7 @@ function Header() {
                 </li>
                 <li className="nav__submenu-item" role="none">
                   <NavLink
-                    to="/boards/school"
+                    to="/board?category=info"
                     className="nav__submenu-link"
                     role="menuitem"
                   >
