@@ -315,14 +315,25 @@ const BoardList: React.FC<BoardListProps> = ({
       <div className="board-header">
         <h1 className="board-title">{pageTitle}</h1>
 
-        <div className="sort-dropdown" ref={sortRef}>
+        <div className="board-actions" style={{ display: "flex", gap: "8px" }}>
           <button
-            className="sort-button"
-            onClick={onToggleSort}
-            aria-haspopup="menu"
-            aria-expanded={sortOpen}
+            className="write-button"
+            onClick={() => navigate(`/board/${categoryParam}/write`)}
+            style={{
+              padding: "0 12px",
+              height: "36px",
+              borderRadius: "6px",
+              border: "1px solid #e5e7eb",
+              backgroundColor: "white",
+              fontSize: "14px",
+              fontWeight: 500,
+              color: "#374151",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: "4px",
+            }}
           >
-            <span>정렬: {SORT_OPTIONS[sortBy]}</span>
             <svg
               width="16"
               height="16"
@@ -332,24 +343,49 @@ const BoardList: React.FC<BoardListProps> = ({
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              aria-hidden
             >
-              <path d="m6 9 6 6 6-6" />
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
             </svg>
+            글쓰기
           </button>
 
-          <div className={`sort-menu ${sortOpen ? "open" : ""}`} role="menu">
-            {(Object.keys(SORT_OPTIONS) as SortKey[]).map((key) => (
-              <div
-                key={key}
-                className={`sort-option ${sortBy === key ? "active" : ""}`}
-                data-value={key}
-                role="menuitem"
-                onClick={() => onSelectSort(key)}
+          <div className="sort-dropdown" ref={sortRef}>
+            <button
+              className="sort-button"
+              onClick={onToggleSort}
+              aria-haspopup="menu"
+              aria-expanded={sortOpen}
+            >
+              <span>정렬: {SORT_OPTIONS[sortBy]}</span>
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
               >
-                {SORT_OPTIONS[key]}
-              </div>
-            ))}
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </button>
+
+            <div className={`sort-menu ${sortOpen ? "open" : ""}`} role="menu">
+              {(Object.keys(SORT_OPTIONS) as SortKey[]).map((key) => (
+                <div
+                  key={key}
+                  className={`sort-option ${sortBy === key ? "active" : ""}`}
+                  data-value={key}
+                  role="menuitem"
+                  onClick={() => onSelectSort(key)}
+                >
+                  {SORT_OPTIONS[key]}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
