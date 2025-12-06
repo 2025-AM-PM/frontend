@@ -1,4 +1,3 @@
-import React from "react";
 import Header from "../components/header";
 import "../styles/home.css";
 import Board from "../components/board";
@@ -56,7 +55,7 @@ function HomePage() {
       <Background />
       <Board />
       <History backgroundUrl={timeline} allowUpload={false} />
-      <h2 className="project-title">Our Activities</h2>
+      <h2 className="project-main-title">Our Activities</h2>
       <ProjectsGrid projects={projects} />
       <Footer />
     </div>

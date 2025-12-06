@@ -14,3 +14,21 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 4rem;
 }
+
+/* -------------------------------
+ * Responsive Design (Mobile)
+ * ------------------------------- */
+@media (max-width: 768px) {
+  .board-main {
+    height: auto; /* Allow height to grow */
+    min-height: 100vh;
+    padding-bottom: 2rem; /* Add some bottom padding */
+  }
+
+  .board-container {
+    width: 90%;
+    grid-template-columns: 1fr; /* Single column */
+    gap: 2rem; /* Reduce gap */
+    margin-top: 1rem;
+  }
+}

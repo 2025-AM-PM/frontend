@@ -39,9 +39,14 @@ body {
   --spacing-lg: 2rem;
   --spacing-xl: 3rem;
   --spacing-2xl: 4rem;
+  --footer-bg: #171b22; /* #13161C와 잘 어울리는 살짝 밝은 톤 */
+  --footer-ink: #e7ecf3; /* 본문 텍스트 */
+  --footer-muted: #9aa4b2; /* 보조 텍스트 */
+  --footer-accent: #e0534e; /* 포인트 컬러(하트/호버) */
+  --footer-stroke: #2a303a; /* 얇은 구분선 */
 }
 
-:root {
+/* :root {
   --bg: #13161c;
   --accent-primary: #e0534e;
   --accent-secondary: #6ee7f9;
@@ -52,4 +57,31 @@ body {
   --spacing-lg: 2rem;
   --spacing-xl: 3rem;
   --spacing-2xl: 4rem;
+} */
+
+/* -------------------------------
+ * Responsive Design (Mobile)
+ * ------------------------------- */
+@media (max-width: 768px) {
+  :root {
+    /* Adjust spacing for mobile */
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 2.5rem;
+
+    /* Adjust max-width if needed, though 840px is fine */
+    --max-width: 100%;
+  }
+
+  body {
+    /* Ensure no horizontal scroll */
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+  }
 }

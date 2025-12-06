@@ -250,10 +250,10 @@
      Footer
      ========================================================================== */
 
-footer {
+/* footer {
   padding: var(--spacing-lg) var(--spacing-md);
   text-align: center;
-}
+} */
 
 .footer-content {
   font-size: 0.875rem;

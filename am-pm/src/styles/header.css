@@ -183,3 +183,166 @@
   outline-offset: 2px;
   border-radius: 0.5rem;
 }
+
+/* -------------------------------
+ * Hamburger Menu (Mobile)
+ * ------------------------------- */
+.hamburger {
+  display: none; /* Desktop default: hidden */
+  flex-direction: column;
+  justify-content: space-between;
+  width: 24px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 102; /* Nav menu above */
+}
+
+.hamburger .bar {
+  width: 100%;
+  height: 2px;
+  background-color: #e6edf3;
+  border-radius: 2px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Hamburger Animation */
+.hamburger.active .bar:nth-child(1) {
+  transform: translateY(8px) rotate(45deg);
+}
+.hamburger.active .bar:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active .bar:nth-child(3) {
+  transform: translateY(-8px) rotate(-45deg);
+}
+
+/* -------------------------------
+ * Responsive Design (Mobile)
+ * ------------------------------- */
+@media (max-width: 768px) {
+  .container {
+    width: 95%;
+    padding: 0.5rem 1rem;
+  }
+
+  .logo {
+    margin-left: 0;
+    height: 80%;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    background-color: rgba(28, 33, 40, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 0 0 1rem 1rem;
+    padding: 1rem 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+    /* Hidden by default */
+    display: none;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .nav.active {
+    display: flex;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav__list {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    gap: 0;
+  }
+
+  .nav__item {
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav__link {
+    width: 100%;
+    padding: 1rem 2rem;
+    justify-content: flex-start;
+  }
+
+  .nav__item:hover {
+    background-color: transparent;
+  }
+
+  .nav__item:hover .nav__link {
+    transform: none;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Dropdown in Mobile */
+  .nav__item--has-submenu > .nav__submenu {
+    position: static;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    width: 100%;
+    min-width: auto;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+    border: none;
+    display: none; /* Hidden by default, could use JS to toggle or just show all */
+    padding-left: 1rem;
+  }
+
+  /* Show submenu when parent is hovered or always show for simplicity in this iteration */
+  .nav__item--has-submenu:hover > .nav__submenu,
+  .nav__item--has-submenu:focus-within > .nav__submenu,
+  .nav__item--has-submenu .nav__submenu {
+    /* Option: Always show submenu items in mobile for better UX if not too many */
+    display: block;
+  }
+
+  .nav__submenu-link {
+    padding: 0.75rem 2rem 0.75rem 3rem;
+    color: #94a3b8;
+  }
+
+  .nav__submenu-link:hover {
+    padding-left: 3.5rem;
+  }
+
+  .user {
+    display: none; /* Option: Move user info into the menu or keep it in header */
+  }
+
+  /* If we want user info in the header still, adjust space */
+  .container {
+    justify-content: space-between;
+  }
+
+  /* Add user info to the bottom of nav if needed, or keep it visible in header */
+  .user {
+    display: flex; /* Keep visible */
+    margin-right: 30px; /* Space for hamburger */
+  }
+
+  /* Adjust hamburger position */
+  .hamburger {
+    position: absolute;
+    right: 1.5rem;
+  }
+}

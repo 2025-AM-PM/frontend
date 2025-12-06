@@ -1,5 +1,6 @@
 import "../styles/header.css";
 import { NavLink, useLocation } from "react-router-dom";
+import { useState } from "react";
 import UserInfo from "./User";
 import LoginBtn from "./loginBtn";
 import { useAuthStore } from "../stores/authStore";
@@ -15,14 +16,33 @@ function Header() {
     return path === base || path.startsWith(base + "/");
   };
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <header className="header">
       <div className="container">
         {/* 로고 */}
         <div className="logo" />
 
+        {/* 햄버거 버튼 (모바일 전용) */}
+        <button
+          className={`hamburger ${isMenuOpen ? "active" : ""}`}
+          onClick={toggleMenu}
+          aria-label="메뉴 열기"
+        >
+          <span className="bar"></span>
+          <span className="bar"></span>
+          <span className="bar"></span>
+        </button>
+
         {/* 네비바 (BEM 구조) */}
-        <nav className="nav" aria-label="Primary">
+        <nav
+          className={`nav ${isMenuOpen ? "active" : ""}`}
+          aria-label="Primary"
+        >
           <ul className="nav__list">
             <li
               className={
@@ -30,7 +50,7 @@ function Header() {
                 (isCurrentPath("/", true) ? " nav__item--current" : "")
               }
             >
-              <NavLink to="/" end className="nav__link">
+              <NavLink to="/" end className="nav__link" onClick={closeMenu}>
                 홈
               </NavLink>
             </li>
@@ -41,7 +61,7 @@ function Header() {
                 (isCurrentPath("/projects") ? " nav__item--current" : "")
               }
             >
-              <NavLink to="/projects" className="nav__link">
+              <NavLink to="/projects" className="nav__link" onClick={closeMenu}>
                 프로젝트 자랑
               </NavLink>
             </li>
@@ -52,7 +72,7 @@ function Header() {
                 (isCurrentPath("/rank") ? " nav__item--current" : "")
               }
             >
-              <NavLink to="/rank" className="nav__link">
+              <NavLink to="/rank" className="nav__link" onClick={closeMenu}>
                 백준 랭크
               </NavLink>
             </li>
@@ -63,7 +83,7 @@ function Header() {
                 (isCurrentPath("/polls") ? " nav__item--current" : "")
               }
             >
-              <NavLink to="/polls" className="nav__link">
+              <NavLink to="/polls" className="nav__link" onClick={closeMenu}>
                 투표
               </NavLink>
             </li>
@@ -76,10 +96,11 @@ function Header() {
               }
             >
               <NavLink
-                to="/board/info/write"
+                to="/board"
                 className="nav__link"
                 aria-haspopup="true"
                 aria-expanded={isCurrentPath("/boards") ? true : undefined}
+                onClick={closeMenu}
               >
                 게시판
               </NavLink>
@@ -89,6 +110,7 @@ function Header() {
                     to="/board?category=study"
                     className="nav__submenu-link"
                     role="menuitem"
+                    onClick={closeMenu}
                   >
                     스터디
                   </NavLink>
@@ -98,6 +120,7 @@ function Header() {
                     to="/board?category=notice"
                     className="nav__submenu-link"
                     role="menuitem"
+                    onClick={closeMenu}
                   >
                     공지사항
                   </NavLink>
@@ -107,6 +130,7 @@ function Header() {
                     to="/board?category=job"
                     className="nav__submenu-link"
                     role="menuitem"
+                    onClick={closeMenu}
                   >
                     취업정보
                   </NavLink>
@@ -116,6 +140,7 @@ function Header() {
                     to="/board?category=info"
                     className="nav__submenu-link"
                     role="menuitem"
+                    onClick={closeMenu}
                   >
                     학교정보
                   </NavLink>
@@ -130,7 +155,7 @@ function Header() {
                   (isCurrentPath("/admin") ? " nav__item--current" : "")
                 }
               >
-                <NavLink to="/admin" className="nav__link">
+                <NavLink to="/admin" className="nav__link" onClick={closeMenu}>
                   관리자
                 </NavLink>
               </li>

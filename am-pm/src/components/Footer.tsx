@@ -45,7 +45,7 @@ const Footer: React.FC<Props> = ({
 
   return (
     <footer className="site-footer" role="contentinfo">
-      <div className="container-footer footer-top">
+      <div className="container-footer footer-copyright">
         <div className="copyright">Copyright © {org} All Rights Reserved.</div>
         <nav className="socials" aria-label="소셜 링크">
           {socials.map((s) => (
@@ -64,7 +64,7 @@ const Footer: React.FC<Props> = ({
 
       <div className="divider" aria-hidden />
 
-      <div className="container-footer footer-main">
+      <div className="container-footer footer-content">
         <div className="left">
           <div className="credit-lines">
             {credits.map((line, i) => (

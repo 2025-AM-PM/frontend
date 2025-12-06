@@ -13,6 +13,8 @@
 
 .login-hero {
   text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 .hero-title {
   font-size: 1.25rem;
@@ -250,4 +252,51 @@
 .login-footer {
   color: var(--muted);
   font-size: 0.85rem;
+}
+
+/* -------------------------------
+ * Responsive Design (Mobile)
+ * ------------------------------- */
+@media (max-width: 480px) {
+  .login-page {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .auth-card {
+    width: 100%;
+    padding: 1.25rem;
+    box-shadow: none; /* Simplify shadow on mobile */
+    border: none; /* Optional: remove border if full width feels better */
+    background: transparent; /* Or keep it if you want the card look */
+  }
+
+  /* If we want to keep the card look but make it fit better */
+  .auth-card {
+    background: #13161c; /* Match page bg or keep surface color */
+    border: 1px solid var(--border);
+  }
+
+  .hero-title {
+    font-size: 1.5rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .text-field {
+    height: 48px; /* Larger touch target */
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .btn {
+    height: 48px; /* Larger touch target */
+    font-size: 1rem;
+  }
+
+  .brand-dot {
+    width: 40px;
+    height: 40px;
+  }
 }
