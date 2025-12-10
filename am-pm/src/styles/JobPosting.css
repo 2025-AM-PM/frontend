@@ -1,0 +1,108 @@
+/* src/styles/JobPosting.css */
+@import "./post-detail.css"; /* Reuse Post Detail styles */
+
+.job-content {
+  margin-top: 2rem;
+}
+
+.job-summary-table {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: #ffd700; /* Gold accent */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.job-section {
+  margin-bottom: 3rem;
+}
+
+.job-section h2 {
+  font-size: 1.5rem;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.job-section ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.job-section li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.8rem;
+  line-height: 1.6;
+  color: #d1d5db;
+  font-size: 1.05rem;
+}
+
+.job-section li::before {
+  content: "•";
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 1.2rem;
+  position: absolute;
+  left: 0;
+  top: -2px;
+}
+
+.apply-btn-large {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #121212;
+  padding: 16px 48px;
+  border-radius: 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px var(--accent);
+}
+
+.apply-btn-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--accent-hover);
+}
+
+.apply-btn-large.disabled {
+  background: #333;
+  color: #777;
+  cursor: not-allowed;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .job-summary-table {
+    grid-template-columns: 1fr;
+  }
+}

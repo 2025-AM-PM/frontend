@@ -1,4 +1,3 @@
-// router.tsx
 import {
   createBrowserRouter,
   redirect,
@@ -22,6 +21,7 @@ import BoardList from "../components/boardList";
 import ErrorPage from "../components/error";
 import Prove from "../components/prove";
 import { register as registerApi } from "./auth";
+import JobPostingDemo from "../pages/JobPostingDemo";
 
 function LoginRoute() {
   const { setUser } = useAuth();
@@ -168,5 +168,6 @@ export const router = createBrowserRouter([
   { path: "/admin", element: <AdminRoute /> },
   { path: "/prove", Component: Prove },
   { path: "/board", Component: BoardList },
+  { path: "/jobs-demo", Component: JobPostingDemo },
   { path: "*", Component: ErrorPage },
 ]);
