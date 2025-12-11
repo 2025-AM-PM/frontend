@@ -8,11 +8,13 @@ import {
   PollResultResponse,
   PollVoteRequest,
   User,
+  DbHealthResponse,
 } from "../types";
 import { authStoreApi, useAuthStore } from "../stores/authStore";
 import { refreshAccessToken } from "./auth";
 
 export const API_BASE = process.env.REACT_APP_API_BASE;
+export const DB = process.env.DB_API;
 
 export type ApiResponse<T> = {
   status: number;
@@ -104,6 +106,16 @@ export async function apiFetch<T>(
   };
 }
 
+export async function dbHealthCheck(): Promise<DbHealthResponse> {
+  const res = await fetch(`${DB}/api/db/health`, {
+    method: "GET",
+    credentials: "include",
+  });
+
+  if (!res.ok) throw new Error("DB 연결 실패");
+  return res.json();
+}
+
 // Poll API functions
 export async function getPolls(
   params: PollSearchParam = {},
@@ -145,7 +157,7 @@ export async function getPolls(
 export async function createPoll(
   pollData: PollCreateRequest
 ): Promise<PollSummaryResponse> {
-  const response = await apiFetch<PollSummaryResponse>("/polls", {
+  const response = await apiFetch<PollSummaryResponse>(`/polls`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -20,37 +20,6 @@ type RegisterReq = {
   studentPassword: string;
 };
 
-// export async function login(req: LoginReq): Promise<User> {
-//   const { data, headers } = await apiFetch<LoginRes>("/auth/login", {
-//     method: "POST",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify(req),
-//   });
-//   if (!data) throw new Error("로그인 실패");
-
-//   // 1) 토큰 저장 (헤더 → 필요시 바디로 대체)
-//   const raw =
-//     headers.get("Authorization") ||
-//     headers.get("authorization") ||
-//     headers.get("authorizen");
-//   const token =
-//     raw && raw.toLowerCase().startsWith("bearer ") ? raw.slice(7) : null;
-
-//   if (token) setAccessToken(token);
-
-//   // 2) 사용자 저장
-//   const user: User = {
-//     studentId: data.studentId || null,
-//     studentName: data.studentName || null,
-//     studentNumber: data.studentNumber || null,
-//     studentTier: data.studentTier || null,
-//     role: data.role || null,
-//   };
-//   setStoredUser<User>(user);
-
-//   return user;
-// }
-
 export async function login(req: LoginReq): Promise<User> {
   const { setToken, setUser, logOut } = useAuthStore.getState();
 

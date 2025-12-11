@@ -10,6 +10,12 @@ export interface Post {
   updatedAt?: string;
 }
 
+export interface DbHealthResponse {
+  ok: boolean;
+  cluster_name: string;
+  status: string;
+}
+
 export interface PostDetail {
   id: number;
   title: string;
