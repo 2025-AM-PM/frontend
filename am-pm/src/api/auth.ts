@@ -107,14 +107,6 @@ export async function getCurrentUser(): Promise<User | null> {
   }
 }
 
-/** 서버 호출 없이 클라이언트 상태만 정리 */
-// export function logout(): void {
-//   console.log("[logout] before", localStorage.getItem(StorageKeys.access));
-//   setAccessToken(null);
-//   setStoredUser<User>(null);
-//   console.log("[logout] after", localStorage.getItem(StorageKeys.access));
-// }
-
 export async function refreshAccessToken(): Promise<string | null> {
   if (refreshPromise) return refreshPromise; // single-flight
 

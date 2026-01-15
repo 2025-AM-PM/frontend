@@ -13,8 +13,47 @@ import {
 import { authStoreApi, useAuthStore } from "../stores/authStore";
 import { refreshAccessToken } from "./auth";
 
+// ============================================================
+// Re-exports for backward compatibility and DI support
+// ============================================================
+
+// Interfaces (ApiResponse and Extra defined locally for backward compat)
+export type {
+  IApiClient,
+  IPollService,
+  IAuthService,
+  IAdminService,
+  IDbService,
+} from "./api.interfaces";
+
 export const API_BASE = process.env.REACT_APP_API_BASE;
 export const DB = process.env.DB_API;
+
+// Service implementations
+export {
+  DefaultApiClient,
+  DefaultPollService,
+  DefaultAuthService,
+  DefaultAdminService,
+  DefaultDbService,
+  createDefaultServices,
+  getDefaultServices,
+} from "./services";
+
+// Context and hooks
+export {
+  ApiProvider,
+  useApi,
+  useApiClient,
+  usePollService,
+  useAuthService,
+  useAdminService,
+  useDbService,
+} from "./ApiContext";
+
+// ============================================================
+// Legacy exports (backward compatibility)
+// ============================================================
 
 export type ApiResponse<T> = {
   status: number;
